@@ -1,71 +1,37 @@
-// You Got It! — tiny backend that serves the static prototype and proxies two
-// Claude calls for AIGround: generate the draft, and grade the submission.
-// The API key is read ONLY from ANTHROPIC_API_KEY and never reaches the browser.
+// Local dev server — serves the static prototype and the two API endpoints.
+// On Vercel these endpoints are the serverless functions in /api; this Express
+// server is for running the whole thing locally (`npm start`). Both share the
+// grading logic in lib/grader.js so there's a single source of truth.
 
 import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import Anthropic from "@anthropic-ai/sdk";
-import {
-  MODEL,
-  DRAFT_SYSTEM,
-  GRADER_SYSTEM,
-  GRADE_SCHEMA,
-  gradeUserMessage,
-} from "./prompts.js";
+import { generateDraft, gradeSubmission, hasKey } from "./lib/grader.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 app.use(express.json({ limit: "1mb" }));
 app.use(express.static(__dirname));
 
-const hasKey = () => Boolean(process.env.ANTHROPIC_API_KEY);
-const client = new Anthropic(); // reads ANTHROPIC_API_KEY from the environment
-
-function textOf(response) {
-  const block = (response.content || []).find((b) => b.type === "text");
-  return block ? block.text : "";
-}
-
-// POST /api/draft { prompt } -> { draft }
 app.post("/api/draft", async (req, res) => {
   const prompt = (req.body?.prompt || "").trim();
   if (!prompt) return res.status(400).json({ error: "empty_prompt" });
   if (!hasKey()) return res.json({ error: "no_api_key" });
   try {
-    const response = await client.messages.create({
-      model: MODEL,
-      max_tokens: 1200,
-      system: DRAFT_SYSTEM,
-      messages: [{ role: "user", content: prompt }],
-      output_config: { effort: "low" },
-    });
-    res.json({ draft: textOf(response).trim() });
+    res.json({ draft: await generateDraft(prompt) });
   } catch (err) {
     console.error("draft error:", err?.message || err);
     res.status(502).json({ error: "api_error", message: String(err?.message || err) });
   }
 });
 
-// POST /api/grade { prompt, draft } -> { summary, checks: [...] }
 app.post("/api/grade", async (req, res) => {
   const prompt = (req.body?.prompt || "").trim();
   const draft = (req.body?.draft || "").trim();
   if (!prompt || !draft) return res.status(400).json({ error: "missing_fields" });
   if (!hasKey()) return res.json({ error: "no_api_key" });
   try {
-    const response = await client.messages.create({
-      model: MODEL,
-      max_tokens: 3000,
-      system: GRADER_SYSTEM,
-      messages: [{ role: "user", content: gradeUserMessage(prompt, draft) }],
-      output_config: {
-        effort: "medium",
-        format: { type: "json_schema", schema: GRADE_SCHEMA },
-      },
-    });
-    const data = JSON.parse(textOf(response) || "{}");
-    res.json(data);
+    res.json(await gradeSubmission(prompt, draft));
   } catch (err) {
     console.error("grade error:", err?.message || err);
     res.status(502).json({ error: "api_error", message: String(err?.message || err) });
