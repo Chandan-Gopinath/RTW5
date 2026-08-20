@@ -12,7 +12,7 @@
   /* ink & text */
   --ink:#18181C;
   --text-2:#55555C;
-  --muted:#8A8A90;
+  --muted:#73737A;
 
   /* lines */
   --hairline:#E4E4E0;
@@ -247,12 +247,14 @@ button{font-family:inherit}
 .stepper__step{display:flex;align-items:center;gap:9px}
 .stepper__line{width:28px;height:2px;background:var(--hairline);margin:0 8px;flex:0 0 auto}
 .stepper__line.is-done{background:var(--ink)}
-.step-dot{width:24px;height:24px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:11px}
+.step-dot{width:26px;height:26px;border-radius:7px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:11px}
 .step-dot.is-next{border:2px solid var(--hairline-strong);color:var(--muted)}
-.step-dot.is-done{background:var(--ink);color:var(--ground)}
+/* completed step = the brand mark (ink rounded square + prominent yellow tick) */
+.step-mark{width:26px;height:26px;border-radius:7px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.step-mark svg{width:15px;height:15px}
 .stepper__lbl{font-size:13px;color:var(--muted)}
 .stepper__lbl.is-done{color:var(--ink)}
-.step-now{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:var(--ground);border-radius:var(--radius-pill);padding:7px 14px;font-weight:600;font-size:14px}
+.step-now{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:var(--ground);border-radius:8px;padding:8px 14px;font-weight:600;font-size:14px}
 .step-now .n{font-family:var(--font-mono);color:var(--highlight);font-size:12px}
 @media (max-width:600px){
   .stepper__lbl{display:none}
@@ -299,6 +301,26 @@ button{font-family:inherit}
 @media (max-width:560px){
   .record{grid-template-columns:1fr}
   .aig-actions .btn{flex:1}
+}
+
+/* AIGround hub — skill path */
+.path{display:flex;flex-direction:column;margin-top:var(--s5)}
+.path__node{display:flex;align-items:center;gap:16px;position:relative;padding:12px 0;text-decoration:none;color:inherit}
+.path__node:not(:last-child)::before{content:"";position:absolute;left:23px;top:50%;width:2px;height:100%;background:var(--hairline);z-index:0}
+.path__badge{width:48px;height:48px;border-radius:13px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;position:relative;z-index:1}
+.path__badge.avail{background:var(--ink)}
+.path__badge.avail svg{width:20px;height:20px}
+.path__badge.lock{border:2px dashed var(--hairline-strong);background:var(--surface);color:var(--muted)}
+.path__badge.lock svg{width:20px;height:20px}
+.path__meta{display:flex;flex-direction:column;gap:2px;min-width:0}
+.path__cat{font-family:var(--font-mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.path__ttl{font-family:var(--font-display);font-weight:800;font-size:19px;letter-spacing:-.01em;line-height:1.15}
+.path__node.is-lock .path__ttl{color:var(--muted);font-weight:700}
+.path__node .btn,.path__node .pill{margin-left:auto}
+.path__node[data-start-task]:hover .path__ttl{text-decoration:underline;text-underline-offset:3px}
+@media (max-width:440px){
+  .path__node .pill{display:none}
+  .path__ttl{font-size:17px}
 }
 
 /* ===========================================================

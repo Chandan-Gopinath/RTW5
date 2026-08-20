@@ -40,117 +40,166 @@
   </nav>
 
   <main class="aig-wrap">
-    <div class="aig-tracker"><div class="stepper" id="stepper"></div></div>
 
-    <!-- STEP 1 — BRIEF -->
-    <section class="aig-step" data-step="1">
-      <p class="eyebrow">The task · synthetic scenario</p>
-      <h1 class="aig-h">Draft a recall letter for Riverstone Family Practice</h1>
-      <p class="aig-lead">Dr Okafor has asked you to invite a patient who's overdue for a routine diabetes review to book an appointment. Draft it with AI — warm, and safe.</p>
-      <div class="brief-card">
-        <p class="record__k">Patient record — synthetic, safe to practise on</p>
-        <div class="record">
-          <div class="record__item"><div class="record__k">Patient</div><div class="record__v">Margaret Nguyen</div></div>
-          <div class="record__item"><div class="record__k">Date of birth</div><div class="record__v">14 / 03 / 1958</div></div>
-          <div class="record__item"><div class="record__k">Medicare</div><div class="record__v">2953 8881 71</div></div>
-          <div class="record__item"><div class="record__k">Last review</div><div class="record__v">8 months ago (policy: 6)</div></div>
-          <div class="record__item"><div class="record__k">Dr's note</div><div class="record__v">"Borderline high result — don't alarm her."</div></div>
-          <div class="record__item"><div class="record__k">Booking</div><div class="record__v">[phone to confirm] · online portal</div></div>
+    <!-- ============ HUB: skill path ============ -->
+    <section id="aig-hub">
+      <p class="eyebrow">AIGround</p>
+      <h1 class="aig-h">Pick a task to prove</h1>
+      <p class="aig-lead">Practise a real task on safe, synthetic data — then get graded on the judgment that matters. Work your way along; new tasks unlock over time.</p>
+
+      <div class="path">
+        <a class="path__node" href="#" data-start-task="recall">
+          <span class="path__badge avail"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5 L19 12 L8 19 Z" fill="#EFE84B"/></svg></span>
+          <div class="path__meta"><span class="path__cat">Patient correspondence · Ready</span><span class="path__ttl">Recall &amp; reminder letters</span></div>
+          <span class="btn btn--primary btn--sm">Start &rarr;</span>
+        </a>
+
+        <div class="path__node is-lock">
+          <span class="path__badge lock"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11 V8 a4 4 0 0 1 8 0 v3" stroke-linecap="round"/></svg></span>
+          <div class="path__meta"><span class="path__cat">Staff communication · Soon</span><span class="path__ttl">Staff announcements</span></div>
+          <span class="pill pill--soon">Soon</span>
+        </div>
+
+        <div class="path__node is-lock">
+          <span class="path__badge lock"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11 V8 a4 4 0 0 1 8 0 v3" stroke-linecap="round"/></svg></span>
+          <div class="path__meta"><span class="path__cat">Policies &amp; procedures · Soon</span><span class="path__ttl">Policy updates</span></div>
+          <span class="pill pill--soon">Soon</span>
+        </div>
+
+        <div class="path__node is-lock">
+          <span class="path__badge lock"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11 V8 a4 4 0 0 1 8 0 v3" stroke-linecap="round"/></svg></span>
+          <div class="path__meta"><span class="path__cat">Complaints &amp; sensitive · Soon</span><span class="path__ttl">Complaint responses</span></div>
+          <span class="pill pill--soon">Soon</span>
+        </div>
+
+        <div class="path__node is-lock">
+          <span class="path__badge lock"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11 V8 a4 4 0 0 1 8 0 v3" stroke-linecap="round"/></svg></span>
+          <div class="path__meta"><span class="path__cat">Reporting · Soon</span><span class="path__ttl">Board reporting</span></div>
+          <span class="pill pill--soon">Soon</span>
+        </div>
+
+        <div class="path__node is-lock">
+          <span class="path__badge lock"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11 V8 a4 4 0 0 1 8 0 v3" stroke-linecap="round"/></svg></span>
+          <div class="path__meta"><span class="path__cat">Compliance &amp; audit · Soon</span><span class="path__ttl">Compliance prep</span></div>
+          <span class="pill pill--soon">Soon</span>
         </div>
       </div>
-      <div class="aig-actions">
-        <button class="btn btn--primary" data-goto="2">Start writing &rarr;</button>
-      </div>
     </section>
 
-    <!-- STEP 2 — PROMPT -->
-    <section class="aig-step" data-step="2">
-      <p class="eyebrow">Your prompt</p>
-      <h1 class="aig-h">Tell the AI what to write</h1>
-      <p class="aig-lead">Give it enough to sound like Riverstone — and remember what's unsafe to paste in.</p>
-      <textarea class="aig-textarea" aria-label="Your prompt">Write a recall letter to Margaret Nguyen, DOB 14/03/1958, Medicare 2953 8881 71, who is overdue for her diabetes review. Her last HbA1c was borderline high.</textarea>
-      <p class="aig-hint">Pre-filled with a first attempt for this demo — in the real thing, it's blank and yours.</p>
-      <div class="aig-actions">
-        <button class="btn btn--secondary" data-goto="1">&larr; Back</button>
-        <button class="btn btn--primary" data-goto="3">Generate draft &rarr;</button>
-      </div>
-    </section>
+    <!-- ============ LOOP: the graded task ============ -->
+    <div id="aig-loop" hidden>
+      <a class="back-link" href="#" id="backToHub">&larr; All AIGround tasks</a>
+      <div class="aig-tracker"><div class="stepper" id="stepper"></div></div>
 
-    <!-- STEP 3 — DRAFT -->
-    <section class="aig-step" data-step="3">
-      <p class="eyebrow">The AI's draft</p>
-      <h1 class="aig-h">Here's what the AI wrote</h1>
-      <p class="aig-lead">Read it like any draft headed to a patient — what would you change before this goes out?</p>
-      <div class="draft-panel">Dear Margaret,
+      <!-- STEP 1 — BRIEF -->
+      <section class="aig-step" data-step="1">
+        <p class="eyebrow">The task · synthetic scenario</p>
+        <h1 class="aig-h">Draft a recall letter for Riverstone Family Practice</h1>
+        <p class="aig-lead">Dr Okafor has asked you to invite a patient who's overdue for a routine diabetes review to book an appointment. Draft it with AI — warm, and safe.</p>
+        <div class="brief-card">
+          <p class="record__k">Patient record — synthetic, safe to practise on</p>
+          <div class="record">
+            <div class="record__item"><div class="record__k">Patient</div><div class="record__v">Margaret Nguyen</div></div>
+            <div class="record__item"><div class="record__k">Date of birth</div><div class="record__v">14 / 03 / 1958</div></div>
+            <div class="record__item"><div class="record__k">Medicare</div><div class="record__v">2953 8881 71</div></div>
+            <div class="record__item"><div class="record__k">Last review</div><div class="record__v">8 months ago (policy: 6)</div></div>
+            <div class="record__item"><div class="record__k">Dr's note</div><div class="record__v">"Borderline high result — don't alarm her."</div></div>
+            <div class="record__item"><div class="record__k">Booking</div><div class="record__v">[phone to confirm] · online portal</div></div>
+          </div>
+        </div>
+        <div class="aig-actions">
+          <button class="btn btn--primary" data-goto="2">Start writing &rarr;</button>
+        </div>
+      </section>
+
+      <!-- STEP 2 — PROMPT -->
+      <section class="aig-step" data-step="2">
+        <p class="eyebrow">Your prompt</p>
+        <h1 class="aig-h">Tell the AI what to write</h1>
+        <p class="aig-lead">Give it enough to sound like Riverstone — and remember what's unsafe to paste in.</p>
+        <textarea class="aig-textarea" aria-label="Your prompt">Write a recall letter to Margaret Nguyen, DOB 14/03/1958, Medicare 2953 8881 71, who is overdue for her diabetes review. Her last HbA1c was borderline high.</textarea>
+        <p class="aig-hint">Pre-filled with a first attempt for this demo — in the real thing, it's blank and yours.</p>
+        <div class="aig-actions">
+          <button class="btn btn--secondary" data-goto="1">&larr; Back</button>
+          <button class="btn btn--primary" data-goto="3">Generate draft &rarr;</button>
+        </div>
+      </section>
+
+      <!-- STEP 3 — DRAFT -->
+      <section class="aig-step" data-step="3">
+        <p class="eyebrow">The AI's draft</p>
+        <h1 class="aig-h">Here's what the AI wrote</h1>
+        <p class="aig-lead">Read it like any draft headed to a patient — what would you change before this goes out?</p>
+        <div class="draft-panel">Dear Margaret,
 
 Our records show your recent borderline high blood sugar result means you're due for a diabetes review. Please call us on (03) 9412 6680 to book an appointment.
 
 Kind regards,
 Riverstone Family Practice</div>
-      <div class="aig-actions">
-        <button class="btn btn--secondary" data-goto="2">&larr; Edit prompt</button>
-        <button class="btn btn--primary" data-goto="4">Submit for feedback &rarr;</button>
-      </div>
-    </section>
+        <div class="aig-actions">
+          <button class="btn btn--secondary" data-goto="2">&larr; Edit prompt</button>
+          <button class="btn btn--primary" data-goto="4">Submit for feedback &rarr;</button>
+        </div>
+      </section>
 
-    <!-- STEP 4 — FEEDBACK -->
-    <section class="aig-step" data-step="4">
-      <p class="eyebrow">Graded feedback</p>
-      <div class="fb-head">
-        <h1 class="aig-h">You're close — here's what to tighten</h1>
-        <p class="aig-lead">Two important fixes and one to check, with the proof pulled straight from your work.</p>
-      </div>
-      <div class="fb-list">
-        <div class="fb-row is-fail">
-          <div class="fb-row__stripe"></div><div class="fb-row__badge">✕</div>
-          <div>
-            <div class="fb-row__title">Kept sensitive data out of the tool</div>
-            <div class="fb-row__why">You pasted the Medicare number and date of birth — the AI never needed them to write this letter, and that's identifiable health data going into a general tool.</div>
-            <div class="fb-evidence">Medicare 2953 8881 71 · DOB 14/03/1958</div>
+      <!-- STEP 4 — FEEDBACK -->
+      <section class="aig-step" data-step="4">
+        <p class="eyebrow">Graded feedback</p>
+        <div class="fb-head">
+          <h1 class="aig-h">You're close — here's what to tighten</h1>
+          <p class="aig-lead">Two important fixes and one to check, with the proof pulled straight from your work.</p>
+        </div>
+        <div class="fb-list">
+          <div class="fb-row is-fail">
+            <div class="fb-row__stripe"></div><div class="fb-row__badge">✕</div>
+            <div>
+              <div class="fb-row__title">Kept sensitive data out of the tool</div>
+              <div class="fb-row__why">You pasted the Medicare number and date of birth — the AI never needed them to write this letter, and that's identifiable health data going into a general tool.</div>
+              <div class="fb-evidence">Medicare 2953 8881 71 · DOB 14/03/1958</div>
+            </div>
+          </div>
+          <div class="fb-row is-fail">
+            <div class="fb-row__stripe"></div><div class="fb-row__badge">✕</div>
+            <div>
+              <div class="fb-row__title">Didn't let the AI reveal the result</div>
+              <div class="fb-row__why">A reminder invites a booking — it shouldn't report a clinical result. Dr Okafor asked you not to alarm her.</div>
+              <div class="fb-evidence">"…your recent borderline high blood sugar result…"</div>
+            </div>
+          </div>
+          <div class="fb-row is-warn">
+            <div class="fb-row__stripe"></div><div class="fb-row__badge">!</div>
+            <div>
+              <div class="fb-row__title">Handled the unverifiable detail</div>
+              <div class="fb-row__why">The AI invented a phone number to fill the gap. Leave a placeholder and confirm it before sending.</div>
+              <div class="fb-evidence">"…call us on (03) 9412 6680…"</div>
+            </div>
+          </div>
+          <div class="fb-row is-pass">
+            <div class="fb-row__stripe"></div><div class="fb-row__badge">✓</div>
+            <div>
+              <div class="fb-row__title">Gave the AI a clear, specific task</div>
+              <div class="fb-row__why">You said exactly what the letter was for. That's the right instinct — now do it without the risky details.</div>
+            </div>
           </div>
         </div>
-        <div class="fb-row is-fail">
-          <div class="fb-row__stripe"></div><div class="fb-row__badge">✕</div>
-          <div>
-            <div class="fb-row__title">Didn't let the AI reveal the result</div>
-            <div class="fb-row__why">A reminder invites a booking — it shouldn't report a clinical result. Dr Okafor asked you not to alarm her.</div>
-            <div class="fb-evidence">"…your recent borderline high blood sugar result…"</div>
-          </div>
+        <div class="aig-actions">
+          <button class="btn btn--secondary" data-goto="2">Try again</button>
+          <button class="btn btn--primary" data-goto="5">See a strong version &rarr;</button>
         </div>
-        <div class="fb-row is-warn">
-          <div class="fb-row__stripe"></div><div class="fb-row__badge">!</div>
-          <div>
-            <div class="fb-row__title">Handled the unverifiable detail</div>
-            <div class="fb-row__why">The AI invented a phone number to fill the gap. Leave a placeholder and confirm it before sending.</div>
-            <div class="fb-evidence">"…call us on (03) 9412 6680…"</div>
-          </div>
-        </div>
-        <div class="fb-row is-pass">
-          <div class="fb-row__stripe"></div><div class="fb-row__badge">✓</div>
-          <div>
-            <div class="fb-row__title">Gave the AI a clear, specific task</div>
-            <div class="fb-row__why">You said exactly what the letter was for. That's the right instinct — now do it without the risky details.</div>
-          </div>
-        </div>
-      </div>
-      <div class="aig-actions">
-        <button class="btn btn--secondary" data-goto="2">Try again</button>
-        <button class="btn btn--primary" data-goto="5">See a strong version &rarr;</button>
-      </div>
-    </section>
+      </section>
 
-    <!-- STEP 5 — REVEAL -->
-    <section class="aig-step" data-step="5">
-      <p class="eyebrow">A strong version</p>
-      <h1 class="aig-h">This is the standard you're aiming for</h1>
-      <p class="aig-lead">Same task, done with the three skills. Notice what changed — no personal data, no clinical result, placeholders for anything unverified.</p>
-      <div class="reveal-block">
-        <p class="reveal-label">The prompt</p>
-        <div class="draft-panel" style="font-family:var(--font-mono);font-size:13.5px;line-height:1.6">Warm, plain-English recall letter for Riverstone Family Practice. A patient is overdue for a routine diabetes review. Invite them to book — no clinical details, don't alarm them. Leave [patient name] and [booking phone] as placeholders for me to fill in.</div>
-      </div>
-      <div class="reveal-block">
-        <p class="reveal-label">The letter</p>
-        <div class="draft-panel">Dear [patient name],
+      <!-- STEP 5 — REVEAL -->
+      <section class="aig-step" data-step="5">
+        <p class="eyebrow">A strong version</p>
+        <h1 class="aig-h">This is the standard you're aiming for</h1>
+        <p class="aig-lead">Same task, done with the three skills. Notice what changed — no personal data, no clinical result, placeholders for anything unverified.</p>
+        <div class="reveal-block">
+          <p class="reveal-label">The prompt</p>
+          <div class="draft-panel" style="font-family:var(--font-mono);font-size:13.5px;line-height:1.6">Warm, plain-English recall letter for Riverstone Family Practice. A patient is overdue for a routine diabetes review. Invite them to book — no clinical details, don't alarm them. Leave [patient name] and [booking phone] as placeholders for me to fill in.</div>
+        </div>
+        <div class="reveal-block">
+          <p class="reveal-label">The letter</p>
+          <div class="draft-panel">Dear [patient name],
 
 It's time for your regular check-up here at Riverstone Family Practice. Our records show it's been a little while since your last review, and we'd love to see you.
 
@@ -158,12 +207,14 @@ Please call us on [booking phone], or book online whenever suits you.
 
 Warm regards,
 Riverstone Family Practice</div>
-      </div>
-      <div class="aig-actions">
-        <button class="btn btn--secondary" data-goto="2">Try it yourself</button>
-        <a class="btn btn--primary" href="dashboard.html">Back to Your desk &rarr;</a>
-      </div>
-    </section>
+        </div>
+        <div class="aig-actions">
+          <button class="btn btn--secondary" data-goto="2">Try it yourself</button>
+          <a class="btn btn--primary" href="dashboard.html">Back to Your desk &rarr;</a>
+        </div>
+      </section>
+    </div>
+
   </main>
 
   <script>
@@ -175,7 +226,11 @@ Riverstone Family Practice</div>
       menuBtn.setAttribute('aria-expanded', open);
     });
 
-    // step tracker + navigation
+    // hub <-> loop
+    const hub = document.getElementById('aig-hub');
+    const loop = document.getElementById('aig-loop');
+
+    // step tracker + navigation (within a task)
     const STEPS = ['Brief', 'Prompt', 'Draft', 'Feedback', 'Reveal'];
     const stepperEl = document.getElementById('stepper');
     let current = 1;
@@ -186,7 +241,7 @@ Riverstone Family Practice</div>
         const n = i + 1;
         if (i > 0) html += `<span class="stepper__line ${n <= cur ? 'is-done' : ''}"></span>`;
         if (n < cur) {
-          html += `<div class="stepper__step"><span class="step-dot is-done">✓</span><span class="stepper__lbl is-done">${label}</span></div>`;
+          html += `<div class="stepper__step"><span class="step-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5 L10 18 L20 6" fill="none" stroke="#EFE84B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="stepper__lbl is-done">${label}</span></div>`;
         } else if (n === cur) {
           html += `<div class="stepper__step"><span class="step-now"><span class="n">0${n}</span> ${label}</span></div>`;
         } else {
@@ -203,11 +258,28 @@ Riverstone Family Practice</div>
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    function startTask() {
+      hub.hidden = true;
+      loop.hidden = false;
+      showStep(1);
+    }
+    function backToHub() {
+      loop.hidden = true;
+      hub.hidden = false;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     document.querySelectorAll('[data-goto]').forEach(b =>
       b.addEventListener('click', () => showStep(+b.dataset.goto))
     );
+    document.querySelectorAll('[data-start-task]').forEach(c =>
+      c.addEventListener('click', e => { e.preventDefault(); startTask(); })
+    );
+    document.getElementById('backToHub').addEventListener('click', e => { e.preventDefault(); backToHub(); });
 
-    showStep(1);
+    // entry: ?task=recall jumps straight into the loop; otherwise show the hub
+    const params = new URLSearchParams(location.search);
+    if (params.get('task') === 'recall') startTask();
   </script>
 
 </body>
