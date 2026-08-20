@@ -25,8 +25,18 @@
       <a href="aiground.html">AIGround</a>
     </nav>
     <div class="topbar__user">
-      <span class="name">Welcome, Sarah</span>
-      <span class="avatar">S</span>
+      <button class="user-chip" id="userChip" aria-haspopup="true" aria-expanded="false" aria-controls="userMenu">
+        <span class="name">Welcome, Sarah</span>
+        <span class="avatar">S</span>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="user-menu" id="userMenu" role="menu">
+        <div class="user-menu__head">Signed in as <strong>Sarah</strong></div>
+        <a class="user-menu__item" href="index.html" role="menuitem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 17l5-5-5-5M21 12H9M12 19H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Sign out
+        </a>
+      </div>
     </div>
     <button class="topbar__menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false" aria-controls="mobileNav">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -125,6 +135,24 @@
     menuBtn.addEventListener('click', () => {
       const open = mobileNav.classList.toggle('open');
       menuBtn.setAttribute('aria-expanded', open);
+    });
+
+    // account menu (sign out)
+    const userChip = document.getElementById('userChip');
+    const userMenu = document.getElementById('userMenu');
+    userChip.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const open = userMenu.classList.toggle('open');
+      userChip.setAttribute('aria-expanded', open);
+    });
+    document.addEventListener('click', (e) => {
+      if (!userMenu.contains(e.target) && !userChip.contains(e.target)) {
+        userMenu.classList.remove('open');
+        userChip.setAttribute('aria-expanded', 'false');
+      }
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { userMenu.classList.remove('open'); userChip.setAttribute('aria-expanded', 'false'); }
     });
   </script>
 

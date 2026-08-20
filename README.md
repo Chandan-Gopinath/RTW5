@@ -1,29 +1,43 @@
 # You Got It!
 
-A design prototype for **You Got It!** — a daily-habit product that teaches non-technical **practice managers** to use AI on their real work, and grades whether they did it well. The graded practice arena is called **AIGround**.
+**You Got It!** teaches non-technical **practice managers** to use AI on their real work, and grades whether they did it well. The graded practice arena is **AIGround**.
 
-> **Status: design-only clickable prototype.** No AI, backend, or grading logic is wired yet — the prompt/draft/feedback content is the pre-scripted "Riverstone / Margaret Nguyen" recall-letter scenario, used to demonstrate the flow and the visual design. The real-AI build is a separate, later step.
+The recall-letter task is wired for **live AI grading**: the learner writes a prompt, Claude drafts the letter, and a second Claude call grades the submission against a rubric of planted traps (give context · keep unsafe data out · verify) and returns structured, cited feedback. Without an API key the app runs in **demo mode** on pre-scripted results, so the whole flow is still clickable.
+
+## Run it
+
+```bash
+npm install
+export ANTHROPIC_API_KEY=sk-ant-...   # optional — omit for demo mode
+npm start
+```
+
+Then open http://localhost:8123 . (Node 24+ can also load a `.env` file: `node --env-file=.env server.js` — see `.env.example`.)
+
+- **With `ANTHROPIC_API_KEY` set** → live drafting + grading via the Claude API.
+- **Without it** → demo mode: a banner appears in AIGround and the loop uses pre-scripted content.
+
+The API key is read **only** from the environment on the server; it is never sent to or exposed in the browser.
 
 ## The flow
 
-`index.html` (sign in) → `dashboard.html` (Your desk) → `learn.html` (3 judgment lessons) → `aiground.html` (the 5-step graded loop: Brief → Prompt → Draft → Feedback → Reveal) → back to Your desk.
+`index.html` (sign in) → `dashboard.html` (Your desk) → `learn.html` (3 judgment lessons) → `aiground.html` (skill-path hub → 5-step graded loop: Brief → Prompt → Draft → Feedback → Reveal) → back to Your desk.
 
-## Run it locally
+## Architecture
 
-Any static server works, e.g.:
-
-```bash
-python3 -m http.server 8123
-```
-
-Then open http://localhost:8123/index.html
+- **`server.js`** — Express server. Serves the static pages and exposes two endpoints:
+  - `POST /api/draft { prompt }` → `{ draft }` — generates the letter from the learner's prompt.
+  - `POST /api/grade { prompt, draft }` → `{ summary, checks[] }` — grades against the rubric, structured JSON with per-check verdict + cited evidence + why.
+- **`prompts.js`** — the scenario, the planted-trap rubric, the grader system prompt, and the JSON schema. Kept server-side so the "answer key" never reaches the browser. Model: **`claude-sonnet-5`**.
+- **`styles.css`** — the whole design system (tokens, components, responsive).
+- The frontend (`aiground.html`) calls the two endpoints and renders the draft and feedback; on any error it falls back to demo data and shows the banner.
 
 ## Design system
 
-All tokens, type, and components live in `styles.css`:
-
 - **Ground** bright bone `#FCFCFA`, ink `#18181C`
-- **Accent** highlighter-yellow `#EFE84B` (used only as a highlight + active marker)
-- **Semantic** pass `#2E8B52` · warn `#C6871F` · fix `#C0503C` (kept separate from the accent)
+- **Accent** highlighter-yellow `#EFE84B` (highlight + active marker; ink carries buttons)
+- **Semantic** pass `#2E8B52` · warn `#C6871F` · fix `#C0503C` (separate from the accent)
 - **Type** Fraunces (display) · Hanken Grotesk (body) · IBM Plex Mono (labels & evidence)
-- Fully responsive (mobile-first); the logo mark is a placeholder (tick concept).
+- Fully responsive, mobile-first. Logo mark is a placeholder (tick concept).
+
+> **Note:** all scenario data is synthetic. Real patient/clinic data never enters the app.

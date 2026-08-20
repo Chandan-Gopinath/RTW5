@@ -127,7 +127,7 @@ button{font-family:inherit}
 .topbar__nav a{font-size:18px;font-weight:600;color:var(--text-2);text-decoration:none;padding-bottom:4px;border-bottom:3px solid transparent}
 .topbar__nav a:hover{color:var(--ink)}
 .topbar__nav a.active{color:var(--ink);border-bottom-color:var(--highlight)}
-.topbar__user{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:15px;color:var(--text-2)}
+.topbar__user{margin-left:auto;position:relative;display:flex;align-items:center}
 
 /* hamburger — mobile only */
 .topbar__menu-btn{display:none;margin-left:var(--s3);background:transparent;border:1px solid var(--hairline-strong);border-radius:9px;width:44px;height:44px;align-items:center;justify-content:center;cursor:pointer;color:var(--ink)}
@@ -141,6 +141,19 @@ button{font-family:inherit}
 .mobile-nav a.active{color:var(--ink);box-shadow:inset 3px 0 0 var(--highlight);padding-left:14px}
 @media (min-width:721px){.mobile-nav{display:none !important}}
 .avatar{width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--ground);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;flex:0 0 auto}
+
+/* account menu */
+.user-chip{display:flex;align-items:center;gap:10px;background:none;border:0;cursor:pointer;padding:5px 6px;border-radius:9px;font-family:var(--font-body);font-size:15px;color:var(--text-2)}
+.user-chip:hover{background:var(--wash)}
+.user-chip .chev{width:14px;height:14px;flex:0 0 auto;transition:transform .15s ease}
+.user-chip[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.user-menu{position:absolute;top:calc(100% + 8px);right:0;min-width:210px;background:var(--surface);border:1px solid var(--hairline);border-radius:var(--radius-sm);box-shadow:var(--shadow);padding:6px;display:none;z-index:40}
+.user-menu.open{display:block}
+.user-menu__head{font-size:13px;color:var(--muted);padding:10px 12px 11px;border-bottom:1px solid var(--hairline);margin-bottom:4px}
+.user-menu__head strong{color:var(--ink)}
+.user-menu__item{display:flex;align-items:center;gap:10px;width:100%;padding:12px;border-radius:7px;font-family:var(--font-body);font-size:16px;font-weight:600;color:var(--ink);text-decoration:none;background:none;border:0;text-align:left;cursor:pointer}
+.user-menu__item:hover{background:var(--wash)}
+.user-menu__item svg{width:18px;height:18px;flex:0 0 auto}
 
 /* ---------- page container ---------- */
 .page{max-width:var(--maxw);margin:0 auto;padding:var(--s7) var(--s5)}

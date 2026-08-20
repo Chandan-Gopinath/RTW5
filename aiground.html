@@ -25,8 +25,18 @@
       <a href="aiground.html" class="active">AIGround</a>
     </nav>
     <div class="topbar__user">
-      <span class="name">Welcome, Sarah</span>
-      <span class="avatar">S</span>
+      <button class="user-chip" id="userChip" aria-haspopup="true" aria-expanded="false" aria-controls="userMenu">
+        <span class="name">Welcome, Sarah</span>
+        <span class="avatar">S</span>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="user-menu" id="userMenu" role="menu">
+        <div class="user-menu__head">Signed in as <strong>Sarah</strong></div>
+        <a class="user-menu__item" href="index.html" role="menuitem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 17l5-5-5-5M21 12H9M12 19H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Sign out
+        </a>
+      </div>
     </div>
     <button class="topbar__menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false" aria-controls="mobileNav">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -90,6 +100,7 @@
     <div id="aig-loop" hidden>
       <a class="back-link" href="#" id="backToHub">&larr; All AIGround tasks</a>
       <div class="aig-tracker"><div class="stepper" id="stepper"></div></div>
+      <p class="aig-hint" id="demoBanner" hidden style="margin-bottom:var(--s4)">Demo mode — the server has no <code>ANTHROPIC_API_KEY</code> set, so you're seeing pre-scripted results. Add the key and restart to grade live.</p>
 
       <!-- STEP 1 — BRIEF -->
       <section class="aig-step" data-step="1">
@@ -117,11 +128,11 @@
         <p class="eyebrow">Your prompt</p>
         <h1 class="aig-h">Tell the AI what to write</h1>
         <p class="aig-lead">Give it enough to sound like Riverstone — and remember what's unsafe to paste in.</p>
-        <textarea class="aig-textarea" aria-label="Your prompt">Write a recall letter to Margaret Nguyen, DOB 14/03/1958, Medicare 2953 8881 71, who is overdue for her diabetes review. Her last HbA1c was borderline high.</textarea>
-        <p class="aig-hint">Pre-filled with a first attempt for this demo — in the real thing, it's blank and yours.</p>
+        <textarea class="aig-textarea" id="promptInput" aria-label="Your prompt" placeholder="e.g. Write a warm, plain-English recall letter for our clinic inviting a patient to book a review…"></textarea>
+        <p class="aig-hint" id="draftStatus">The AI drafts from exactly what you write here — so give it context, and leave out anything unsafe.</p>
         <div class="aig-actions">
           <button class="btn btn--secondary" data-goto="1">&larr; Back</button>
-          <button class="btn btn--primary" data-goto="3">Generate draft &rarr;</button>
+          <button class="btn btn--primary" id="genDraftBtn">Generate draft &rarr;</button>
         </div>
       </section>
 
@@ -130,15 +141,10 @@
         <p class="eyebrow">The AI's draft</p>
         <h1 class="aig-h">Here's what the AI wrote</h1>
         <p class="aig-lead">Read it like any draft headed to a patient — what would you change before this goes out?</p>
-        <div class="draft-panel">Dear Margaret,
-
-Our records show your recent borderline high blood sugar result means you're due for a diabetes review. Please call us on (03) 9412 6680 to book an appointment.
-
-Kind regards,
-Riverstone Family Practice</div>
+        <div class="draft-panel" id="draftPanel"></div>
         <div class="aig-actions">
           <button class="btn btn--secondary" data-goto="2">&larr; Edit prompt</button>
-          <button class="btn btn--primary" data-goto="4">Submit for feedback &rarr;</button>
+          <button class="btn btn--primary" id="gradeBtn">Submit for feedback &rarr;</button>
         </div>
       </section>
 
@@ -146,42 +152,10 @@ Riverstone Family Practice</div>
       <section class="aig-step" data-step="4">
         <p class="eyebrow">Graded feedback</p>
         <div class="fb-head">
-          <h1 class="aig-h">You're close — here's what to tighten</h1>
-          <p class="aig-lead">Two important fixes and one to check, with the proof pulled straight from your work.</p>
+          <h1 class="aig-h" id="fbSummary">How you did</h1>
+          <p class="aig-lead">Graded on the judgment that matters — with the proof pulled straight from your work.</p>
         </div>
-        <div class="fb-list">
-          <div class="fb-row is-fail">
-            <div class="fb-row__stripe"></div><div class="fb-row__badge">✕</div>
-            <div>
-              <div class="fb-row__title">Kept sensitive data out of the tool</div>
-              <div class="fb-row__why">You pasted the Medicare number and date of birth — the AI never needed them to write this letter, and that's identifiable health data going into a general tool.</div>
-              <div class="fb-evidence">Medicare 2953 8881 71 · DOB 14/03/1958</div>
-            </div>
-          </div>
-          <div class="fb-row is-fail">
-            <div class="fb-row__stripe"></div><div class="fb-row__badge">✕</div>
-            <div>
-              <div class="fb-row__title">Didn't let the AI reveal the result</div>
-              <div class="fb-row__why">A reminder invites a booking — it shouldn't report a clinical result. Dr Okafor asked you not to alarm her.</div>
-              <div class="fb-evidence">"…your recent borderline high blood sugar result…"</div>
-            </div>
-          </div>
-          <div class="fb-row is-warn">
-            <div class="fb-row__stripe"></div><div class="fb-row__badge">!</div>
-            <div>
-              <div class="fb-row__title">Handled the unverifiable detail</div>
-              <div class="fb-row__why">The AI invented a phone number to fill the gap. Leave a placeholder and confirm it before sending.</div>
-              <div class="fb-evidence">"…call us on (03) 9412 6680…"</div>
-            </div>
-          </div>
-          <div class="fb-row is-pass">
-            <div class="fb-row__stripe"></div><div class="fb-row__badge">✓</div>
-            <div>
-              <div class="fb-row__title">Gave the AI a clear, specific task</div>
-              <div class="fb-row__why">You said exactly what the letter was for. That's the right instinct — now do it without the risky details.</div>
-            </div>
-          </div>
-        </div>
+        <div class="fb-list" id="fbList"></div>
         <div class="aig-actions">
           <button class="btn btn--secondary" data-goto="2">Try again</button>
           <button class="btn btn--primary" data-goto="5">See a strong version &rarr;</button>
@@ -224,6 +198,24 @@ Riverstone Family Practice</div>
     menuBtn.addEventListener('click', () => {
       const open = mobileNav.classList.toggle('open');
       menuBtn.setAttribute('aria-expanded', open);
+    });
+
+    // account menu (sign out)
+    const userChip = document.getElementById('userChip');
+    const userMenu = document.getElementById('userMenu');
+    userChip.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const open = userMenu.classList.toggle('open');
+      userChip.setAttribute('aria-expanded', open);
+    });
+    document.addEventListener('click', (e) => {
+      if (!userMenu.contains(e.target) && !userChip.contains(e.target)) {
+        userMenu.classList.remove('open');
+        userChip.setAttribute('aria-expanded', 'false');
+      }
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { userMenu.classList.remove('open'); userChip.setAttribute('aria-expanded', 'false'); }
     });
 
     // hub <-> loop
@@ -276,6 +268,90 @@ Riverstone Family Practice</div>
       c.addEventListener('click', e => { e.preventDefault(); startTask(); })
     );
     document.getElementById('backToHub').addEventListener('click', e => { e.preventDefault(); backToHub(); });
+
+    // ---------- live AI grading (with demo fallback) ----------
+    const FALLBACK_DRAFT = `Dear Margaret,
+
+Our records show your recent borderline high blood sugar result means you're due for a diabetes review. Please call us on (03) 9412 6680 to book an appointment.
+
+Kind regards,
+Riverstone Family Practice`;
+    const FALLBACK_GRADE = {
+      summary: "You're close — here's what to tighten",
+      checks: [
+        { id: 'safety', title: 'Kept sensitive data out of the tool', verdict: 'fail', evidence: 'Medicare 2953 8881 71 · DOB 14/03/1958', why: "You pasted the Medicare number and date of birth — the AI never needed them, and that's identifiable health data going into a general tool." },
+        { id: 'reveal', title: "Didn't let the AI reveal the result", verdict: 'fail', evidence: '"…your recent borderline high blood sugar result…"', why: "A reminder invites a booking — it shouldn't report a clinical result. Dr Okafor asked you not to alarm her." },
+        { id: 'verify', title: 'Handled the unverifiable detail', verdict: 'warn', evidence: '"…call us on (03) 9412 6680…"', why: 'The AI invented a phone number. Leave a placeholder and confirm it before sending.' },
+        { id: 'context', title: 'Gave the AI a clear, specific task', verdict: 'pass', evidence: '', why: 'You said exactly what the letter was for — now do it without the risky details.' },
+      ],
+    };
+
+    let currentPrompt = '', currentDraft = '';
+    const promptInput = document.getElementById('promptInput');
+    const draftPanel = document.getElementById('draftPanel');
+    const draftStatus = document.getElementById('draftStatus');
+    const genDraftBtn = document.getElementById('genDraftBtn');
+    const gradeBtn = document.getElementById('gradeBtn');
+    const fbList = document.getElementById('fbList');
+    const fbSummary = document.getElementById('fbSummary');
+    const demoBanner = document.getElementById('demoBanner');
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m]));
+    }
+
+    genDraftBtn.addEventListener('click', async () => {
+      currentPrompt = (promptInput.value || '').trim();
+      if (!currentPrompt) { draftStatus.textContent = 'Write a prompt first — the AI drafts from what you type.'; return; }
+      genDraftBtn.disabled = true;
+      genDraftBtn.textContent = 'Generating…';
+      try {
+        const r = await fetch('/api/draft', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: currentPrompt }) });
+        const data = await r.json();
+        if (data.error) throw new Error(data.error);
+        currentDraft = data.draft;
+      } catch (e) {
+        currentDraft = FALLBACK_DRAFT;
+        demoBanner.hidden = false;
+      }
+      draftPanel.textContent = currentDraft;
+      genDraftBtn.disabled = false;
+      genDraftBtn.textContent = 'Generate draft →';
+      showStep(3);
+    });
+
+    gradeBtn.addEventListener('click', async () => {
+      gradeBtn.disabled = true;
+      gradeBtn.textContent = 'Grading…';
+      let data;
+      try {
+        const r = await fetch('/api/grade', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: currentPrompt, draft: currentDraft }) });
+        data = await r.json();
+        if (data.error) throw new Error(data.error);
+      } catch (e) {
+        data = FALLBACK_GRADE;
+        demoBanner.hidden = false;
+      }
+      renderFeedback(data);
+      gradeBtn.disabled = false;
+      gradeBtn.textContent = 'Submit for feedback →';
+      showStep(4);
+    });
+
+    function renderFeedback(data) {
+      fbSummary.textContent = data.summary || 'How you did';
+      const cls = { pass: 'is-pass', warn: 'is-warn', fail: 'is-fail' };
+      const icon = { pass: '✓', warn: '!', fail: '✕' };
+      fbList.innerHTML = (data.checks || []).map(c => `
+        <div class="fb-row ${cls[c.verdict] || 'is-warn'}">
+          <div class="fb-row__stripe"></div><div class="fb-row__badge">${icon[c.verdict] || '!'}</div>
+          <div>
+            <div class="fb-row__title">${escapeHtml(c.title)}</div>
+            <div class="fb-row__why">${escapeHtml(c.why || '')}</div>
+            ${c.evidence ? `<div class="fb-evidence">${escapeHtml(c.evidence)}</div>` : ''}
+          </div>
+        </div>`).join('');
+    }
 
     // entry: ?task=recall jumps straight into the loop; otherwise show the hub
     const params = new URLSearchParams(location.search);

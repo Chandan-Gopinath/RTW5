@@ -1,0 +1,14 @@
+{
+  "name": "you-got-it",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "You Got It! — AIGround live-grading backend + static prototype",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.68.0",
+    "express": "^5.1.0"
+  }
+}
