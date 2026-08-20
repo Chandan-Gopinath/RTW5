@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You Got It! — Your desk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800;9..144,900&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- top bar -->
+  <header class="topbar">
+    <a class="logo" href="dashboard.html" aria-label="You Got It! home (logo placeholder)">
+      <span class="logo__mark">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5 L10 18 L20 6" fill="none" stroke="#EFE84B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <span class="logo__word">You Got It!</span>
+    </a>
+    <nav class="topbar__nav">
+      <a href="dashboard.html" class="active">Your desk</a>
+      <a href="learn.html">Learn</a>
+      <a href="aiground.html">AIGround</a>
+    </nav>
+    <div class="topbar__user">
+      <span class="name">Welcome, Sarah</span>
+      <span class="avatar">S</span>
+    </div>
+    <button class="topbar__menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false" aria-controls="mobileNav">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </header>
+
+  <!-- mobile dropdown menu -->
+  <nav class="mobile-nav" id="mobileNav" aria-label="Main">
+    <a href="dashboard.html" class="active">Your desk</a>
+    <a href="learn.html">Learn</a>
+    <a href="aiground.html">AIGround</a>
+  </nav>
+
+  <main class="page">
+    <div class="page-head">
+      <p class="eyebrow">Your desk</p>
+      <h1>Good to see you, <span class="hl">Sarah</span>.</h1>
+      <p class="lead">One task a day, on the work already on your desk. Learn it, then prove it in AIGround.</p>
+    </div>
+
+    <!-- TODAY'S FOCUS -->
+    <p class="section-label">Today's focus</p>
+    <a class="today-hero" href="learn.html">
+      <div class="today-hero__main">
+        <p class="today-hero__cat"><span class="hl">Patient correspondence</span></p>
+        <h2 class="today-hero__title">Recall &amp; reminder letters</h2>
+        <p class="today-hero__desc">Draft a warm, on-brand recall letter with AI — and learn what's unsafe to share, what to verify, and how to make it sound like your clinic.</p>
+        <div class="today-hero__foot">
+          <span class="btn btn--primary">Start today's task &rarr;</span>
+          <span class="meta">~10 min · graded in AIGround</span>
+        </div>
+      </div>
+      <div class="today-hero__aside">
+        <p class="aside-label">What you'll practise</p>
+        <ul class="skill-chips">
+          <li>Give the AI context</li>
+          <li>Keep unsafe data out</li>
+          <li>Verify what it gives back</li>
+        </ul>
+      </div>
+    </a>
+
+    <!-- THE REST OF YOUR WEEK -->
+    <p class="section-label">The rest of your week</p>
+    <section class="catalog" aria-label="Upcoming tasks">
+
+      <div class="taskcard taskcard--soon">
+        <p class="taskcard__cat">Staff communication</p>
+        <h2 class="taskcard__title">Staff announcements</h2>
+        <p class="taskcard__desc">Turn messy meeting notes into a clear, calm message the whole team can act on.</p>
+        <div class="taskcard__foot"><span class="meta">Messy notes → message</span><span class="pill pill--soon">Soon</span></div>
+      </div>
+
+      <div class="taskcard taskcard--soon">
+        <p class="taskcard__cat">Policies &amp; procedures</p>
+        <h2 class="taskcard__title">Policy updates</h2>
+        <p class="taskcard__desc">Shape rough notes into a staff-ready SOP — and check the AI hasn't misstated the rule.</p>
+        <div class="taskcard__foot"><span class="meta">Notes → SOP</span><span class="pill pill--soon">Soon</span></div>
+      </div>
+
+      <div class="taskcard taskcard--soon">
+        <p class="taskcard__cat">Complaints &amp; sensitive</p>
+        <h2 class="taskcard__title">Complaint responses</h2>
+        <p class="taskcard__desc">Draft a calm, professional first reply — and judge when a draft needs a human, not AI.</p>
+        <div class="taskcard__foot"><span class="meta">De-escalate with care</span><span class="pill pill--soon">Soon</span></div>
+      </div>
+
+      <div class="taskcard taskcard--soon">
+        <p class="taskcard__cat">Reporting</p>
+        <h2 class="taskcard__title">Board reporting</h2>
+        <p class="taskcard__desc">Turn a set of numbers into a written summary — and verify the AI read the figures right.</p>
+        <div class="taskcard__foot"><span class="meta">Numbers → narrative</span><span class="pill pill--soon">Soon</span></div>
+      </div>
+
+      <div class="taskcard taskcard--soon">
+        <p class="taskcard__cat">Compliance &amp; audit</p>
+        <h2 class="taskcard__title">Compliance prep</h2>
+        <p class="taskcard__desc">Generate checklists and evidence summaries — while confirming everything against the primary source.</p>
+        <div class="taskcard__foot"><span class="meta">Checklists &amp; evidence</span><span class="pill pill--soon">Soon</span></div>
+      </div>
+
+    </section>
+  </main>
+
+  <script>
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileNav = document.getElementById('mobileNav');
+    menuBtn.addEventListener('click', () => {
+      const open = mobileNav.classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', open);
+    });
+  </script>
+
+</body>
+</html>

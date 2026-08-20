@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You Got It! — Learn: Recall letters</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800;9..144,900&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- top bar -->
+  <header class="topbar">
+    <a class="logo" href="dashboard.html" aria-label="You Got It! home (logo placeholder)">
+      <span class="logo__mark">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5 L10 18 L20 6" fill="none" stroke="#EFE84B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <span class="logo__word">You Got It!</span>
+    </a>
+    <nav class="topbar__nav">
+      <a href="dashboard.html">Your desk</a>
+      <a href="learn.html" class="active">Learn</a>
+      <a href="aiground.html">AIGround</a>
+    </nav>
+    <div class="topbar__user">
+      <span class="name">Welcome, Sarah</span>
+      <span class="avatar">S</span>
+    </div>
+    <button class="topbar__menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false" aria-controls="mobileNav">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </header>
+
+  <nav class="mobile-nav" id="mobileNav" aria-label="Main">
+    <a href="dashboard.html">Your desk</a>
+    <a href="learn.html" class="active">Learn</a>
+    <a href="aiground.html">AIGround</a>
+  </nav>
+
+  <main class="page">
+    <a class="back-link" href="dashboard.html">&larr; Your desk</a>
+
+    <div class="page-head">
+      <p class="eyebrow">Learn · Patient correspondence</p>
+      <h1>Recall &amp; reminder letters</h1>
+      <p class="lead">Three judgment skills, one real task — about four minutes, then you'll prove it in AIGround.</p>
+    </div>
+
+    <div class="lessons">
+
+      <!-- 01 -->
+      <article class="lesson">
+        <div class="lesson__num">01</div>
+        <div class="lesson__body">
+          <h2 class="lesson__title">Give the AI context</h2>
+          <p class="lesson__text">The AI can't sound like <em>your</em> clinic unless you tell it who you are, the tone you want, and how patients book. Vague in, generic out — so name the clinic, the feeling ("warm, plain-English"), and the call to action.</p>
+          <div class="dodont">
+            <div class="dd dd--do">
+              <div class="dd__label">✓ Do</div>
+              <p class="dd__text">"Warm, plain-English recall letter for Riverstone Family Practice. Invite them to book online or by phone."</p>
+            </div>
+            <div class="dd dd--dont">
+              <div class="dd__label">✕ Don't</div>
+              <p class="dd__text">"Write a recall letter."</p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 02 -->
+      <article class="lesson">
+        <div class="lesson__num">02</div>
+        <div class="lesson__body">
+          <h2 class="lesson__title">Keep unsafe data out</h2>
+          <p class="lesson__text">Names, dates of birth, Medicare numbers and clinical results are sensitive health information. A general AI tool never needs them to draft a letter — and pasting them in can be an unauthorised disclosure. Describe the <em>situation</em>, not the person.</p>
+          <div class="dodont">
+            <div class="dd dd--do">
+              <div class="dd__label">✓ Do</div>
+              <p class="dd__text">"a patient overdue for a routine review"</p>
+            </div>
+            <div class="dd dd--dont">
+              <div class="dd__label">✕ Don't</div>
+              <p class="dd__text">"Margaret Nguyen, DOB 14/03/1958, Medicare 2953 8881 71, borderline high result"</p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 03 -->
+      <article class="lesson">
+        <div class="lesson__num">03</div>
+        <div class="lesson__body">
+          <h2 class="lesson__title">Verify what it gives back</h2>
+          <p class="lesson__text">AI writes confidently even when it's wrong — it will invent a phone number or a date to fill a gap. Treat every draft as a first version: leave placeholders for anything you can't confirm, and check facts against the real source before it goes out.</p>
+          <div class="dodont">
+            <div class="dd dd--do">
+              <div class="dd__label">✓ Do</div>
+              <p class="dd__text">Leave "[booking phone]" and confirm it before sending.</p>
+            </div>
+            <div class="dd dd--dont">
+              <div class="dd__label">✕ Don't</div>
+              <p class="dd__text">Trust an invented number: "call us on (03) 9412 6680".</p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- CTA -->
+    <div class="learn-cta">
+      <div>
+        <p class="learn-cta__title">Ready to try it for real?</p>
+        <p class="learn-cta__text">In AIGround you'll write the letter yourself and get graded on these three skills — on safe, synthetic data.</p>
+      </div>
+      <a class="btn btn--primary" href="aiground.html">Enter AIGround &rarr;</a>
+    </div>
+  </main>
+
+  <script>
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileNav = document.getElementById('mobileNav');
+    menuBtn.addEventListener('click', () => {
+      const open = mobileNav.classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', open);
+    });
+  </script>
+
+</body>
+</html>

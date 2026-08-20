@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You Got It! — AIGround</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800;9..144,900&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- top bar -->
+  <header class="topbar">
+    <a class="logo" href="dashboard.html" aria-label="You Got It! home (logo placeholder)">
+      <span class="logo__mark">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5 L10 18 L20 6" fill="none" stroke="#EFE84B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <span class="logo__word">You Got It!</span>
+    </a>
+    <nav class="topbar__nav">
+      <a href="dashboard.html">Your desk</a>
+      <a href="learn.html">Learn</a>
+      <a href="aiground.html" class="active">AIGround</a>
+    </nav>
+    <div class="topbar__user">
+      <span class="name">Welcome, Sarah</span>
+      <span class="avatar">S</span>
+    </div>
+    <button class="topbar__menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false" aria-controls="mobileNav">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </header>
+
+  <nav class="mobile-nav" id="mobileNav" aria-label="Main">
+    <a href="dashboard.html">Your desk</a>
+    <a href="learn.html">Learn</a>
+    <a href="aiground.html" class="active">AIGround</a>
+  </nav>
+
+  <main class="aig-wrap">
+    <div class="aig-tracker"><div class="stepper" id="stepper"></div></div>
+
+    <!-- STEP 1 — BRIEF -->
+    <section class="aig-step" data-step="1">
+      <p class="eyebrow">The task · synthetic scenario</p>
+      <h1 class="aig-h">Draft a recall letter for Riverstone Family Practice</h1>
+      <p class="aig-lead">Dr Okafor has asked you to invite a patient who's overdue for a routine diabetes review to book an appointment. Draft it with AI — warm, and safe.</p>
+      <div class="brief-card">
+        <p class="record__k">Patient record — synthetic, safe to practise on</p>
+        <div class="record">
+          <div class="record__item"><div class="record__k">Patient</div><div class="record__v">Margaret Nguyen</div></div>
+          <div class="record__item"><div class="record__k">Date of birth</div><div class="record__v">14 / 03 / 1958</div></div>
+          <div class="record__item"><div class="record__k">Medicare</div><div class="record__v">2953 8881 71</div></div>
+          <div class="record__item"><div class="record__k">Last review</div><div class="record__v">8 months ago (policy: 6)</div></div>
+          <div class="record__item"><div class="record__k">Dr's note</div><div class="record__v">"Borderline high result — don't alarm her."</div></div>
+          <div class="record__item"><div class="record__k">Booking</div><div class="record__v">[phone to confirm] · online portal</div></div>
+        </div>
+      </div>
+      <div class="aig-actions">
+        <button class="btn btn--primary" data-goto="2">Start writing &rarr;</button>
+      </div>
+    </section>
+
+    <!-- STEP 2 — PROMPT -->
+    <section class="aig-step" data-step="2">
+      <p class="eyebrow">Your prompt</p>
+      <h1 class="aig-h">Tell the AI what to write</h1>
+      <p class="aig-lead">Give it enough to sound like Riverstone — and remember what's unsafe to paste in.</p>
+      <textarea class="aig-textarea" aria-label="Your prompt">Write a recall letter to Margaret Nguyen, DOB 14/03/1958, Medicare 2953 8881 71, who is overdue for her diabetes review. Her last HbA1c was borderline high.</textarea>
+      <p class="aig-hint">Pre-filled with a first attempt for this demo — in the real thing, it's blank and yours.</p>
+      <div class="aig-actions">
+        <button class="btn btn--secondary" data-goto="1">&larr; Back</button>
+        <button class="btn btn--primary" data-goto="3">Generate draft &rarr;</button>
+      </div>
+    </section>
+
+    <!-- STEP 3 — DRAFT -->
+    <section class="aig-step" data-step="3">
+      <p class="eyebrow">The AI's draft</p>
+      <h1 class="aig-h">Here's what the AI wrote</h1>
+      <p class="aig-lead">Read it like any draft headed to a patient — what would you change before this goes out?</p>
+      <div class="draft-panel">Dear Margaret,
+
+Our records show your recent borderline high blood sugar result means you're due for a diabetes review. Please call us on (03) 9412 6680 to book an appointment.
+
+Kind regards,
+Riverstone Family Practice</div>
+      <div class="aig-actions">
+        <button class="btn btn--secondary" data-goto="2">&larr; Edit prompt</button>
+        <button class="btn btn--primary" data-goto="4">Submit for feedback &rarr;</button>
+      </div>
+    </section>
+
+    <!-- STEP 4 — FEEDBACK -->
+    <section class="aig-step" data-step="4">
+      <p class="eyebrow">Graded feedback</p>
+      <div class="fb-head">
+        <h1 class="aig-h">You're close — here's what to tighten</h1>
+        <p class="aig-lead">Two important fixes and one to check, with the proof pulled straight from your work.</p>
+      </div>
+      <div class="fb-list">
+        <div class="fb-row is-fail">
+          <div class="fb-row__stripe"></div><div class="fb-row__badge">✕</div>
+          <div>
+            <div class="fb-row__title">Kept sensitive data out of the tool</div>
+            <div class="fb-row__why">You pasted the Medicare number and date of birth — the AI never needed them to write this letter, and that's identifiable health data going into a general tool.</div>
+            <div class="fb-evidence">Medicare 2953 8881 71 · DOB 14/03/1958</div>
+          </div>
+        </div>
+        <div class="fb-row is-fail">
+          <div class="fb-row__stripe"></div><div class="fb-row__badge">✕</div>
+          <div>
+            <div class="fb-row__title">Didn't let the AI reveal the result</div>
+            <div class="fb-row__why">A reminder invites a booking — it shouldn't report a clinical result. Dr Okafor asked you not to alarm her.</div>
+            <div class="fb-evidence">"…your recent borderline high blood sugar result…"</div>
+          </div>
+        </div>
+        <div class="fb-row is-warn">
+          <div class="fb-row__stripe"></div><div class="fb-row__badge">!</div>
+          <div>
+            <div class="fb-row__title">Handled the unverifiable detail</div>
+            <div class="fb-row__why">The AI invented a phone number to fill the gap. Leave a placeholder and confirm it before sending.</div>
+            <div class="fb-evidence">"…call us on (03) 9412 6680…"</div>
+          </div>
+        </div>
+        <div class="fb-row is-pass">
+          <div class="fb-row__stripe"></div><div class="fb-row__badge">✓</div>
+          <div>
+            <div class="fb-row__title">Gave the AI a clear, specific task</div>
+            <div class="fb-row__why">You said exactly what the letter was for. That's the right instinct — now do it without the risky details.</div>
+          </div>
+        </div>
+      </div>
+      <div class="aig-actions">
+        <button class="btn btn--secondary" data-goto="2">Try again</button>
+        <button class="btn btn--primary" data-goto="5">See a strong version &rarr;</button>
+      </div>
+    </section>
+
+    <!-- STEP 5 — REVEAL -->
+    <section class="aig-step" data-step="5">
+      <p class="eyebrow">A strong version</p>
+      <h1 class="aig-h">This is the standard you're aiming for</h1>
+      <p class="aig-lead">Same task, done with the three skills. Notice what changed — no personal data, no clinical result, placeholders for anything unverified.</p>
+      <div class="reveal-block">
+        <p class="reveal-label">The prompt</p>
+        <div class="draft-panel" style="font-family:var(--font-mono);font-size:13.5px;line-height:1.6">Warm, plain-English recall letter for Riverstone Family Practice. A patient is overdue for a routine diabetes review. Invite them to book — no clinical details, don't alarm them. Leave [patient name] and [booking phone] as placeholders for me to fill in.</div>
+      </div>
+      <div class="reveal-block">
+        <p class="reveal-label">The letter</p>
+        <div class="draft-panel">Dear [patient name],
+
+It's time for your regular check-up here at Riverstone Family Practice. Our records show it's been a little while since your last review, and we'd love to see you.
+
+Please call us on [booking phone], or book online whenever suits you.
+
+Warm regards,
+Riverstone Family Practice</div>
+      </div>
+      <div class="aig-actions">
+        <button class="btn btn--secondary" data-goto="2">Try it yourself</button>
+        <a class="btn btn--primary" href="dashboard.html">Back to Your desk &rarr;</a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // mobile menu
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileNav = document.getElementById('mobileNav');
+    menuBtn.addEventListener('click', () => {
+      const open = mobileNav.classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', open);
+    });
+
+    // step tracker + navigation
+    const STEPS = ['Brief', 'Prompt', 'Draft', 'Feedback', 'Reveal'];
+    const stepperEl = document.getElementById('stepper');
+    let current = 1;
+
+    function renderStepper(cur) {
+      let html = '';
+      STEPS.forEach((label, i) => {
+        const n = i + 1;
+        if (i > 0) html += `<span class="stepper__line ${n <= cur ? 'is-done' : ''}"></span>`;
+        if (n < cur) {
+          html += `<div class="stepper__step"><span class="step-dot is-done">✓</span><span class="stepper__lbl is-done">${label}</span></div>`;
+        } else if (n === cur) {
+          html += `<div class="stepper__step"><span class="step-now"><span class="n">0${n}</span> ${label}</span></div>`;
+        } else {
+          html += `<div class="stepper__step"><span class="step-dot is-next">${n}</span><span class="stepper__lbl">${label}</span></div>`;
+        }
+      });
+      stepperEl.innerHTML = html;
+    }
+
+    function showStep(n) {
+      current = n;
+      document.querySelectorAll('.aig-step').forEach(s => s.classList.toggle('is-active', +s.dataset.step === n));
+      renderStepper(n);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('[data-goto]').forEach(b =>
+      b.addEventListener('click', () => showStep(+b.dataset.goto))
+    );
+
+    showStep(1);
+  </script>
+
+</body>
+</html>

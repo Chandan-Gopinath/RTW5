@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You Got It! — Sign in</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800;9..144,900&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="auth">
+
+    <!-- Brand -->
+    <section class="auth__brand">
+      <!-- logo: PLACEHOLDER tick mark — replace with final logo later -->
+      <div class="logo" aria-label="You Got It! (logo placeholder)">
+        <span class="logo__mark">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5 L10 18 L20 6" fill="none" stroke="#EFE84B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="logo__word">You Got It!</span>
+      </div>
+
+      <div class="brand-hero">
+        <p class="eyebrow">A daily habit for practice managers</p>
+        <h1 class="brand-mark">You <span class="hl">Got&nbsp;It!</span></h1>
+        <p class="brand-lead">Practise the AI skills your clinic actually needs — on safe, realistic tasks. Then prove it in <strong>AIGround</strong>.</p>
+      </div>
+
+      <p class="brand-foot">No jargon · no fake demos · real work, graded.</p>
+    </section>
+
+    <!-- Form -->
+    <section class="auth__form">
+      <div class="card">
+        <div class="card__head">
+          <div class="segment" role="tablist" aria-label="Sign in or create a profile">
+            <button role="tab" aria-selected="true" data-tab="create">Create profile</button>
+            <button role="tab" aria-selected="false" data-tab="signin">I've been here</button>
+          </div>
+          <h2 id="card-title">Let's get you started</h2>
+        </div>
+
+        <!-- CREATE -->
+        <form class="form-body" id="form-create" onsubmit="return go(event)">
+          <div class="field">
+            <label class="field__label" for="name-c">Your first name</label>
+            <input class="input" id="name-c" type="text" placeholder="e.g. Sarah" autocomplete="given-name">
+          </div>
+          <div class="field">
+            <label class="field__label">Set a 4-digit code</label>
+            <div class="code" data-code>
+              <input class="code__box" inputmode="numeric" maxlength="1" aria-label="digit 1">
+              <input class="code__box" inputmode="numeric" maxlength="1" aria-label="digit 2">
+              <input class="code__box" inputmode="numeric" maxlength="1" aria-label="digit 3">
+              <input class="code__box" inputmode="numeric" maxlength="1" aria-label="digit 4">
+            </div>
+            <p class="field__hint">This isn't a password — it just remembers you on this device. Forget it? Make a new profile.</p>
+          </div>
+          <a class="btn btn--primary btn--block" href="dashboard.html">Create &amp; start &rarr;</a>
+        </form>
+
+        <!-- SIGN IN -->
+        <form class="form-body hidden" id="form-signin" onsubmit="return go(event)">
+          <div class="field">
+            <label class="field__label" for="name-s">Your first name</label>
+            <input class="input" id="name-s" type="text" placeholder="Sarah" autocomplete="given-name">
+          </div>
+          <div class="field">
+            <label class="field__label">Your 4-digit code</label>
+            <div class="code" data-code>
+              <input class="code__box" inputmode="numeric" maxlength="1" aria-label="digit 1">
+              <input class="code__box" inputmode="numeric" maxlength="1" aria-label="digit 2">
+              <input class="code__box" inputmode="numeric" maxlength="1" aria-label="digit 3">
+              <input class="code__box" inputmode="numeric" maxlength="1" aria-label="digit 4">
+            </div>
+          </div>
+          <a class="btn btn--primary btn--block" href="dashboard.html">Continue &rarr;</a>
+          <p class="form-foot"><button type="button" class="link-plain">Forgot it? Make a new profile</button></p>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Segmented toggle between Create / Sign in
+    const tabs = document.querySelectorAll('[role="tab"]');
+    const title = document.getElementById('card-title');
+    const views = { create: document.getElementById('form-create'), signin: document.getElementById('form-signin') };
+    const titles = { create: "Let's get you started", signin: "Welcome back" };
+    tabs.forEach(t => t.addEventListener('click', () => {
+      tabs.forEach(x => x.setAttribute('aria-selected', x === t));
+      const which = t.dataset.tab;
+      views.create.classList.toggle('hidden', which !== 'create');
+      views.signin.classList.toggle('hidden', which !== 'signin');
+      title.textContent = titles[which];
+    }));
+
+    // 4-digit code auto-advance
+    document.querySelectorAll('[data-code]').forEach(group => {
+      const boxes = [...group.querySelectorAll('.code__box')];
+      boxes.forEach((box, i) => {
+        box.addEventListener('input', () => {
+          box.value = box.value.replace(/[^0-9]/g, '');
+          if (box.value && i < boxes.length - 1) boxes[i + 1].focus();
+        });
+        box.addEventListener('keydown', e => {
+          if (e.key === 'Backspace' && !box.value && i > 0) boxes[i - 1].focus();
+        });
+      });
+    });
+
+    function go(e){ /* prototype: links handle navigation */ }
+  </script>
+</body>
+</html>
