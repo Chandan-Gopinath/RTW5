@@ -8,6 +8,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800;9..144,900&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <!-- Plausible analytics — proxied first-party via Vercel. Replace data-domain with your registered Plausible domain. -->
+  <script defer data-domain="yourdomain.com" data-api="/plausible/event" src="/js/script.js"></script>
+  <script defer src="analytics.js"></script>
 </head>
 <body>
 
@@ -59,7 +62,7 @@
 
     <!-- TODAY'S FOCUS -->
     <p class="section-label">Today's focus</p>
-    <a class="today-hero" href="learn.html">
+    <a class="today-hero" href="learn.html" data-event="Learn Started">
       <div class="today-hero__main">
         <p class="today-hero__cat"><span class="hl">Patient correspondence</span></p>
         <h2 class="today-hero__title">Recall &amp; reminder letters</h2>

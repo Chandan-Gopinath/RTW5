@@ -8,6 +8,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800;9..144,900&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <!-- Plausible analytics — proxied first-party via Vercel. Replace data-domain with your registered Plausible domain. -->
+  <script defer data-domain="yourdomain.com" data-api="/plausible/event" src="/js/script.js"></script>
+  <script defer src="analytics.js"></script>
 </head>
 <body>
 
@@ -125,7 +128,7 @@
         <p class="learn-cta__title">Ready to try it for real?</p>
         <p class="learn-cta__text">In AIGround you'll write the letter yourself and get graded on these three skills — on safe, synthetic data.</p>
       </div>
-      <a class="btn btn--primary" href="aiground.html?task=recall">Enter AIGround &rarr;</a>
+      <a class="btn btn--primary" href="aiground.html?task=recall" data-event="Enter AIGround">Enter AIGround &rarr;</a>
     </div>
   </main>
 

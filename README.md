@@ -32,6 +32,25 @@ The API key is read **only** from the environment on the server; it is never sen
 - **`styles.css`** — the whole design system (tokens, components, responsive).
 - The frontend (`aiground.html`) calls the two endpoints and renders the draft and feedback; on any error it falls back to demo data and shows the banner.
 
+## Analytics (Plausible)
+
+Privacy-friendly, cookieless (no consent banner needed). Proxied **first-party through Vercel** (`vercel.json` rewrites `/js/script.js` and `/plausible/event` to Plausible) so ad-blockers don't drop it. `analytics.js` exposes `window.track(name, props)` and auto-fires any element with a `data-event` attribute.
+
+**Setup:** create the site in Plausible, then replace `data-domain="yourdomain.com"` in each page's `<head>` with your registered domain. Locally the script doesn't load (no proxy), so events cleanly no-op.
+
+**Custom goal events** (the "doing, not watching" funnel — per-user metrics come from the DB later, not Plausible):
+
+| Event | Fires when |
+|---|---|
+| `Signup` / `Signin` | sign-in CTA clicked |
+| `Learn Started` | Today's-focus hero opened |
+| `Enter AIGround` | Learn → AIGround CTA |
+| `Task Started` | AIGround task begins |
+| `Draft Generated` (`mode`) | draft returned |
+| `Graded` (`mode`, `checks_passed`, `total`) | grading returned |
+| `Try Again` | retry from feedback/reveal |
+| `Reveal Viewed` | strong-version step |
+
 ## Design system
 
 - **Ground** bright bone `#FCFCFA`, ink `#18181C`

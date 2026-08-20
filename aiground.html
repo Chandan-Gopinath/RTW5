@@ -8,6 +8,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800;9..144,900&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <!-- Plausible analytics — proxied first-party via Vercel. Replace data-domain with your registered Plausible domain. -->
+  <script defer data-domain="yourdomain.com" data-api="/plausible/event" src="/js/script.js"></script>
+  <script defer src="analytics.js"></script>
 </head>
 <body>
 
@@ -157,7 +160,7 @@
         </div>
         <div class="fb-list" id="fbList"></div>
         <div class="aig-actions">
-          <button class="btn btn--secondary" data-goto="2">Try again</button>
+          <button class="btn btn--secondary" data-goto="2" data-event="Try Again">Try again</button>
           <button class="btn btn--primary" data-goto="5">See a strong version &rarr;</button>
         </div>
       </section>
@@ -183,7 +186,7 @@ Warm regards,
 Riverstone Family Practice</div>
         </div>
         <div class="aig-actions">
-          <button class="btn btn--secondary" data-goto="2">Try it yourself</button>
+          <button class="btn btn--secondary" data-goto="2" data-event="Try Again">Try it yourself</button>
           <a class="btn btn--primary" href="dashboard.html">Back to Your desk &rarr;</a>
         </div>
       </section>
@@ -248,12 +251,14 @@ Riverstone Family Practice</div>
       document.querySelectorAll('.aig-step').forEach(s => s.classList.toggle('is-active', +s.dataset.step === n));
       renderStepper(n);
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (n === 5) window.track && window.track('Reveal Viewed');
     }
 
     function startTask() {
       hub.hidden = true;
       loop.hidden = false;
       showStep(1);
+      window.track && window.track('Task Started');
     }
     function backToHub() {
       loop.hidden = true;
@@ -305,6 +310,7 @@ Riverstone Family Practice`;
       if (!currentPrompt) { draftStatus.textContent = 'Write a prompt first — the AI drafts from what you type.'; return; }
       genDraftBtn.disabled = true;
       genDraftBtn.textContent = 'Generating…';
+      let liveDraft = true;
       try {
         const r = await fetch('/api/draft', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: currentPrompt }) });
         const data = await r.json();
@@ -313,17 +319,19 @@ Riverstone Family Practice`;
       } catch (e) {
         currentDraft = FALLBACK_DRAFT;
         demoBanner.hidden = false;
+        liveDraft = false;
       }
       draftPanel.textContent = currentDraft;
       genDraftBtn.disabled = false;
       genDraftBtn.textContent = 'Generate draft →';
+      window.track && window.track('Draft Generated', { mode: liveDraft ? 'live' : 'demo' });
       showStep(3);
     });
 
     gradeBtn.addEventListener('click', async () => {
       gradeBtn.disabled = true;
       gradeBtn.textContent = 'Grading…';
-      let data;
+      let data, liveGrade = true;
       try {
         const r = await fetch('/api/grade', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: currentPrompt, draft: currentDraft }) });
         data = await r.json();
@@ -331,10 +339,13 @@ Riverstone Family Practice`;
       } catch (e) {
         data = FALLBACK_GRADE;
         demoBanner.hidden = false;
+        liveGrade = false;
       }
       renderFeedback(data);
       gradeBtn.disabled = false;
       gradeBtn.textContent = 'Submit for feedback →';
+      const passed = (data.checks || []).filter(c => c.verdict === 'pass').length;
+      window.track && window.track('Graded', { mode: liveGrade ? 'live' : 'demo', checks_passed: passed, total: (data.checks || []).length });
       showStep(4);
     });
 
