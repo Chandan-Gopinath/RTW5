@@ -28,7 +28,7 @@ The API key is read **only** from the environment on the server; it is never sen
 - **`server.js`** — Express server. Serves the static pages and exposes two endpoints:
   - `POST /api/draft { prompt }` → `{ draft }` — generates the letter from the learner's prompt.
   - `POST /api/grade { prompt, draft }` → `{ summary, checks[] }` — grades against the rubric, structured JSON with per-check verdict + cited evidence + why.
-- **`prompts.js`** — the scenario, the planted-trap rubric, the grader system prompt, and the JSON schema. Kept server-side so the "answer key" never reaches the browser. Model: **`gemini-2.5-flash`** (verify this is still current in Google AI Studio).
+- **`prompts.js`** — the scenario, the planted-trap rubric, the grader system prompt, and the JSON schema. Kept server-side so the "answer key" never reaches the browser. Model: **`gemini-3.6-flash`**.
 - **`styles.css`** — the whole design system (tokens, components, responsive).
 - The frontend (`aiground.html`) calls the two endpoints and renders the draft and feedback; on any error it falls back to demo data and shows the banner.
 

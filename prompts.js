@@ -1,10 +1,7 @@
 // Scenario, rubric, and system prompts for the AIGround recall-letter task.
 // Kept server-side so the "answer key" (planted traps) never reaches the browser.
 
-// NOTE: verify this against the current model list in Google AI Studio
-// (aistudio.google.com) when you get your key — Gemini's free-tier model
-// names change over time and this may need updating.
-export const MODEL = "gemini-2.5-flash";
+export const MODEL = "gemini-3.6-flash";
 
 // The naive drafting model: behaves like a general-purpose AI tool. It writes
 // exactly what the learner asks — so if they paste PII or omit context, that
