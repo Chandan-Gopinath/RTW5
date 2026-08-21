@@ -68,6 +68,12 @@
           <span class="btn btn--primary btn--sm">Start &rarr;</span>
         </a>
 
+        <a class="path__node" href="#" data-start-task="complaint">
+          <span class="path__badge avail"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5 L19 12 L8 19 Z" fill="#EFE84B"/></svg></span>
+          <div class="path__meta"><span class="path__cat">Complaints &amp; sensitive · Ready</span><span class="path__ttl">Complaint responses</span></div>
+          <span class="btn btn--primary btn--sm">Start &rarr;</span>
+        </a>
+
         <div class="path__node is-lock">
           <span class="path__badge lock"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11 V8 a4 4 0 0 1 8 0 v3" stroke-linecap="round"/></svg></span>
           <div class="path__meta"><span class="path__cat">Staff communication · Soon</span><span class="path__ttl">Staff announcements</span></div>
@@ -77,12 +83,6 @@
         <div class="path__node is-lock">
           <span class="path__badge lock"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11 V8 a4 4 0 0 1 8 0 v3" stroke-linecap="round"/></svg></span>
           <div class="path__meta"><span class="path__cat">Policies &amp; procedures · Soon</span><span class="path__ttl">Policy updates</span></div>
-          <span class="pill pill--soon">Soon</span>
-        </div>
-
-        <div class="path__node is-lock">
-          <span class="path__badge lock"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11 V8 a4 4 0 0 1 8 0 v3" stroke-linecap="round"/></svg></span>
-          <div class="path__meta"><span class="path__cat">Complaints &amp; sensitive · Soon</span><span class="path__ttl">Complaint responses</span></div>
           <span class="pill pill--soon">Soon</span>
         </div>
 
@@ -106,21 +106,14 @@
       <div class="aig-tracker"><div class="stepper" id="stepper"></div></div>
       <p class="aig-hint" id="demoBanner" hidden style="margin-bottom:var(--s4)">Demo mode — the server has no <code>GEMINI_API_KEY</code> set, so you're seeing pre-scripted results. Add the key and restart to grade live.</p>
 
-      <!-- STEP 1 — BRIEF -->
+      <!-- STEP 1 — BRIEF (rendered per task from TASK_VIEWS) -->
       <section class="aig-step" data-step="1">
         <p class="eyebrow">The task · synthetic scenario</p>
-        <h1 class="aig-h">Draft a recall letter for Riverstone Family Practice</h1>
-        <p class="aig-lead">Dr Okafor has asked you to invite a patient who's overdue for a routine diabetes review to book an appointment. Draft it with AI — warm, and safe.</p>
+        <h1 class="aig-h" id="briefTitle"></h1>
+        <p class="aig-lead" id="briefLead"></p>
         <div class="brief-card">
-          <p class="record__k">Patient record — synthetic, safe to practise on</p>
-          <div class="record">
-            <div class="record__item"><div class="record__k">Patient</div><div class="record__v">Margaret Nguyen</div></div>
-            <div class="record__item"><div class="record__k">Date of birth</div><div class="record__v">14 / 03 / 1958</div></div>
-            <div class="record__item"><div class="record__k">Medicare</div><div class="record__v">2953 8881 71</div></div>
-            <div class="record__item"><div class="record__k">Last review</div><div class="record__v">8 months ago (policy: 6)</div></div>
-            <div class="record__item"><div class="record__k">Dr's note</div><div class="record__v">"Borderline high result — don't alarm her."</div></div>
-            <div class="record__item"><div class="record__k">Booking</div><div class="record__v">[phone to confirm] · online portal</div></div>
-          </div>
+          <p class="record__k" id="briefRecordLabel"></p>
+          <div class="record" id="briefRecord"></div>
         </div>
         <div class="aig-actions">
           <button class="btn btn--primary" data-goto="2">Start writing &rarr;</button>
@@ -131,8 +124,8 @@
       <section class="aig-step" data-step="2">
         <p class="eyebrow">Your prompt</p>
         <h1 class="aig-h">Tell the AI what to write</h1>
-        <p class="aig-lead">Give it enough to sound like Riverstone — and remember what's unsafe to paste in.</p>
-        <textarea class="aig-textarea" id="promptInput" aria-label="Your prompt" placeholder="e.g. Write a warm, plain-English recall letter for our clinic inviting a patient to book a review…"></textarea>
+        <p class="aig-lead" id="promptLead"></p>
+        <textarea class="aig-textarea" id="promptInput" aria-label="Your prompt" placeholder=""></textarea>
         <p class="aig-hint" id="draftStatus">The AI drafts from exactly what you write here — so give it context, and leave out anything unsafe.</p>
         <div class="aig-actions">
           <button class="btn btn--secondary" data-goto="1">&larr; Back</button>
@@ -166,25 +159,18 @@
         </div>
       </section>
 
-      <!-- STEP 5 — REVEAL -->
+      <!-- STEP 5 — REVEAL (rendered per task from TASK_VIEWS) -->
       <section class="aig-step" data-step="5">
         <p class="eyebrow">A strong version</p>
         <h1 class="aig-h">This is the standard you're aiming for</h1>
-        <p class="aig-lead">Same task, done with the three skills. Notice what changed — no personal data, no clinical result, placeholders for anything unverified.</p>
+        <p class="aig-lead" id="revealLead"></p>
         <div class="reveal-block">
-          <p class="reveal-label">The prompt</p>
-          <div class="draft-panel" style="font-family:var(--font-mono);font-size:13.5px;line-height:1.6">Warm, plain-English recall letter for Riverstone Family Practice. A patient is overdue for a routine diabetes review. Invite them to book — no clinical details, don't alarm them. Leave [patient name] and [booking phone] as placeholders for me to fill in.</div>
+          <p class="reveal-label" id="revealPromptLabel">The prompt</p>
+          <div class="draft-panel" id="revealPrompt" style="font-family:var(--font-mono);font-size:13.5px;line-height:1.6"></div>
         </div>
         <div class="reveal-block">
-          <p class="reveal-label">The letter</p>
-          <div class="draft-panel">Dear [patient name],
-
-It's time for your regular check-up here at Riverstone Family Practice. Our records show it's been a little while since your last review, and we'd love to see you.
-
-Please call us on [booking phone], or book online whenever suits you.
-
-Warm regards,
-Riverstone Family Practice</div>
+          <p class="reveal-label" id="revealDraftLabel">The letter</p>
+          <div class="draft-panel" id="revealDraft"></div>
         </div>
         <div class="aig-actions">
           <button class="btn btn--secondary" data-goto="2" data-event="Try Again">Try it yourself</button>
@@ -228,6 +214,7 @@ Riverstone Family Practice</div>
     // hub <-> loop
     const hub = document.getElementById('aig-hub');
     const loop = document.getElementById('aig-loop');
+    let currentTask = 'recall';
 
     // step tracker + navigation (within a task)
     const STEPS = ['Brief', 'Prompt', 'Draft', 'Feedback', 'Reveal'];
@@ -258,11 +245,19 @@ Riverstone Family Practice</div>
       if (n === 5) window.track && window.track('Reveal Viewed');
     }
 
-    function startTask() {
+    function startTask(id) {
+      currentTask = TASK_VIEWS[id] ? id : 'recall';
+      renderTask(currentTask);
+      // reset any state from a previous task/attempt
+      promptInput.value = '';
+      draftPanel.textContent = '';
+      fbList.innerHTML = '';
+      currentPrompt = ''; currentDraft = '';
+      demoBanner.hidden = true;
       hub.hidden = true;
       loop.hidden = false;
       showStep(1);
-      window.track && window.track('Task Started');
+      window.track && window.track('Task Started', { task: currentTask });
     }
     function backToHub() {
       loop.hidden = true;
@@ -274,26 +269,125 @@ Riverstone Family Practice</div>
       b.addEventListener('click', () => showStep(+b.dataset.goto))
     );
     document.querySelectorAll('[data-start-task]').forEach(c =>
-      c.addEventListener('click', e => { e.preventDefault(); startTask(); })
+      c.addEventListener('click', e => { e.preventDefault(); startTask(c.dataset.startTask); })
     );
     document.getElementById('backToHub').addEventListener('click', e => { e.preventDefault(); backToHub(); });
 
-    // ---------- live AI grading (with demo fallback) ----------
-    const FALLBACK_DRAFT = `Dear Margaret,
+    // ---------- per-task view content + demo fallbacks ----------
+    // The grader/answer-key lives server-side (prompts.js). This is only the
+    // display copy + the pre-scripted results used when there's no API key.
+    const TASK_VIEWS = {
+      recall: {
+        brief: {
+          title: 'Draft a recall letter for Riverstone Family Practice',
+          lead: "Dr Okafor has asked you to invite a patient who's overdue for a routine diabetes review to book an appointment. Draft it with AI — warm, and safe.",
+          recordLabel: 'Patient record — synthetic, safe to practise on',
+          record: [
+            ['Patient', 'Margaret Nguyen'],
+            ['Date of birth', '14 / 03 / 1958'],
+            ['Medicare', '2953 8881 71'],
+            ['Last review', '8 months ago (policy: 6)'],
+            ["Dr's note", '"Borderline high result — don\'t alarm her."'],
+            ['Booking', '[phone to confirm] · online portal'],
+          ],
+        },
+        promptLead: "Give it enough to sound like Riverstone — and remember what's unsafe to paste in.",
+        promptPlaceholder: 'e.g. Write a warm, plain-English recall letter for our clinic inviting a patient to book a review…',
+        reveal: {
+          lead: 'Same task, done with the three skills. Notice what changed — no personal data, no clinical result, placeholders for anything unverified.',
+          promptLabel: 'The prompt',
+          promptText: "Warm, plain-English recall letter for Riverstone Family Practice. A patient is overdue for a routine diabetes review. Invite them to book — no clinical details, don't alarm them. Leave [patient name] and [booking phone] as placeholders for me to fill in.",
+          draftLabel: 'The letter',
+          draftText: `Dear [patient name],
+
+It's time for your regular check-up here at Riverstone Family Practice. Our records show it's been a little while since your last review, and we'd love to see you.
+
+Please call us on [booking phone], or book online whenever suits you.
+
+Warm regards,
+Riverstone Family Practice`,
+        },
+        fallbackDraft: `Dear Margaret,
 
 Our records show your recent borderline high blood sugar result means you're due for a diabetes review. Please call us on (03) 9412 6680 to book an appointment.
 
 Kind regards,
-Riverstone Family Practice`;
-    const FALLBACK_GRADE = {
-      summary: "You're close — here's what to tighten",
-      checks: [
-        { id: 'safety', title: 'Kept sensitive data out of the tool', verdict: 'fail', evidence: 'Medicare 2953 8881 71 · DOB 14/03/1958', why: "You pasted the Medicare number and date of birth — the AI never needed them, and that's identifiable health data going into a general tool." },
-        { id: 'reveal', title: "Didn't let the AI reveal the result", verdict: 'fail', evidence: '"…your recent borderline high blood sugar result…"', why: "A reminder invites a booking — it shouldn't report a clinical result. Dr Okafor asked you not to alarm her." },
-        { id: 'verify', title: 'Handled the unverifiable detail', verdict: 'warn', evidence: '"…call us on (03) 9412 6680…"', why: 'The AI invented a phone number. Leave a placeholder and confirm it before sending.' },
-        { id: 'context', title: 'Gave the AI a clear, specific task', verdict: 'pass', evidence: '', why: 'You said exactly what the letter was for — now do it without the risky details.' },
-      ],
+Riverstone Family Practice`,
+        fallbackGrade: {
+          summary: "You're close — here's what to tighten",
+          checks: [
+            { id: 'safety', title: 'Kept sensitive data out of the tool', verdict: 'fail', evidence: 'Medicare 2953 8881 71 · DOB 14/03/1958', why: "You pasted the Medicare number and date of birth — the AI never needed them, and that's identifiable health data going into a general tool." },
+            { id: 'reveal', title: "Didn't let the AI reveal the result", verdict: 'fail', evidence: '"…your recent borderline high blood sugar result…"', why: "A reminder invites a booking — it shouldn't report a clinical result. Dr Okafor asked you not to alarm her." },
+            { id: 'verify', title: 'Handled the unverifiable detail', verdict: 'warn', evidence: '"…call us on (03) 9412 6680…"', why: 'The AI invented a phone number. Leave a placeholder and confirm it before sending.' },
+            { id: 'context', title: 'Gave the AI a clear, specific task', verdict: 'pass', evidence: '', why: 'You said exactly what the letter was for — now do it without the risky details.' },
+          ],
+        },
+      },
+      complaint: {
+        brief: {
+          title: 'Respond to a patient complaint for Riverstone Family Practice',
+          lead: "Dawn has sent an angry email after a long wait. The practice principal wants a warm first reply — apologise sincerely, but don't admit fault or promise anything. Draft it with AI.",
+          recordLabel: 'The complaint — synthetic, safe to practise on',
+          record: [
+            ['Patient', 'Dawn Whitaker'],
+            ['Received', 'Email, this morning'],
+            ['Her complaint', 'Waited ~50 min past her appointment time'],
+            ['Also', 'Felt dismissed by the reception staff'],
+            ['Her threat', 'Considering leaving a public review'],
+            ["Principal's note", '"Apologise, but don\'t admit fault or promise anything — I\'ll call her."'],
+          ],
+        },
+        promptLead: "Give it the clinic and the tone you want — calm and warm — and remember what's unsafe to paste in.",
+        promptPlaceholder: 'e.g. Write a calm, empathetic first reply from our clinic to a patient who waited a long time and felt dismissed…',
+        reveal: {
+          lead: 'Same task, done with judgment. Notice what changed — no personal details in the tool, a sincere apology, no admission of fault, nothing invented, and a human takes it from here.',
+          promptLabel: 'The prompt',
+          promptText: 'Calm, empathetic first reply from Riverstone Family Practice to a patient who waited a long time and felt dismissed by reception. Apologise sincerely for her experience, do not admit fault or promise anything, and offer a call from our practice principal. Leave [patient name] as a placeholder.',
+          draftLabel: 'The reply',
+          draftText: `Dear [patient name],
+
+Thank you for taking the time to write to us, and I'm sorry about your recent experience at Riverstone Family Practice. Being kept waiting, and feeling that your concerns weren't heard, is not what we want for you — and I understand your frustration.
+
+I'd genuinely like to understand what happened and make things right. Our practice principal will call you in the next couple of days to talk it through personally — or you're welcome to let us know a time that suits you.
+
+Kind regards,
+Riverstone Family Practice`,
+        },
+        fallbackDraft: `Dear Dawn,
+
+I am so sorry — you are absolutely right, and this was completely our fault. The doctor was running late because of an emergency, and our reception team should have handled it far better. I promise you this will never happen again, and we would like to offer you a full refund for the visit.
+
+Kind regards,
+Riverstone Family Practice`,
+        fallbackGrade: {
+          summary: 'Warm — but you promised too much',
+          checks: [
+            { id: 'accountability', title: 'Apologised without admitting fault or over-promising', verdict: 'fail', evidence: '"…this was completely our fault… this will never happen again… a full refund…"', why: "The principal asked you not to admit fault or promise outcomes — those commitments can bind the clinic and aren't yours to make in a first reply." },
+            { id: 'invent', title: "Didn't let the AI fabricate an excuse", verdict: 'fail', evidence: '"…running late because of an emergency…"', why: 'The brief never gave a reason for the delay — the AI invented one. Apologise for the experience without making up facts.' },
+            { id: 'safety', title: "Kept the patient's details out of the tool", verdict: 'warn', evidence: '"Dear Dawn"', why: "Her name went into the general AI tool — describe the situation generally and add names yourself afterwards." },
+            { id: 'context', title: 'Set a calm, caring tone', verdict: 'pass', evidence: '', why: 'The warmth is right — now keep it while staying careful about fault and facts.' },
+          ],
+        },
+      },
     };
+
+    function renderTask(id) {
+      const v = TASK_VIEWS[id];
+      if (!v) return;
+      document.getElementById('briefTitle').textContent = v.brief.title;
+      document.getElementById('briefLead').textContent = v.brief.lead;
+      document.getElementById('briefRecordLabel').textContent = v.brief.recordLabel;
+      document.getElementById('briefRecord').innerHTML = v.brief.record.map(
+        ([k, val]) => `<div class="record__item"><div class="record__k">${escapeHtml(k)}</div><div class="record__v">${escapeHtml(val)}</div></div>`
+      ).join('');
+      document.getElementById('promptLead').textContent = v.promptLead;
+      document.getElementById('promptInput').placeholder = v.promptPlaceholder;
+      document.getElementById('revealLead').textContent = v.reveal.lead;
+      document.getElementById('revealPromptLabel').textContent = v.reveal.promptLabel;
+      document.getElementById('revealPrompt').textContent = v.reveal.promptText;
+      document.getElementById('revealDraftLabel').textContent = v.reveal.draftLabel;
+      document.getElementById('revealDraft').textContent = v.reveal.draftText;
+    }
 
     let currentPrompt = '', currentDraft = '';
     const promptInput = document.getElementById('promptInput');
@@ -321,14 +415,14 @@ Riverstone Family Practice`;
         if (data.error) throw new Error(data.error);
         currentDraft = data.draft;
       } catch (e) {
-        currentDraft = FALLBACK_DRAFT;
+        currentDraft = TASK_VIEWS[currentTask].fallbackDraft;
         liveDraft = false;
       }
       demoBanner.hidden = liveDraft;
       draftPanel.textContent = currentDraft;
       genDraftBtn.disabled = false;
       genDraftBtn.textContent = 'Generate draft →';
-      window.track && window.track('Draft Generated', { mode: liveDraft ? 'live' : 'demo' });
+      window.track && window.track('Draft Generated', { mode: liveDraft ? 'live' : 'demo', task: currentTask });
       showStep(3);
     });
 
@@ -337,11 +431,11 @@ Riverstone Family Practice`;
       gradeBtn.textContent = 'Grading…';
       let data, liveGrade = true;
       try {
-        const r = await fetch('/api/grade', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: currentPrompt, draft: currentDraft }) });
+        const r = await fetch('/api/grade', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ task: currentTask, prompt: currentPrompt, draft: currentDraft }) });
         data = await r.json();
         if (data.error) throw new Error(data.error);
       } catch (e) {
-        data = FALLBACK_GRADE;
+        data = TASK_VIEWS[currentTask].fallbackGrade;
         liveGrade = false;
       }
       demoBanner.hidden = liveGrade;
@@ -350,10 +444,10 @@ Riverstone Family Practice`;
       gradeBtn.textContent = 'Submit for feedback →';
       const total = (data.checks || []).length;
       const passed = (data.checks || []).filter(c => c.verdict === 'pass').length;
-      window.track && window.track('Graded', { mode: liveGrade ? 'live' : 'demo', checks_passed: passed, total });
+      window.track && window.track('Graded', { mode: liveGrade ? 'live' : 'demo', task: currentTask, checks_passed: passed, total });
       // Clean pass/fail outcome goal (separate from the Graded props) so success
       // rate is a first-class metric. Only fires when there were checks to pass.
-      if (total > 0) window.track && window.track(passed === total ? 'Task Passed' : 'Task Failed', { mode: liveGrade ? 'live' : 'demo' });
+      if (total > 0) window.track && window.track(passed === total ? 'Task Passed' : 'Task Failed', { mode: liveGrade ? 'live' : 'demo', task: currentTask });
       showStep(4);
     });
 
@@ -372,9 +466,10 @@ Riverstone Family Practice`;
         </div>`).join('');
     }
 
-    // entry: ?task=recall jumps straight into the loop; otherwise show the hub
+    // entry: ?task=<id> jumps straight into that task's loop; otherwise show the hub
     const params = new URLSearchParams(location.search);
-    if (params.get('task') === 'recall') startTask();
+    const routeTask = params.get('task');
+    if (routeTask && TASK_VIEWS[routeTask]) startTask(routeTask);
   </script>
 
 </body>

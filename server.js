@@ -7,6 +7,7 @@ import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { generateDraft, gradeSubmission, hasKey } from "./lib/grader.js";
+import { getTask } from "./prompts.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -26,12 +27,14 @@ app.post("/api/draft", async (req, res) => {
 });
 
 app.post("/api/grade", async (req, res) => {
+  const task = (req.body?.task || "recall").trim();
   const prompt = (req.body?.prompt || "").trim();
   const draft = (req.body?.draft || "").trim();
   if (!prompt || !draft) return res.status(400).json({ error: "missing_fields" });
+  if (!getTask(task)) return res.status(400).json({ error: "unknown_task" });
   if (!hasKey()) return res.json({ error: "no_api_key" });
   try {
-    res.json(await gradeSubmission(prompt, draft));
+    res.json(await gradeSubmission(task, prompt, draft));
   } catch (err) {
     console.error("grade error:", err?.message || err);
     res.status(502).json({ error: "api_error", message: String(err?.message || err) });
