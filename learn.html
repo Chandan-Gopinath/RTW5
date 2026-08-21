@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>You Got It! — Learn: Recall letters</title>
+  <title>You Got It! — Learn</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -57,85 +57,116 @@
     <a class="back-link" href="dashboard.html">&larr; Your desk</a>
 
     <div class="page-head">
-      <p class="eyebrow">Learn · Patient correspondence</p>
-      <h1>Recall &amp; reminder letters</h1>
-      <p class="lead">Three judgment skills, one real task — about four minutes, then you'll prove it in AIGround.</p>
+      <p class="eyebrow" id="learnEyebrow"></p>
+      <h1 id="learnHeading"></h1>
+      <p class="lead" id="learnLead"></p>
     </div>
 
-    <div class="lessons">
-
-      <!-- 01 -->
-      <article class="lesson">
-        <div class="lesson__num">01</div>
-        <div class="lesson__body">
-          <h2 class="lesson__title">Give the AI context</h2>
-          <p class="lesson__text">The AI can't sound like <em>your</em> clinic unless you tell it who you are, the tone you want, and how patients book. Vague in, generic out — so name the clinic, the feeling ("warm, plain-English"), and the call to action.</p>
-          <div class="dodont">
-            <div class="dd dd--do">
-              <div class="dd__label">✓ Do</div>
-              <p class="dd__text">"Warm, plain-English recall letter for Riverstone Family Practice. Invite them to book online or by phone."</p>
-            </div>
-            <div class="dd dd--dont">
-              <div class="dd__label">✕ Don't</div>
-              <p class="dd__text">"Write a recall letter."</p>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <!-- 02 -->
-      <article class="lesson">
-        <div class="lesson__num">02</div>
-        <div class="lesson__body">
-          <h2 class="lesson__title">Keep unsafe data out</h2>
-          <p class="lesson__text">Names, dates of birth, Medicare numbers and clinical results are sensitive health information. A general AI tool never needs them to draft a letter — and pasting them in can be an unauthorised disclosure. Describe the <em>situation</em>, not the person.</p>
-          <div class="dodont">
-            <div class="dd dd--do">
-              <div class="dd__label">✓ Do</div>
-              <p class="dd__text">"a patient overdue for a routine review"</p>
-            </div>
-            <div class="dd dd--dont">
-              <div class="dd__label">✕ Don't</div>
-              <p class="dd__text">"Margaret Nguyen, DOB 14/03/1958, Medicare 2953 8881 71, borderline high result"</p>
-            </div>
-          </div>
-        </div>
-      </article>
-
-      <!-- 03 -->
-      <article class="lesson">
-        <div class="lesson__num">03</div>
-        <div class="lesson__body">
-          <h2 class="lesson__title">Verify what it gives back</h2>
-          <p class="lesson__text">AI writes confidently even when it's wrong — it will invent a phone number or a date to fill a gap. Treat every draft as a first version: leave placeholders for anything you can't confirm, and check facts against the real source before it goes out.</p>
-          <div class="dodont">
-            <div class="dd dd--do">
-              <div class="dd__label">✓ Do</div>
-              <p class="dd__text">Leave "[booking phone]" and confirm it before sending.</p>
-            </div>
-            <div class="dd dd--dont">
-              <div class="dd__label">✕ Don't</div>
-              <p class="dd__text">Trust an invented number: "call us on (03) 9412 6680".</p>
-            </div>
-          </div>
-        </div>
-      </article>
-
-    </div>
+    <div class="lessons" id="lessons"></div>
 
     <!-- CTA -->
     <div class="learn-cta">
       <div>
         <p class="learn-cta__title">Ready to try it for real?</p>
-        <p class="learn-cta__text">In AIGround you'll write the letter yourself and get graded on these three skills — on safe, synthetic data.</p>
+        <p class="learn-cta__text" id="learnCtaText"></p>
       </div>
-      <a class="btn btn--primary" href="aiground.html?task=recall" data-event="Enter AIGround">Enter AIGround &rarr;</a>
+      <a class="btn btn--primary" id="enterAiground" href="aiground.html?task=recall" data-event="Enter AIGround">Enter AIGround &rarr;</a>
     </div>
   </main>
 
   <script src="auth.js"></script>
   <script>
     ygiRequireProfile();
+
+    // ---------- task-aware lesson content ----------
+    // Each task's three judgment lessons map to how it's graded in AIGround.
+    const LEARN = {
+      recall: {
+        title: 'Recall letters',
+        eyebrow: 'Learn · Patient correspondence',
+        heading: 'Recall & reminder letters',
+        lead: "Three judgment skills, one real task — about four minutes, then you'll prove it in AIGround.",
+        ctaText: "In AIGround you'll write the letter yourself and get graded on these three skills — on safe, synthetic data.",
+        lessons: [
+          {
+            title: 'Give the AI context',
+            text: `The AI can't sound like <em>your</em> clinic unless you tell it who you are, the tone you want, and how patients book. Vague in, generic out — so name the clinic, the feeling ("warm, plain-English"), and the call to action.`,
+            do: `"Warm, plain-English recall letter for Riverstone Family Practice. Invite them to book online or by phone."`,
+            dont: `"Write a recall letter."`,
+          },
+          {
+            title: 'Keep unsafe data out',
+            text: `Names, dates of birth, Medicare numbers and clinical results are sensitive health information. A general AI tool never needs them to draft a letter — and pasting them in can be an unauthorised disclosure. Describe the <em>situation</em>, not the person.`,
+            do: `"a patient overdue for a routine review"`,
+            dont: `"Margaret Nguyen, DOB 14/03/1958, Medicare 2953 8881 71, borderline high result"`,
+          },
+          {
+            title: 'Verify what it gives back',
+            text: `AI writes confidently even when it's wrong — it will invent a phone number or a date to fill a gap. Treat every draft as a first version: leave placeholders for anything you can't confirm, and check facts against the real source before it goes out.`,
+            do: `Leave "[booking phone]" and confirm it before sending.`,
+            dont: `Trust an invented number: "call us on (03) 9412 6680".`,
+          },
+        ],
+      },
+      complaint: {
+        title: 'Complaint responses',
+        eyebrow: 'Learn · Complaints & sensitive',
+        heading: 'Complaint responses',
+        lead: "Three judgment skills for a first reply that's warm, safe, and careful — then you'll prove it in AIGround.",
+        ctaText: "In AIGround you'll write the reply yourself and get graded on these three skills — on a safe, synthetic complaint.",
+        lessons: [
+          {
+            title: 'Set a calm, careful tone',
+            text: `A complaint reply lives or dies on tone. Tell the AI who you are and the feeling you want — calm, warm, and genuinely sorry for the <em>experience</em> — so it de-escalates instead of sounding defensive or robotic.`,
+            do: `"Calm, empathetic first reply from Riverstone Family Practice to an upset patient — acknowledge how she felt, no defensiveness."`,
+            dont: `"Reply to this complaint."`,
+          },
+          {
+            title: 'Keep her details out',
+            text: `The complaint names a real person and touches her care. A general AI tool never needs her name or any health detail to draft a reply — describe the <em>situation</em>, not the patient, and add names yourself afterwards.`,
+            do: `"a patient who waited a long time and felt dismissed by reception"`,
+            dont: `"Dawn Whitaker — furious about waiting for her diabetes review…"`,
+          },
+          {
+            title: "Apologise, don't over-commit",
+            text: `You can be warm without signing the clinic up to things. Say sorry for the experience, but don't admit fault, promise it'll never happen again, or offer a refund — and don't let the AI invent a reason for the delay it was never told. Some complaints need a real human: hand off to a call.`,
+            do: `"I'm sorry about your experience — our practice principal will call you to talk it through."`,
+            dont: `"This was completely our fault, it won't happen again, and here's a refund. (The doctor had an emergency.)"`,
+          },
+        ],
+      },
+    };
+
+    (function renderLearn() {
+      const params = new URLSearchParams(location.search);
+      const req = params.get('task');
+      const taskId = LEARN[req] ? req : 'recall';
+      const L = LEARN[taskId];
+      document.title = 'You Got It! — Learn: ' + L.title;
+      document.getElementById('learnEyebrow').textContent = L.eyebrow;
+      document.getElementById('learnHeading').textContent = L.heading;
+      document.getElementById('learnLead').textContent = L.lead;
+      document.getElementById('learnCtaText').textContent = L.ctaText;
+      document.getElementById('enterAiground').setAttribute('href', 'aiground.html?task=' + taskId);
+      document.getElementById('lessons').innerHTML = L.lessons.map((l, i) => `
+        <article class="lesson">
+          <div class="lesson__num">${String(i + 1).padStart(2, '0')}</div>
+          <div class="lesson__body">
+            <h2 class="lesson__title">${l.title}</h2>
+            <p class="lesson__text">${l.text}</p>
+            <div class="dodont">
+              <div class="dd dd--do">
+                <div class="dd__label">✓ Do</div>
+                <p class="dd__text">${l.do}</p>
+              </div>
+              <div class="dd dd--dont">
+                <div class="dd__label">✕ Don't</div>
+                <p class="dd__text">${l.dont}</p>
+              </div>
+            </div>
+          </div>
+        </article>`).join('');
+    })();
 
     const menuBtn = document.getElementById('menuBtn');
     const mobileNav = document.getElementById('mobileNav');
