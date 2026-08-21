@@ -348,8 +348,12 @@ Riverstone Family Practice`;
       renderFeedback(data);
       gradeBtn.disabled = false;
       gradeBtn.textContent = 'Submit for feedback →';
+      const total = (data.checks || []).length;
       const passed = (data.checks || []).filter(c => c.verdict === 'pass').length;
-      window.track && window.track('Graded', { mode: liveGrade ? 'live' : 'demo', checks_passed: passed, total: (data.checks || []).length });
+      window.track && window.track('Graded', { mode: liveGrade ? 'live' : 'demo', checks_passed: passed, total });
+      // Clean pass/fail outcome goal (separate from the Graded props) so success
+      // rate is a first-class metric. Only fires when there were checks to pass.
+      if (total > 0) window.track && window.track(passed === total ? 'Task Passed' : 'Task Failed', { mode: liveGrade ? 'live' : 'demo' });
       showStep(4);
     });
 

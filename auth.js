@@ -35,7 +35,10 @@ function ygiRequireProfile() {
   document.querySelectorAll("[data-profile-name]").forEach((el) => { el.textContent = profile.name; });
 
   const signOut = document.getElementById("signOutBtn");
-  if (signOut) signOut.addEventListener("click", ygiClearProfile);
+  if (signOut) signOut.addEventListener("click", () => {
+    if (window.track) window.track("Sign Out");
+    ygiClearProfile();
+  });
 
   return profile;
 }
