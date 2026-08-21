@@ -27,9 +27,7 @@ export default async function handler(req, res) {
 
   const base = process.env.APP_URL || `https://${req.headers.host}`;
   const link = `${base}/api/auth/verify?token=${token}`;
-  let emailError = null;
-  try { await sendMagicLink(email, link); } catch (e) { emailError = String(e?.message || e); console.error("magic-link email failed:", emailError); }
+  try { await sendMagicLink(email, link); } catch (e) { console.error("magic-link email failed:", e?.message || e); }
 
-  // ?debug=1 surfaces the email-send error (for setup diagnosis); normal callers see only { ok: true }.
-  res.json(emailError && req.query?.debug === "1" ? { ok: true, emailError } : { ok: true });
+  res.json({ ok: true });
 }
