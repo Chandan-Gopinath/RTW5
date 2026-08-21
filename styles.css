@@ -213,6 +213,8 @@ button{font-family:inherit}
   .topbar__nav{display:none}
   .topbar__menu-btn{display:inline-flex}
   .topbar{padding:12px var(--s4)}
+  /* admin model switcher is a desktop/admin tool for now; hide when nav collapses */
+  .admin-menu-wrap{display:none}
 }
 @media (max-width:460px){
   .topbar__user span.name{display:none}
@@ -289,6 +291,26 @@ button{font-family:inherit}
 .record__item{padding:var(--s3) 0;border-bottom:1px dashed var(--hairline)}
 .record__k{font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
 .record__v{font-size:15px;color:var(--ink)}
+
+/* admin model switcher (top nav, injected by admin.js) */
+.admin-menu-wrap{position:relative;margin-right:var(--s3)}
+.admin-chip{display:flex;align-items:center;gap:6px;background:none;border:1px solid var(--hairline-strong);border-radius:9px;cursor:pointer;padding:7px 11px;font-family:var(--font-body);font-size:14px;font-weight:600;color:var(--text-2)}
+.admin-chip:hover{color:var(--ink);border-color:var(--ink)}
+.admin-chip .chev{width:15px;height:15px}
+.admin-menu{position:absolute;top:calc(100% + 8px);right:0;min-width:262px;background:var(--surface);border:1px solid var(--hairline);border-radius:var(--radius-sm);box-shadow:var(--shadow);padding:10px;display:none;z-index:40}
+.admin-menu.open{display:block}
+.admin-menu__head{font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);font-weight:600;padding:4px 6px 8px;display:flex;flex-direction:column;gap:2px}
+.admin-menu__note{font-family:var(--font-body);font-size:11px;letter-spacing:0;text-transform:none;color:var(--muted);font-weight:400}
+.admin-menu__list{display:flex;flex-direction:column;gap:4px}
+.admin-model{display:flex;align-items:center;gap:9px;padding:10px;border-radius:8px;cursor:pointer;border:1px solid transparent}
+.admin-model:hover{background:var(--wash)}
+.admin-model.is-active{border-color:var(--ink);background:var(--wash)}
+.admin-model input{accent-color:var(--ink);margin:0;flex:0 0 auto}
+.admin-model__name{font-size:14px;color:var(--ink);flex:1}
+.admin-model__badge{font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;padding:3px 7px;border-radius:var(--radius-pill);flex:0 0 auto}
+.admin-model__badge.is-live{background:rgba(46,139,82,.12);color:var(--pass)}
+.admin-model__badge.is-demo{background:var(--wash);color:var(--muted)}
+.admin-menu__foot{font-size:11px;color:var(--muted);padding:9px 6px 3px;line-height:1.4;border-top:1px solid var(--hairline);margin-top:8px}
 
 /* collapsible brief reference, shown on the prompt step so the task + record
    stay in view while writing */

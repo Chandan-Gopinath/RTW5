@@ -28,6 +28,7 @@ const EVENTS = [
   "Task Failed",
   "Try Again",
   "Reveal Viewed",
+  "Model Switched",
 ];
 
 const key = process.env.PLAUSIBLE_API_KEY;

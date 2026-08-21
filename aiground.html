@@ -193,6 +193,7 @@
   </main>
 
   <script src="auth.js"></script>
+  <script src="admin.js"></script>
   <script>
     ygiRequireProfile();
 
@@ -431,7 +432,7 @@ Riverstone Family Practice`,
       genDraftBtn.textContent = 'Generating…';
       let liveDraft = true;
       try {
-        const r = await fetch('/api/draft', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: currentPrompt }) });
+        const r = await fetch('/api/draft', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: window.ygiGetModel ? window.ygiGetModel() : 'gemini', prompt: currentPrompt }) });
         const data = await r.json();
         if (data.error) throw new Error(data.error);
         currentDraft = data.draft;
@@ -452,7 +453,7 @@ Riverstone Family Practice`,
       gradeBtn.textContent = 'Grading…';
       let data, liveGrade = true;
       try {
-        const r = await fetch('/api/grade', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ task: currentTask, prompt: currentPrompt, draft: currentDraft }) });
+        const r = await fetch('/api/grade', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: window.ygiGetModel ? window.ygiGetModel() : 'gemini', task: currentTask, prompt: currentPrompt, draft: currentDraft }) });
         data = await r.json();
         if (data.error) throw new Error(data.error);
       } catch (e) {

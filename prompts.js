@@ -2,7 +2,17 @@
 // Kept server-side so each task's "answer key" (planted traps) never reaches
 // the browser. Tasks are keyed by id in TASKS; add a task by adding an entry.
 
-export const MODEL = "gemini-3.6-flash";
+// Models the app can grade/draft with. The scenario + rubric below are
+// provider-agnostic; lib/grader.js adapts the actual API call per provider.
+export const MODELS = {
+  gemini:      { id: "gemini",    label: "Gemini 3.6 Flash", provider: "gemini", model: "gemini-3.6-flash",       envKey: "GEMINI_API_KEY" },
+  "groq-70b":  { id: "groq-70b",  label: "Llama 3.3 70B",    provider: "groq",   model: "llama-3.3-70b-versatile", envKey: "GROQ_API_KEY" },
+  "groq-120b": { id: "groq-120b", label: "GPT-OSS 120B",     provider: "groq",   model: "openai/gpt-oss-120b",     envKey: "GROQ_API_KEY" },
+};
+export const DEFAULT_MODEL = "gemini";
+export function getModel(id) {
+  return MODELS[id] || null;
+}
 
 // The naive drafting model: behaves like a general-purpose AI tool. It writes
 // exactly what the learner asks — so if they paste PII or omit context, that
