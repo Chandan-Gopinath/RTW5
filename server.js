@@ -14,6 +14,8 @@ import authRequest from "./api/auth/request.js";
 import authVerify from "./api/auth/verify.js";
 import authMe from "./api/auth/me.js";
 import authSignout from "./api/auth/signout.js";
+import adminConfig from "./api/admin/config.js";
+import adminUsers from "./api/admin/users.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -24,6 +26,9 @@ app.post("/api/auth/request", (req, res) => authRequest(req, res));
 app.get("/api/auth/verify", (req, res) => authVerify(req, res));
 app.get("/api/auth/me", (req, res) => authMe(req, res));
 app.post("/api/auth/signout", (req, res) => authSignout(req, res));
+app.get("/api/admin/config", (req, res) => adminConfig(req, res));
+app.post("/api/admin/config", (req, res) => adminConfig(req, res));
+app.get("/api/admin/users", (req, res) => adminUsers(req, res));
 
 app.get("/api/models", (req, res) => {
   const models = Object.values(MODELS).map((m) => ({
