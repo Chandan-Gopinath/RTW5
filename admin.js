@@ -11,7 +11,7 @@
 
   const FALLBACK_MODELS = [
     { id: "gemini", label: "Gemini 3.6 Flash", live: false },
-    { id: "groq-70b", label: "Llama 3.3 70B", live: false },
+    { id: "groq-20b", label: "GPT-OSS 20B", live: false },
     { id: "groq-120b", label: "GPT-OSS 120B", live: false },
   ];
 
@@ -35,12 +35,14 @@
   }
 
   async function loadModels() {
-    let models = FALLBACK_MODELS;
+    let models = FALLBACK_MODELS, def = DEFAULT;
     try {
       const res = await fetch("/api/models");
       const data = await res.json();
-      if (data && Array.isArray(data.models)) models = data.models;
+      if (data && Array.isArray(data.models)) { models = data.models; def = data.default || DEFAULT; }
     } catch (e) { /* keep fallback (all demo) — e.g. offline / static host */ }
+    // if the saved choice is no longer offered (e.g. a model was renamed), reset
+    if (!models.some((m) => m.id === window.ygiGetModel())) localStorage.setItem(KEY, def);
     render(models);
   }
 

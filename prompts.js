@@ -6,7 +6,7 @@
 // provider-agnostic; lib/grader.js adapts the actual API call per provider.
 export const MODELS = {
   gemini:      { id: "gemini",    label: "Gemini 3.6 Flash", provider: "gemini", model: "gemini-3.6-flash",       envKey: "GEMINI_API_KEY" },
-  "groq-70b":  { id: "groq-70b",  label: "Llama 3.3 70B",    provider: "groq",   model: "llama-3.3-70b-versatile", envKey: "GROQ_API_KEY" },
+  "groq-20b":  { id: "groq-20b",  label: "GPT-OSS 20B",      provider: "groq",   model: "openai/gpt-oss-20b",      envKey: "GROQ_API_KEY" },
   "groq-120b": { id: "groq-120b", label: "GPT-OSS 120B",     provider: "groq",   model: "openai/gpt-oss-120b",     envKey: "GROQ_API_KEY" },
 };
 export const DEFAULT_MODEL = "gemini";
