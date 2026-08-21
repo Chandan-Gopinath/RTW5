@@ -6,12 +6,16 @@
 import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { generateDraft, gradeSubmission, hasKey } from "./lib/grader.js";
-import { getTask, getModel, MODELS, DEFAULT_MODEL } from "./prompts.js";
+import { hasKey } from "./lib/grader.js";
+import { MODELS, DEFAULT_MODEL } from "./prompts.js";
+import gradeHandler from "./api/grade.js";
+import draftHandler from "./api/draft.js";
 import authRequest from "./api/auth/request.js";
 import authVerify from "./api/auth/verify.js";
 import authMe from "./api/auth/me.js";
 import authSignout from "./api/auth/signout.js";
+import adminConfig from "./api/admin/config.js";
+import adminUsers from "./api/admin/users.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -22,6 +26,9 @@ app.post("/api/auth/request", (req, res) => authRequest(req, res));
 app.get("/api/auth/verify", (req, res) => authVerify(req, res));
 app.get("/api/auth/me", (req, res) => authMe(req, res));
 app.post("/api/auth/signout", (req, res) => authSignout(req, res));
+app.get("/api/admin/config", (req, res) => adminConfig(req, res));
+app.post("/api/admin/config", (req, res) => adminConfig(req, res));
+app.get("/api/admin/users", (req, res) => adminUsers(req, res));
 
 app.get("/api/models", (req, res) => {
   const models = Object.values(MODELS).map((m) => ({
@@ -30,36 +37,9 @@ app.get("/api/models", (req, res) => {
   res.json({ models, default: DEFAULT_MODEL });
 });
 
-app.post("/api/draft", async (req, res) => {
-  const model = (req.body?.model || DEFAULT_MODEL).trim();
-  const prompt = (req.body?.prompt || "").trim();
-  if (!prompt) return res.status(400).json({ error: "empty_prompt" });
-  if (!getModel(model)) return res.status(400).json({ error: "unknown_model" });
-  if (!hasKey(model)) return res.json({ error: "no_api_key" });
-  try {
-    res.json({ draft: await generateDraft(model, prompt) });
-  } catch (err) {
-    console.error("draft error:", err?.message || err);
-    res.status(502).json({ error: "api_error", message: String(err?.message || err) });
-  }
-});
-
-app.post("/api/grade", async (req, res) => {
-  const model = (req.body?.model || DEFAULT_MODEL).trim();
-  const task = (req.body?.task || "recall").trim();
-  const prompt = (req.body?.prompt || "").trim();
-  const draft = (req.body?.draft || "").trim();
-  if (!prompt || !draft) return res.status(400).json({ error: "missing_fields" });
-  if (!getTask(task)) return res.status(400).json({ error: "unknown_task" });
-  if (!getModel(model)) return res.status(400).json({ error: "unknown_model" });
-  if (!hasKey(model)) return res.json({ error: "no_api_key" });
-  try {
-    res.json(await gradeSubmission(model, task, prompt, draft));
-  } catch (err) {
-    console.error("grade error:", err?.message || err);
-    res.status(502).json({ error: "api_error", message: String(err?.message || err) });
-  }
-});
+// delegate to the same serverless handlers Vercel uses (single source of truth)
+app.post("/api/draft", (req, res) => draftHandler(req, res));
+app.post("/api/grade", (req, res) => gradeHandler(req, res));
 
 const PORT = process.env.PORT || 8123;
 app.listen(PORT, () => {

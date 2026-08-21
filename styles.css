@@ -312,6 +312,16 @@ button{font-family:inherit}
 .admin-model__badge.is-demo{background:var(--wash);color:var(--muted)}
 .admin-menu__foot{font-size:11px;color:var(--muted);padding:9px 6px 3px;line-height:1.4;border-top:1px solid var(--hairline);margin-top:8px}
 
+/* admin page: users table + section notes */
+.admin-note{font-family:var(--font-body);font-size:12px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--muted);margin-left:8px}
+.admin-table-wrap{overflow-x:auto;border:1px solid var(--hairline);border-radius:var(--radius);background:var(--surface)}
+.admin-table{width:100%;border-collapse:collapse;font-size:14px;min-width:660px}
+.admin-table th{text-align:left;font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:12px 16px;border-bottom:1px solid var(--hairline)}
+.admin-table td{padding:13px 16px;border-bottom:1px solid var(--hairline);color:var(--ink)}
+.admin-table tr:last-child td{border-bottom:0}
+.admin-table td.mono{font-family:var(--font-mono);font-size:12.5px;color:var(--text-2)}
+.pill--admin{background:var(--ink);color:var(--ground);font-family:var(--font-mono);font-weight:600;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:var(--radius-pill)}
+
 /* collapsible brief reference, shown on the prompt step so the task + record
    stay in view while writing */
 .brief-peek{background:var(--surface);border:1px solid var(--hairline);border-radius:var(--radius);margin-bottom:var(--s5);overflow:hidden}
