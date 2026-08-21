@@ -125,6 +125,17 @@
         <p class="eyebrow">Your prompt</p>
         <h1 class="aig-h">Tell the AI what to write</h1>
         <p class="aig-lead" id="promptLead"></p>
+        <details class="brief-peek" open>
+          <summary class="brief-peek__summary">
+            <span class="brief-peek__label">The task &amp; record</span>
+            <svg class="brief-peek__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </summary>
+          <div class="brief-peek__body">
+            <p class="brief-peek__lead" id="peekLead"></p>
+            <p class="record__k" id="peekRecordLabel"></p>
+            <div class="record" id="peekRecord"></div>
+          </div>
+        </details>
         <textarea class="aig-textarea" id="promptInput" aria-label="Your prompt" placeholder=""></textarea>
         <p class="aig-hint" id="draftStatus">The AI drafts from exactly what you write here — so give it context, and leave out anything unsafe.</p>
         <div class="aig-actions">
@@ -241,6 +252,8 @@
       current = n;
       document.querySelectorAll('.aig-step').forEach(s => s.classList.toggle('is-active', +s.dataset.step === n));
       renderStepper(n);
+      // banner rides with the pre-scripted result: Draft (3) / Feedback (4) only
+      demoBanner.hidden = !((n === 3 && demoDraft) || (n === 4 && demoGrade));
       window.scrollTo({ top: 0, behavior: 'smooth' });
       if (n === 5) window.track && window.track('Reveal Viewed');
     }
@@ -253,7 +266,7 @@
       draftPanel.textContent = '';
       fbList.innerHTML = '';
       currentPrompt = ''; currentDraft = '';
-      demoBanner.hidden = true;
+      demoDraft = false; demoGrade = false;
       hub.hidden = true;
       loop.hidden = false;
       showStep(1);
@@ -374,12 +387,17 @@ Riverstone Family Practice`,
     function renderTask(id) {
       const v = TASK_VIEWS[id];
       if (!v) return;
+      const recordHtml = v.brief.record.map(
+        ([k, val]) => `<div class="record__item"><div class="record__k">${escapeHtml(k)}</div><div class="record__v">${escapeHtml(val)}</div></div>`
+      ).join('');
       document.getElementById('briefTitle').textContent = v.brief.title;
       document.getElementById('briefLead').textContent = v.brief.lead;
       document.getElementById('briefRecordLabel').textContent = v.brief.recordLabel;
-      document.getElementById('briefRecord').innerHTML = v.brief.record.map(
-        ([k, val]) => `<div class="record__item"><div class="record__k">${escapeHtml(k)}</div><div class="record__v">${escapeHtml(val)}</div></div>`
-      ).join('');
+      document.getElementById('briefRecord').innerHTML = recordHtml;
+      // the same brief, echoed as a collapsible reference on the prompt step
+      document.getElementById('peekLead').textContent = v.brief.lead;
+      document.getElementById('peekRecordLabel').textContent = v.brief.recordLabel;
+      document.getElementById('peekRecord').innerHTML = recordHtml;
       document.getElementById('promptLead').textContent = v.promptLead;
       document.getElementById('promptInput').placeholder = v.promptPlaceholder;
       document.getElementById('revealLead').textContent = v.reveal.lead;
@@ -390,6 +408,9 @@ Riverstone Family Practice`,
     }
 
     let currentPrompt = '', currentDraft = '';
+    // demo-mode banner only belongs on the steps that show a pre-scripted
+    // result (Draft, Feedback) — not over the Brief/Prompt steps.
+    let demoDraft = false, demoGrade = false;
     const promptInput = document.getElementById('promptInput');
     const draftPanel = document.getElementById('draftPanel');
     const draftStatus = document.getElementById('draftStatus');
@@ -418,7 +439,7 @@ Riverstone Family Practice`,
         currentDraft = TASK_VIEWS[currentTask].fallbackDraft;
         liveDraft = false;
       }
-      demoBanner.hidden = liveDraft;
+      demoDraft = !liveDraft;
       draftPanel.textContent = currentDraft;
       genDraftBtn.disabled = false;
       genDraftBtn.textContent = 'Generate draft →';
@@ -438,7 +459,7 @@ Riverstone Family Practice`,
         data = TASK_VIEWS[currentTask].fallbackGrade;
         liveGrade = false;
       }
-      demoBanner.hidden = liveGrade;
+      demoGrade = !liveGrade;
       renderFeedback(data);
       gradeBtn.disabled = false;
       gradeBtn.textContent = 'Submit for feedback →';

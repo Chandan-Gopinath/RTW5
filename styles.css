@@ -290,6 +290,19 @@ button{font-family:inherit}
 .record__k{font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
 .record__v{font-size:15px;color:var(--ink)}
 
+/* collapsible brief reference, shown on the prompt step so the task + record
+   stay in view while writing */
+.brief-peek{background:var(--surface);border:1px solid var(--hairline);border-radius:var(--radius);margin-bottom:var(--s5);overflow:hidden}
+.brief-peek__summary{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);padding:var(--s4) var(--s5);cursor:pointer;list-style:none;user-select:none}
+.brief-peek__summary::-webkit-details-marker{display:none}
+.brief-peek__summary:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
+.brief-peek__label{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);font-weight:600}
+.brief-peek__chev{width:18px;height:18px;color:var(--muted);transition:transform .18s ease;flex:0 0 auto}
+.brief-peek[open] .brief-peek__chev{transform:rotate(180deg)}
+.brief-peek__body{padding:0 var(--s5) var(--s5)}
+.brief-peek__lead{font-size:14px;color:var(--text-2);line-height:1.5;margin-bottom:var(--s4)}
+.brief-peek__body .record__k:first-of-type{margin-bottom:var(--s2)}
+
 .aig-textarea{width:100%;min-height:150px;background:var(--surface);border:1px solid var(--hairline-strong);border-radius:var(--radius-sm);padding:14px;font-family:var(--font-mono);font-size:14px;line-height:1.6;color:var(--ink);resize:vertical}
 .aig-textarea:focus{outline:2px solid var(--ink);outline-offset:1px}
 .aig-hint{font-size:13px;color:var(--muted);margin-top:var(--s2)}
