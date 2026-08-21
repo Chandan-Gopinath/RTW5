@@ -35,7 +35,7 @@
       </button>
       <div class="user-menu" id="userMenu" role="menu">
         <div class="user-menu__head">Signed in as <strong>Sarah</strong></div>
-        <a class="user-menu__item" href="index.html" role="menuitem">
+        <a class="user-menu__item" href="index.html" id="signOutBtn" role="menuitem">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 17l5-5-5-5M21 12H9M12 19H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h7" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Sign out
         </a>
@@ -56,7 +56,7 @@
   <main class="page">
     <div class="page-head">
       <p class="eyebrow">Your desk</p>
-      <h1>Good to see you, <span class="hl">Sarah</span>.</h1>
+      <h1>Good to see you, <span class="hl" data-profile-name>Sarah</span>.</h1>
       <p class="lead">One task a day, on the work already on your desk. Learn it, then prove it in AIGround.</p>
     </div>
 
@@ -124,7 +124,10 @@
     </section>
   </main>
 
+  <script src="auth.js"></script>
   <script>
+    ygiRequireProfile();
+
     const menuBtn = document.getElementById('menuBtn');
     const mobileNav = document.getElementById('mobileNav');
     menuBtn.addEventListener('click', () => {

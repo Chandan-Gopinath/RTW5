@@ -61,7 +61,8 @@
             </div>
             <p class="field__hint">This isn't a password — it just remembers you on this device. Forget it? Make a new profile.</p>
           </div>
-          <a class="btn btn--primary btn--block" href="dashboard.html" data-event="Signup">Create &amp; start &rarr;</a>
+          <button type="submit" class="btn btn--primary btn--block" data-event="Signup">Create &amp; start &rarr;</button>
+          <p class="field__hint auth-error" id="error-c" hidden></p>
         </form>
 
         <!-- SIGN IN -->
@@ -79,7 +80,8 @@
               <input class="code__box" inputmode="numeric" maxlength="1" aria-label="digit 4">
             </div>
           </div>
-          <a class="btn btn--primary btn--block" href="dashboard.html" data-event="Signin">Continue &rarr;</a>
+          <button type="submit" class="btn btn--primary btn--block" data-event="Signin">Continue &rarr;</button>
+          <p class="field__hint auth-error" id="error-s" hidden></p>
           <p class="form-foot"><button type="button" class="link-plain">Forgot it? Make a new profile</button></p>
         </form>
       </div>
@@ -87,6 +89,7 @@
 
   </main>
 
+  <script src="auth.js"></script>
   <script>
     // Segmented toggle between Create / Sign in
     const tabs = document.querySelectorAll('[role="tab"]');
@@ -115,7 +118,36 @@
       });
     });
 
-    function go(e){ /* prototype: links handle navigation */ }
+    function go(e){
+      e.preventDefault();
+      const form = e.target;
+      const isCreate = form.id === 'form-create';
+      const nameInput = document.getElementById(isCreate ? 'name-c' : 'name-s');
+      const errorEl = document.getElementById(isCreate ? 'error-c' : 'error-s');
+      const boxes = [...form.querySelectorAll('.code__box')];
+      const name = nameInput.value.trim();
+      const code = boxes.map(b => b.value).join('');
+
+      errorEl.hidden = true;
+
+      if (!name) { nameInput.focus(); return false; }
+      const firstEmpty = boxes.find(b => !b.value);
+      if (code.length !== 4) { (firstEmpty || boxes[0]).focus(); return false; }
+
+      if (isCreate) {
+        ygiSaveProfile(name, code);
+        window.location.href = 'dashboard.html';
+      } else {
+        const existing = ygiGetProfile();
+        if (!existing || existing.name.toLowerCase() !== name.toLowerCase() || existing.code !== code) {
+          errorEl.textContent = "No matching profile on this device — check your name and code, or create a new profile.";
+          errorEl.hidden = false;
+          return false;
+        }
+        window.location.href = 'dashboard.html';
+      }
+      return false;
+    }
   </script>
 </body>
 </html>

@@ -88,6 +88,7 @@ button{font-family:inherit}
 .field{display:flex;flex-direction:column;gap:var(--s2)}
 .field__label{font-size:13px;font-weight:600;color:var(--text-2)}
 .field__hint{font-size:12px;color:var(--muted);line-height:1.45}
+.auth-error{color:var(--fix)}
 .input{
   background:var(--surface);border:1px solid var(--hairline-strong);border-radius:var(--radius-sm);
   padding:13px 14px;font-size:15px;font-family:var(--font-body);color:var(--ink);width:100%;
