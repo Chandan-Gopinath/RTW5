@@ -2,19 +2,19 @@
 
 **You Got It!** teaches non-technical **practice managers** to use AI on their real work, and grades whether they did it well. The graded practice arena is **AIGround**.
 
-The recall-letter task is wired for **live AI grading**: the learner writes a prompt, Claude drafts the letter, and a second Claude call grades the submission against a rubric of planted traps (give context · keep unsafe data out · verify) and returns structured, cited feedback. Without an API key the app runs in **demo mode** on pre-scripted results, so the whole flow is still clickable.
+The recall-letter task is wired for **live AI grading**: the learner writes a prompt, Gemini drafts the letter, and a second Gemini call grades the submission against a rubric of planted traps (give context · keep unsafe data out · verify) and returns structured, cited feedback. Without an API key the app runs in **demo mode** on pre-scripted results, so the whole flow is still clickable.
 
 ## Run it
 
 ```bash
 npm install
-export ANTHROPIC_API_KEY=sk-ant-...   # optional — omit for demo mode
+export GEMINI_API_KEY=...   # optional — omit for demo mode; get a free key at aistudio.google.com/apikey
 npm start
 ```
 
 Then open http://localhost:8123 . (Node 24+ can also load a `.env` file: `node --env-file=.env server.js` — see `.env.example`.)
 
-- **With `ANTHROPIC_API_KEY` set** → live drafting + grading via the Claude API.
+- **With `GEMINI_API_KEY` set** → live drafting + grading via the Gemini API.
 - **Without it** → demo mode: a banner appears in AIGround and the loop uses pre-scripted content.
 
 The API key is read **only** from the environment on the server; it is never sent to or exposed in the browser.
@@ -28,7 +28,7 @@ The API key is read **only** from the environment on the server; it is never sen
 - **`server.js`** — Express server. Serves the static pages and exposes two endpoints:
   - `POST /api/draft { prompt }` → `{ draft }` — generates the letter from the learner's prompt.
   - `POST /api/grade { prompt, draft }` → `{ summary, checks[] }` — grades against the rubric, structured JSON with per-check verdict + cited evidence + why.
-- **`prompts.js`** — the scenario, the planted-trap rubric, the grader system prompt, and the JSON schema. Kept server-side so the "answer key" never reaches the browser. Model: **`claude-sonnet-5`**.
+- **`prompts.js`** — the scenario, the planted-trap rubric, the grader system prompt, and the JSON schema. Kept server-side so the "answer key" never reaches the browser. Model: **`gemini-2.5-flash`** (verify this is still current in Google AI Studio).
 - **`styles.css`** — the whole design system (tokens, components, responsive).
 - The frontend (`aiground.html`) calls the two endpoints and renders the draft and feedback; on any error it falls back to demo data and shows the banner.
 

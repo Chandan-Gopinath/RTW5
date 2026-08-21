@@ -41,5 +41,5 @@ app.post("/api/grade", async (req, res) => {
 const PORT = process.env.PORT || 8123;
 app.listen(PORT, () => {
   console.log(`You Got It! running at http://localhost:${PORT}`);
-  console.log(hasKey() ? "ANTHROPIC_API_KEY detected — live grading on." : "No ANTHROPIC_API_KEY — running in demo mode.");
+  console.log(hasKey() ? "GEMINI_API_KEY detected — live grading on." : "No GEMINI_API_KEY — running in demo mode.");
 });
