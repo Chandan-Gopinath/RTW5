@@ -8,11 +8,20 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { generateDraft, gradeSubmission, hasKey } from "./lib/grader.js";
 import { getTask, getModel, MODELS, DEFAULT_MODEL } from "./prompts.js";
+import authRequest from "./api/auth/request.js";
+import authVerify from "./api/auth/verify.js";
+import authMe from "./api/auth/me.js";
+import authSignout from "./api/auth/signout.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 app.use(express.json({ limit: "1mb" }));
 app.use(express.static(__dirname));
+
+app.post("/api/auth/request", (req, res) => authRequest(req, res));
+app.get("/api/auth/verify", (req, res) => authVerify(req, res));
+app.get("/api/auth/me", (req, res) => authMe(req, res));
+app.post("/api/auth/signout", (req, res) => authSignout(req, res));
 
 app.get("/api/models", (req, res) => {
   const models = Object.values(MODELS).map((m) => ({
