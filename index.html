@@ -39,116 +39,53 @@
     <section class="auth__form">
       <div class="card">
         <div class="card__head">
-          <div class="segment" role="tablist" aria-label="Sign in or create a profile">
-            <button role="tab" aria-selected="true" data-tab="create">Create profile</button>
-            <button role="tab" aria-selected="false" data-tab="signin">I've been here</button>
-          </div>
-          <h2 id="card-title">Let's get you started</h2>
+          <h2 id="card-title">Sign in or create your account</h2>
+          <p class="field__hint">We'll email you a secure sign-in link — no password to remember.</p>
         </div>
 
-        <!-- CREATE -->
-        <form class="form-body" id="form-create" onsubmit="return go(event)">
+        <form class="form-body" id="signinForm" novalidate>
           <div class="field">
-            <label class="field__label" for="name-c">Your first name</label>
-            <input class="input" id="name-c" type="text" placeholder="e.g. Sarah" autocomplete="given-name">
+            <label class="field__label" for="nameInput">Your first name</label>
+            <input class="input" id="nameInput" name="name" type="text" placeholder="e.g. Sarah" autocomplete="name" required>
           </div>
           <div class="field">
-            <label class="field__label">Set a 4-digit code</label>
-            <div class="code" data-code>
-              <input class="code__box" inputmode="numeric" maxlength="1" aria-label="digit 1">
-              <input class="code__box" inputmode="numeric" maxlength="1" aria-label="digit 2">
-              <input class="code__box" inputmode="numeric" maxlength="1" aria-label="digit 3">
-              <input class="code__box" inputmode="numeric" maxlength="1" aria-label="digit 4">
-            </div>
-            <p class="field__hint">This isn't a password — it just remembers you on this device. Forget it? Make a new profile.</p>
+            <label class="field__label" for="emailInput">Email</label>
+            <input class="input" id="emailInput" name="email" type="email" placeholder="you@clinic.com" autocomplete="email" required>
           </div>
-          <button type="submit" class="btn btn--primary btn--block" data-event="Signup">Create &amp; start &rarr;</button>
-          <p class="field__hint auth-error" id="error-c" hidden></p>
-        </form>
-
-        <!-- SIGN IN -->
-        <form class="form-body hidden" id="form-signin" onsubmit="return go(event)">
-          <div class="field">
-            <label class="field__label" for="name-s">Your first name</label>
-            <input class="input" id="name-s" type="text" placeholder="Sarah" autocomplete="given-name">
-          </div>
-          <div class="field">
-            <label class="field__label">Your 4-digit code</label>
-            <div class="code" data-code>
-              <input class="code__box" inputmode="numeric" maxlength="1" aria-label="digit 1">
-              <input class="code__box" inputmode="numeric" maxlength="1" aria-label="digit 2">
-              <input class="code__box" inputmode="numeric" maxlength="1" aria-label="digit 3">
-              <input class="code__box" inputmode="numeric" maxlength="1" aria-label="digit 4">
-            </div>
-          </div>
-          <button type="submit" class="btn btn--primary btn--block" data-event="Signin">Continue &rarr;</button>
-          <p class="field__hint auth-error" id="error-s" hidden></p>
-          <p class="form-foot"><button type="button" class="link-plain">Forgot it? Make a new profile</button></p>
+          <button type="submit" class="btn btn--primary btn--block" data-event="Signin">Email me a sign-in link &rarr;</button>
+          <p class="field__hint" id="signinStatus" hidden></p>
         </form>
       </div>
     </section>
 
   </main>
 
-  <script src="auth.js"></script>
   <script>
-    // Segmented toggle between Create / Sign in
-    const tabs = document.querySelectorAll('[role="tab"]');
-    const title = document.getElementById('card-title');
-    const views = { create: document.getElementById('form-create'), signin: document.getElementById('form-signin') };
-    const titles = { create: "Let's get you started", signin: "Welcome back" };
-    tabs.forEach(t => t.addEventListener('click', () => {
-      tabs.forEach(x => x.setAttribute('aria-selected', x === t));
-      const which = t.dataset.tab;
-      views.create.classList.toggle('hidden', which !== 'create');
-      views.signin.classList.toggle('hidden', which !== 'signin');
-      title.textContent = titles[which];
-    }));
-
-    // 4-digit code auto-advance
-    document.querySelectorAll('[data-code]').forEach(group => {
-      const boxes = [...group.querySelectorAll('.code__box')];
-      boxes.forEach((box, i) => {
-        box.addEventListener('input', () => {
-          box.value = box.value.replace(/[^0-9]/g, '');
-          if (box.value && i < boxes.length - 1) boxes[i + 1].focus();
-        });
-        box.addEventListener('keydown', e => {
-          if (e.key === 'Backspace' && !box.value && i > 0) boxes[i - 1].focus();
-        });
-      });
-    });
-
-    function go(e){
+    const form = document.getElementById('signinForm');
+    const emailInput = document.getElementById('emailInput');
+    const nameInput = document.getElementById('nameInput');
+    const statusEl = document.getElementById('signinStatus');
+    // pre-fill last-used email/name for returning users
+    emailInput.value = localStorage.getItem('ygiLastEmail') || '';
+    nameInput.value = localStorage.getItem('ygiLastName') || '';
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const form = e.target;
-      const isCreate = form.id === 'form-create';
-      const nameInput = document.getElementById(isCreate ? 'name-c' : 'name-s');
-      const errorEl = document.getElementById(isCreate ? 'error-c' : 'error-s');
-      const boxes = [...form.querySelectorAll('.code__box')];
+      const email = emailInput.value.trim();
       const name = nameInput.value.trim();
-      const code = boxes.map(b => b.value).join('');
-
-      errorEl.hidden = true;
-
-      if (!name) { nameInput.focus(); return false; }
-      const firstEmpty = boxes.find(b => !b.value);
-      if (code.length !== 4) { (firstEmpty || boxes[0]).focus(); return false; }
-
-      if (isCreate) {
-        ygiSaveProfile(name, code);
-        window.location.href = 'dashboard.html';
-      } else {
-        const existing = ygiGetProfile();
-        if (!existing || existing.name.toLowerCase() !== name.toLowerCase() || existing.code !== code) {
-          errorEl.textContent = "No matching profile on this device — check your name and code, or create a new profile.";
-          errorEl.hidden = false;
-          return false;
-        }
-        window.location.href = 'dashboard.html';
-      }
-      return false;
-    }
+      if (!email || !name) return;
+      localStorage.setItem('ygiLastEmail', email);
+      localStorage.setItem('ygiLastName', name);
+      statusEl.hidden = false;
+      statusEl.textContent = 'Sending…';
+      try {
+        await fetch('/api/auth/request', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, name }),
+        });
+      } catch (_) {}
+      statusEl.textContent = 'Check your email for a sign-in link. It expires in 15 minutes.';
+      if (window.track) window.track('Signin');
+    });
   </script>
 </body>
 </html>
