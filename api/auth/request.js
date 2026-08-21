@@ -1,5 +1,5 @@
 // POST /api/auth/request { email, name } -> { ok: true } (always; no enumeration)
-import { db, magicTokens } from "../../lib/db.js";
+import { db, magicTokens, users } from "../../lib/db.js";
 import { normalizeEmail, isValidEmail } from "../../lib/auth-helpers.js";
 import { generateToken, hashToken } from "../../lib/tokens.js";
 import { sendMagicLink } from "../../lib/email.js";
@@ -27,7 +27,8 @@ export default async function handler(req, res) {
 
   const base = process.env.APP_URL || `https://${req.headers.host}`;
   const link = `${base}/api/auth/verify?token=${token}`;
-  try { await sendMagicLink(email, link); } catch (e) { console.error("magic-link email failed:", e?.message || e); }
+  const returning = Boolean((await db().select().from(users).where(eq(users.email, email)))[0]);
+  try { await sendMagicLink(email, link, { name, returning }); } catch (e) { console.error("magic-link email failed:", e?.message || e); }
 
   res.json({ ok: true });
 }
