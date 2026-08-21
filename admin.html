@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You Got It! — Admin</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800;9..144,900&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Plausible analytics — proxied first-party via Vercel. Site: you-got-it.vercel.app -->
+  <script defer data-domain="you-got-it.vercel.app" data-api="/plausible/event" src="/js/script.js"></script>
+  <script defer src="analytics.js"></script>
+</head>
+<body>
+
+  <header class="topbar">
+    <a class="logo" href="dashboard.html" aria-label="You Got It! home (logo placeholder)">
+      <span class="logo__mark">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5 L10 18 L20 6" fill="none" stroke="#EFE84B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <span class="logo__word">You Got It!</span>
+    </a>
+    <nav class="topbar__nav">
+      <a href="dashboard.html">Your desk</a>
+      <a href="learn.html">Learn</a>
+      <a href="aiground.html">AIGround</a>
+      <a href="admin.html" class="active">Admin</a>
+    </nav>
+    <div class="topbar__user">
+      <button class="user-chip" id="userChip" aria-haspopup="true" aria-expanded="false" aria-controls="userMenu">
+        <span class="name">Welcome</span>
+        <span class="avatar">?</span>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="user-menu" id="userMenu" role="menu">
+        <div class="user-menu__head">Signed in as <strong>—</strong></div>
+        <a class="user-menu__item" href="index.html" id="signOutBtn" role="menuitem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 17l5-5-5-5M21 12H9M12 19H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Sign out
+        </a>
+      </div>
+    </div>
+    <button class="topbar__menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false" aria-controls="mobileNav">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </header>
+
+  <nav class="mobile-nav" id="mobileNav" aria-label="Main">
+    <a href="dashboard.html">Your desk</a>
+    <a href="learn.html">Learn</a>
+    <a href="aiground.html">AIGround</a>
+    <a href="admin.html" class="active">Admin</a>
+  </nav>
+
+  <main class="page" id="adminMain" hidden>
+    <div class="page-head">
+      <p class="eyebrow">Admin</p>
+      <h1>Control room</h1>
+      <p class="lead">Set the grading model everyone uses, and see who's practising.</p>
+    </div>
+
+    <p class="section-label">Grading model <span class="admin-note">applies to draft + grading, for all users</span></p>
+    <div class="brief-card" style="margin-bottom:var(--s7)">
+      <div class="admin-menu__list" id="modelList">Loading…</div>
+    </div>
+
+    <p class="section-label">Users <span class="admin-note" id="usersCount"></span></p>
+    <div class="admin-table-wrap">
+      <table class="admin-table" id="usersTable">
+        <thead>
+          <tr><th>Name</th><th>Email</th><th>Joined</th><th>Attempts</th><th>Pass rate</th><th>Last active</th><th>Role</th></tr>
+        </thead>
+        <tbody id="usersBody"><tr><td colspan="7">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script src="auth.js"></script>
+  <script src="admin.js"></script>
+  <script>
+    // mobile + account menus (same pattern as the other pages)
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileNav = document.getElementById('mobileNav');
+    menuBtn.addEventListener('click', () => { const o = mobileNav.classList.toggle('open'); menuBtn.setAttribute('aria-expanded', o); });
+    const userChip = document.getElementById('userChip');
+    const userMenu = document.getElementById('userMenu');
+    userChip.addEventListener('click', (e) => { e.stopPropagation(); const o = userMenu.classList.toggle('open'); userChip.setAttribute('aria-expanded', o); });
+    document.addEventListener('click', (e) => { if (!userMenu.contains(e.target) && !userChip.contains(e.target)) { userMenu.classList.remove('open'); userChip.setAttribute('aria-expanded', 'false'); } });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { userMenu.classList.remove('open'); userChip.setAttribute('aria-expanded', 'false'); } });
+
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m])); }
+    function fmtDate(d) { return d ? new Date(d).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '—'; }
+
+    async function loadModels() {
+      const list = document.getElementById('modelList');
+      let data;
+      try { data = await (await fetch('/api/admin/config')).json(); } catch (_) { list.textContent = 'Could not load models.'; return; }
+      const render = () => {
+        list.innerHTML = data.models.map(m => `
+          <label class="admin-model ${m.id === data.active ? 'is-active' : ''}">
+            <input type="radio" name="model" value="${m.id}" ${m.id === data.active ? 'checked' : ''}>
+            <span class="admin-model__name">${esc(m.label)}</span>
+            <span class="admin-model__badge ${m.live ? 'is-live' : 'is-demo'}">${m.live ? 'live' : 'demo'}</span>
+          </label>`).join('');
+        list.querySelectorAll('input[name="model"]').forEach(r => r.addEventListener('change', async () => {
+          const res = await fetch('/api/admin/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: r.value }) });
+          if (res.ok) { data.active = r.value; render(); if (window.track) window.track('Model Switched', { model: r.value }); }
+        }));
+      };
+      render();
+    }
+
+    async function loadUsers() {
+      let data;
+      try { data = await (await fetch('/api/admin/users')).json(); } catch (_) { document.getElementById('usersBody').innerHTML = '<tr><td colspan="7">Could not load users.</td></tr>'; return; }
+      document.getElementById('usersCount').textContent = `${data.users.length} total`;
+      document.getElementById('usersBody').innerHTML = data.users.length ? data.users.map(u => `
+        <tr>
+          <td>${esc(u.name)}</td>
+          <td class="mono">${esc(u.email)}</td>
+          <td>${fmtDate(u.createdAt)}</td>
+          <td>${u.attempts}</td>
+          <td>${u.passRate == null ? '—' : u.passRate + '%'}</td>
+          <td>${fmtDate(u.lastAttempt || u.lastActiveAt)}</td>
+          <td>${u.isAdmin ? '<span class="pill pill--admin">Admin</span>' : ''}</td>
+        </tr>`).join('') : '<tr><td colspan="7">No users yet.</td></tr>';
+    }
+
+    // gate: require a session AND admin
+    ygiRequireProfile().then(user => {
+      if (!user) return;                    // ygiRequireProfile already redirected to sign-in
+      if (!user.isAdmin) { window.location.href = 'dashboard.html'; return; }
+      document.getElementById('adminMain').hidden = false;
+      loadModels();
+      loadUsers();
+    });
+  </script>
+
+</body>
+</html>
