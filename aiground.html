@@ -322,9 +322,9 @@ Riverstone Family Practice`;
         currentDraft = data.draft;
       } catch (e) {
         currentDraft = FALLBACK_DRAFT;
-        demoBanner.hidden = false;
         liveDraft = false;
       }
+      demoBanner.hidden = liveDraft;
       draftPanel.textContent = currentDraft;
       genDraftBtn.disabled = false;
       genDraftBtn.textContent = 'Generate draft →';
@@ -342,9 +342,9 @@ Riverstone Family Practice`;
         if (data.error) throw new Error(data.error);
       } catch (e) {
         data = FALLBACK_GRADE;
-        demoBanner.hidden = false;
         liveGrade = false;
       }
+      demoBanner.hidden = liveGrade;
       renderFeedback(data);
       gradeBtn.disabled = false;
       gradeBtn.textContent = 'Submit for feedback →';
