@@ -216,6 +216,15 @@
 
   </main>
 
+  <!-- "thinking" loading HUD (draft + grade) -->
+  <div class="thinking" id="thinking" hidden aria-live="polite" aria-busy="true">
+    <div class="thinking__hud">
+      <div class="thinking__ring" aria-hidden="true"></div>
+      <div class="thinking__char" id="thinkingChar" aria-hidden="true"></div>
+    </div>
+    <p class="thinking__txt">Thinking<span class="thinking__dots"><i>.</i><i>.</i><i>.</i></span></p>
+  </div>
+
   <script src="auth.js"></script>
   <script src="admin.js"></script>
   <script src="characters.js"></script>
@@ -457,6 +466,7 @@ Riverstone Family Practice`,
       if (!currentPrompt) { draftStatus.textContent = 'Write a prompt first — the AI drafts from what you type.'; return; }
       genDraftBtn.disabled = true;
       genDraftBtn.textContent = 'Generating…';
+      showThinking();
       let liveDraft = true;
       try {
         const r = await fetch('/api/draft', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: currentPrompt }) });
@@ -468,6 +478,7 @@ Riverstone Family Practice`,
         liveDraft = false;
       }
       demoDraft = !liveDraft;
+      hideThinking();
       draftPanel.textContent = currentDraft;
       genDraftBtn.disabled = false;
       genDraftBtn.textContent = 'Generate draft →';
@@ -479,6 +490,7 @@ Riverstone Family Practice`,
       ygiAudioResume(); // unlock audio within the user gesture, before the async grade
       gradeBtn.disabled = true;
       gradeBtn.textContent = 'Grading…';
+      showThinking();
       let data, liveGrade = true;
       try {
         const r = await fetch('/api/grade', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ task: currentTask, prompt: currentPrompt, draft: currentDraft }) });
@@ -489,6 +501,7 @@ Riverstone Family Practice`,
         liveGrade = false;
       }
       demoGrade = !liveGrade;
+      hideThinking();
       renderFeedback(data);
       const total = (data.checks || []).length;
       const passed = (data.checks || []).filter(c => c.verdict === 'pass').length;
@@ -559,6 +572,15 @@ Riverstone Family Practice`,
     function cachedCharacter() {
       try { return (JSON.parse(localStorage.getItem('ygiProgress') || 'null') || {}).character || 'buddy'; } catch (_) { return 'buddy'; }
     }
+
+    // "Thinking…" loading HUD — the level buddy inside a spinning ring. Reused for draft + grade.
+    function showThinking() {
+      const el = document.getElementById('thinking'); if (!el) return;
+      const c = document.getElementById('thinkingChar');
+      if (c && window.buddySvg) c.innerHTML = window.buddySvg(cachedCharacter(), 56);
+      el.hidden = false;
+    }
+    function hideThinking() { const el = document.getElementById('thinking'); if (el) el.hidden = true; }
 
     // Post-grade points reveal (only for signed-in live grades, where /api/grade returns `gamify`).
     // allClear = every check passed → the "You Got It!" stamp + a brighter chime.
