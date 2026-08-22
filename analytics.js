@@ -15,3 +15,14 @@ document.addEventListener("click", function (e) {
   const el = e.target.closest("[data-event]");
   if (el) window.track(el.getAttribute("data-event"));
 });
+
+// Reminder click-through: deep-links in the daily/weekly emails carry ?src=daily
+// or ?src=weekly. Fire the goal on landing (email opens can't reach Plausible).
+(function () {
+  try {
+    const src = new URLSearchParams(window.location.search).get("src");
+    if (src === "daily" || src === "weekly") {
+      window.track("Reminder Clicked", { type: src });
+    }
+  } catch (_) { /* no-op */ }
+})();

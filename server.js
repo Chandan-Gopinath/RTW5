@@ -17,6 +17,8 @@ import authSignout from "./api/auth/signout.js";
 import adminConfig from "./api/admin/config.js";
 import adminUsers from "./api/admin/users.js";
 import progressHandler from "./api/progress.js";
+import cronDaily from "./api/cron/daily.js";
+import cronWeekly from "./api/cron/weekly.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -31,6 +33,8 @@ app.get("/api/admin/config", (req, res) => adminConfig(req, res));
 app.post("/api/admin/config", (req, res) => adminConfig(req, res));
 app.get("/api/admin/users", (req, res) => adminUsers(req, res));
 app.get("/api/progress", (req, res) => progressHandler(req, res));
+app.get("/api/cron/daily", (req, res) => cronDaily(req, res));
+app.get("/api/cron/weekly", (req, res) => cronWeekly(req, res));
 
 app.get("/api/models", (req, res) => {
   const models = Object.values(MODELS).map((m) => ({
