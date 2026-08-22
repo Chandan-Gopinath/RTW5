@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You Got It! — Your progress</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800;9..144,900&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Plausible analytics — proxied first-party via Vercel. Site: you-got-it.vercel.app -->
+  <script defer data-domain="you-got-it.vercel.app" data-api="/plausible/event" src="/js/script.js"></script>
+  <script defer src="analytics.js"></script>
+</head>
+<body>
+
+  <!-- top bar -->
+  <header class="topbar">
+    <a class="logo" href="dashboard.html" aria-label="You Got It! home (logo placeholder)">
+      <span class="logo__mark">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5 L10 18 L20 6" fill="none" stroke="#EFE84B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <span class="logo__word">You Got It!</span>
+    </a>
+    <nav class="topbar__nav">
+      <a href="dashboard.html">Your desk</a>
+      <a href="learn.html">Learn</a>
+      <a href="aiground.html">AIGround</a>
+      <a href="progress.html" class="active">Progress</a>
+    </nav>
+    <div class="topbar__user">
+      <button class="user-chip" id="userChip" aria-haspopup="true" aria-expanded="false" aria-controls="userMenu">
+        <span class="name">Welcome</span>
+        <span class="avatar"></span>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="user-menu" id="userMenu" role="menu">
+        <div class="user-menu__head">Signed in as <strong>you</strong></div>
+        <a class="user-menu__item" href="index.html" id="signOutBtn" role="menuitem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 17l5-5-5-5M21 12H9M12 19H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Sign out
+        </a>
+      </div>
+    </div>
+    <button class="topbar__menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false" aria-controls="mobileNav">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </header>
+
+  <!-- mobile dropdown menu -->
+  <nav class="mobile-nav" id="mobileNav" aria-label="Main">
+    <a href="dashboard.html">Your desk</a>
+    <a href="learn.html">Learn</a>
+    <a href="aiground.html">AIGround</a>
+    <a href="progress.html" class="active">Progress</a>
+  </nav>
+
+  <main class="page">
+    <div class="page-head">
+      <p class="eyebrow">Your progress</p>
+      <h1>How far you've come.</h1>
+      <p class="lead">Points for showing up and doing it well. Levels you grow into. A streak that forgives a missed day.</p>
+    </div>
+
+    <!-- summary -->
+    <section class="gamify" id="gamify" aria-label="Your level">
+      <div class="gamify__level" style="cursor:default">
+        <span class="gamify__char" id="gxChar"></span>
+        <span class="gamify__meta">
+          <span class="k">Level <b id="gxLevel">1</b></span>
+          <span class="gamify__name" id="gxName">Getting Going</span>
+          <span class="gamify__pts"><b id="gxPoints">20</b> pts <i id="gxNext"></i></span>
+          <span class="gamify__bar"><i id="gxBar" style="width:0%"></i></span>
+        </span>
+      </div>
+      <div class="gamify__streak" id="gxStreak"></div>
+    </section>
+
+    <!-- level ladder -->
+    <p class="section-label">The level ladder</p>
+    <section class="ladder" id="ladder" aria-label="Levels"></section>
+
+    <!-- how points work -->
+    <p class="section-label">How points work</p>
+    <div class="rules">
+      <div class="rule"><span>🎉 Welcome aboard</span><b>+20</b></div>
+      <div class="rule"><span>☀️ Show up (first task each day)</span><b>+10</b></div>
+      <div class="rule"><span>✅ Each green check</span><b>+5</b></div>
+      <div class="rule"><span>⭐ All checks clear (bonus)</span><b>+10</b></div>
+      <p class="rules__note">Check &amp; bonus points count once per task per day — from your first go. Retrying to improve is always encouraged; a miss is never punished, and you keep every point forever.</p>
+    </div>
+
+    <!-- daily history -->
+    <p class="section-label">Your days</p>
+    <section class="history" id="history" aria-label="Points by day"></section>
+  </main>
+
+  <script src="auth.js"></script>
+  <script src="admin.js"></script>
+  <script src="characters.js"></script>
+  <script>
+    ygiRequireProfile();
+
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileNav = document.getElementById('mobileNav');
+    menuBtn.addEventListener('click', () => {
+      const open = mobileNav.classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', open);
+    });
+
+    // account menu (sign out)
+    const userChip = document.getElementById('userChip');
+    const userMenu = document.getElementById('userMenu');
+    userChip.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const open = userMenu.classList.toggle('open');
+      userChip.setAttribute('aria-expanded', open);
+    });
+    document.addEventListener('click', (e) => {
+      if (!userMenu.contains(e.target) && !userChip.contains(e.target)) {
+        userMenu.classList.remove('open');
+        userChip.setAttribute('aria-expanded', 'false');
+      }
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { userMenu.classList.remove('open'); userChip.setAttribute('aria-expanded', 'false'); }
+    });
+
+    // ladder — mirror the server LEVELS (kept in sync with lib/gamification.js)
+    const LADDER = [
+      { level: 1, name: "Getting Going", min: 0, feature: "buddy" },
+      { level: 2, name: "Finding Your Feet", min: 40, feature: "antenna" },
+      { level: 3, name: "In the Flow", min: 90, feature: "headband" },
+      { level: 4, name: "Sharp Eye", min: 160, feature: "glasses" },
+      { level: 5, name: "Safe Hands", min: 250, feature: "mittens" },
+      { level: 6, name: "Quietly Confident", min: 360, feature: "crown" },
+    ];
+    function renderLadder(current) {
+      document.getElementById("ladder").innerHTML = LADDER.map((l) => {
+        const on = current >= l.level;
+        return `<div class="rung ${on ? "on" : "lock"}">
+          <div class="rung__ch">${window.buddySvg(l.feature, 60)}</div>
+          <div class="rung__name">${l.name}</div>
+          <div class="rung__req">${l.min} pts</div>
+          <span class="rung__badge">${on ? "Unlocked" : "Locked"}</span>
+        </div>`;
+      }).join("");
+    }
+    function renderHistory(days) {
+      const el = document.getElementById("history");
+      if (!days.length) { el.innerHTML = `<p class="history__empty">No graded tasks yet — your first one lands here.</p>`; return; }
+      el.innerHTML = days.map((d) =>
+        `<div class="histrow"><span class="histrow__date">${d.date}</span>
+          <span class="histrow__meta">${d.tasksDone} task${d.tasksDone === 1 ? "" : "s"} · ${d.checksPassed} check${d.checksPassed === 1 ? "" : "s"}${d.passedAll ? " · all clear ⭐" : ""}</span>
+          <span class="histrow__pts">+${d.points}</span></div>`
+      ).join("");
+    }
+
+    // gamification summary + ladder + history
+    (async function () {
+      let p;
+      try {
+        const r = await fetch("/api/progress");
+        if (!r.ok) return; // not signed in / error
+        ({ progress: p } = await r.json());
+      } catch (_) { return; }
+
+      const $ = (id) => document.getElementById(id);
+      $("gxChar").innerHTML = window.buddySvg(p.character, 72);
+      $("gxLevel").textContent = p.level;
+      $("gxName").textContent = p.levelName;
+      $("gxPoints").textContent = p.points;
+      $("gxNext").textContent = p.nextLevelAt ? `· ${p.pointsToNext} to Level ${p.level + 1}` : "· top level 🎉";
+      const pct = p.nextLevelAt ? Math.round((p.pointsIntoLevel / (p.pointsIntoLevel + p.pointsToNext)) * 100) : 100;
+      $("gxBar").style.width = pct + "%";
+
+      if (p.streakUnlocked) {
+        $("gxStreak").innerHTML =
+          `<div class="streakcard"><div class="streakcard__n">🔥 ${p.streak}-day streak</div>` +
+          `<div class="streakcard__sub">One missed day is always forgiven.</div></div>`;
+      } else {
+        const left = p.daysToUnlock;
+        $("gxStreak").innerHTML =
+          `<div class="streakcard streakcard--locked"><div class="streakcard__n">Streaks unlock soon</div>` +
+          `<div class="streakcard__sub">Show up ${left} more day${left === 1 ? "" : "s"} to light your streak — with a free skip so a missed day never breaks it.</div></div>`;
+      }
+
+      renderLadder(p.level);
+      renderHistory(p.dailyHistory);
+
+      if (window.track) window.track("Progress Viewed");
+    })();
+  </script>
+
+</body>
+</html>
