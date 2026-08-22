@@ -23,6 +23,10 @@ The API key is read **only** from the environment on the server; it is never sen
 
 `index.html` (sign in) → `dashboard.html` (Your desk) → `learn.html` (3 judgment lessons) → `aiground.html` (skill-path hub → 5-step graded loop: Brief → Prompt → Draft → Feedback → Reveal) → back to Your desk.
 
+## Gamification
+
+Learner progress is gamified with points, levels, and streak tracking, all computed from the `attempts` table. The **Progress page** (`progress.html`) displays the user's current level, points, streak status (with a 3-day unlock grace window), and buddy-character milestone art. Points are awarded for task completion and graded submissions; the six levels unlock progressively as users accumulate points. The progress state is fetched via `GET /api/progress` and reflected in the analytics event stream.
+
 ## Architecture
 
 - **`server.js`** — Express server. Serves the static pages and exposes two endpoints:
