@@ -61,6 +61,25 @@
       <p class="lead">One task a day, on the work already on your desk. Learn it, then prove it in AIGround.</p>
     </div>
 
+    <a class="gamify-new" id="gamifyNew" href="progress.html" hidden data-event="Progress Viewed">
+      ✨ New — You Got It now has levels &amp; points. See how it works →
+      <button class="gamify-new__x" id="gamifyNewX" aria-label="Dismiss" title="Dismiss">×</button>
+    </a>
+
+    <!-- GAMIFICATION PANEL -->
+    <section class="gamify" id="gamify" hidden aria-label="Your progress">
+      <a class="gamify__level" href="progress.html">
+        <span class="gamify__char" id="gxChar"></span>
+        <span class="gamify__meta">
+          <span class="k">Level <b id="gxLevel">1</b></span>
+          <span class="gamify__name" id="gxName">Getting Going</span>
+          <span class="gamify__pts"><b id="gxPoints">20</b> pts <i id="gxNext"></i></span>
+          <span class="gamify__bar"><i id="gxBar" style="width:0%"></i></span>
+        </span>
+      </a>
+      <div class="gamify__streak" id="gxStreak"></div>
+    </section>
+
     <!-- TODAY'S FOCUS -->
     <p class="section-label">Today's focus</p>
     <a class="today-hero" href="learn.html?task=recall" data-event="Learn Started">
@@ -127,8 +146,63 @@
 
   <script src="auth.js"></script>
   <script src="admin.js"></script>
+  <script src="characters.js"></script>
   <script>
     ygiRequireProfile();
+
+    // gamification panel
+    (async function () {
+      let p;
+      try {
+        const r = await fetch("/api/progress");
+        if (!r.ok) return; // not signed in / error — leave panel hidden
+        ({ progress: p } = await r.json());
+      } catch (_) { return; }
+
+      const $ = (id) => document.getElementById(id);
+      $("gxChar").innerHTML = window.buddySvg(p.character, 72);
+      $("gxLevel").textContent = p.level;
+      $("gxName").textContent = p.levelName;
+      $("gxPoints").textContent = p.points;
+      $("gxNext").textContent = p.nextLevelAt ? `· ${p.pointsToNext} to Level ${p.level + 1}` : "· top level 🎉";
+      const pct = p.nextLevelAt ? Math.round((p.pointsIntoLevel / (p.pointsIntoLevel + p.pointsToNext)) * 100) : 100;
+      $("gxBar").style.width = pct + "%";
+
+      // streak card
+      if (p.streakUnlocked) {
+        $("gxStreak").innerHTML =
+          `<div class="streakcard"><div class="streakcard__n">🔥 ${p.streak}-day streak</div>` +
+          `<div class="streakcard__sub">One missed day is always forgiven.</div></div>`;
+      } else {
+        const left = p.daysToUnlock;
+        $("gxStreak").innerHTML =
+          `<div class="streakcard streakcard--locked"><div class="streakcard__n">Streaks unlock soon</div>` +
+          `<div class="streakcard__sub">Show up ${left} more day${left === 1 ? "" : "s"} to light your streak — with a free skip so a missed day never breaks it.</div></div>`;
+      }
+
+      $("gamify").hidden = false;
+
+      // analytics: Level Up / Streak Unlocked vs last seen (localStorage)
+      try {
+        const prevLvl = Number(localStorage.getItem("ygiLevel") || "0");
+        if (p.level > prevLvl && prevLvl > 0 && window.track) window.track("Level Up", { level: p.level });
+        localStorage.setItem("ygiLevel", String(p.level));
+        const prevUnlocked = localStorage.getItem("ygiStreakUnlocked") === "1";
+        if (p.streakUnlocked && !prevUnlocked && window.track) window.track("Streak Unlocked");
+        localStorage.setItem("ygiStreakUnlocked", p.streakUnlocked ? "1" : "0");
+      } catch (_) {}
+
+      // first-time strip (once)
+      if (!localStorage.getItem("ygiGamifySeen")) {
+        const strip = document.getElementById("gamifyNew");
+        strip.hidden = false;
+        document.getElementById("gamifyNewX").addEventListener("click", (e) => {
+          e.preventDefault(); e.stopPropagation();
+          strip.hidden = true;
+          try { localStorage.setItem("ygiGamifySeen", "1"); } catch (_) {}
+        });
+      }
+    })();
 
     const menuBtn = document.getElementById('menuBtn');
     const mobileNav = document.getElementById('mobileNav');

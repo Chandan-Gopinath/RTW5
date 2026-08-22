@@ -432,3 +432,23 @@ button{font-family:inherit}
   .auth__form{padding:var(--s6) var(--s5) var(--s7)}
   .card{max-width:440px}
 }
+
+/* ---- gamification panel (Your Desk) ---- */
+.gamify{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin:8px 0 26px}
+@media(max-width:680px){.gamify{grid-template-columns:1fr}}
+.gamify__level{display:flex;gap:16px;align-items:center;background:#fff;border:1px solid var(--line,#e5e5df);border-radius:14px;padding:18px;text-decoration:none;color:inherit}
+.gamify__char{flex:0 0 auto;width:80px;height:80px;border-radius:16px;background:var(--bone,#FCFCFA);border:1px solid var(--line,#e5e5df);display:flex;align-items:center;justify-content:center}
+.gamify__meta{display:flex;flex-direction:column;gap:2px}
+.gamify__meta .k{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted,#5b5b63);font-weight:700}
+.gamify__name{font-family:'Fraunces',serif;font-weight:600;font-size:20px}
+.gamify__pts{font-size:14px}.gamify__pts i{color:var(--muted,#5b5b63);font-style:normal}
+.gamify__bar{height:8px;background:#EDEDE9;border-radius:99px;overflow:hidden;margin-top:6px;max-width:260px}
+.gamify__bar>i{display:block;height:100%;background:var(--ink,#18181C);border-radius:99px}
+.gamify__streak{display:flex;align-items:center}
+.streakcard{background:#fff;border:1px solid var(--line,#e5e5df);border-radius:14px;padding:18px;width:100%}
+.streakcard--locked{opacity:.9}
+.streakcard__n{font-weight:700;margin-bottom:4px}
+.streakcard__sub{font-size:13px;color:var(--muted,#5b5b63)}
+/* first-time strip */
+.gamify-new{display:flex;align-items:center;gap:10px;justify-content:center;background:var(--yellow,#EFE84B);color:var(--ink,#18181C);border-radius:11px;padding:10px 14px;margin:0 0 14px;text-decoration:none;font-weight:600;font-size:14px}
+.gamify-new__x{margin-left:6px;background:transparent;border:none;font-size:18px;line-height:1;cursor:pointer;color:inherit}
