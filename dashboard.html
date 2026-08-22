@@ -41,6 +41,10 @@
       </button>
       <div class="user-menu" id="userMenu" role="menu">
         <div class="user-menu__head">Signed in as <strong>you</strong></div>
+        <button class="user-menu__item" id="tourReplay" type="button" role="menuitem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2" stroke-linecap="round"/></svg>
+          Replay tour
+        </button>
         <a class="user-menu__item" href="index.html" id="signOutBtn" role="menuitem">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 17l5-5-5-5M21 12H9M12 19H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h7" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Sign out
@@ -158,6 +162,20 @@
     </div>
   </main>
 
+  <!-- onboarding tour (Desk spotlight) -->
+  <div class="tour" id="tour" hidden>
+    <div class="tour__spot" id="tourSpot"></div>
+    <div class="tour__tip" id="tourTip">
+      <div class="tour__step" id="tourStep"></div>
+      <h4 class="tour__title" id="tourTitle"></h4>
+      <p class="tour__body" id="tourBody"></p>
+      <div class="tour__row">
+        <span class="tour__dots" id="tourDots"></span>
+        <span><button class="tour__skip" id="tourSkip" type="button">Skip</button> <button class="btn btn--primary btn--sm" id="tourNext" type="button">Next &rarr;</button></span>
+      </div>
+    </div>
+  </div>
+
   <script src="auth.js"></script>
   <script src="admin.js"></script>
   <script src="characters.js"></script>
@@ -242,6 +260,64 @@
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') { userMenu.classList.remove('open'); userChip.setAttribute('aria-expanded', 'false'); }
     });
+
+    // ---- onboarding tour (Desk spotlight) ----
+    const TOUR = [
+      { sel: '#gamify', title: 'Your progress lives here', body: 'Your level, points, and what unlocks next — all in one place.' },
+      { sel: '#navGamify', title: 'Level & points, up top', body: 'Your level and points stay visible in the nav bar, on every page.' },
+      { sel: '.today-hero', title: "Today's task", body: 'Your one task for today — learn it, then prove it in AIGround to earn points.' },
+      { sel: '#gxStreak', title: 'Build a streak', body: 'Show up daily to grow a streak — and a missed day is always forgiven.' },
+    ];
+    let tourI = 0, tourAutoTried = false;
+    function tourAt(i) {
+      tourI = i;
+      const el = document.querySelector(TOUR[i].sel);
+      const r0 = el && el.getBoundingClientRect();
+      if (!el || !r0 || r0.width === 0 || r0.height === 0) { return tourStep(i + 1); } // skip hidden targets
+      el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      setTimeout(() => {
+        const r = el.getBoundingClientRect(), pad = 8;
+        const spot = document.getElementById('tourSpot');
+        spot.style.left = (r.left - pad) + 'px'; spot.style.top = (r.top - pad) + 'px';
+        spot.style.width = (r.width + pad * 2) + 'px'; spot.style.height = (r.height + pad * 2) + 'px';
+        document.getElementById('tourStep').textContent = `Step ${i + 1} of ${TOUR.length}`;
+        document.getElementById('tourTitle').textContent = TOUR[i].title;
+        document.getElementById('tourBody').textContent = TOUR[i].body;
+        document.getElementById('tourDots').innerHTML = TOUR.map((_, k) => `<i class="${k === i ? 'on' : ''}"></i>`).join('');
+        document.getElementById('tourNext').innerHTML = i === TOUR.length - 1 ? 'Done' : 'Next &rarr;';
+        const tip = document.getElementById('tourTip');
+        tip.style.visibility = 'hidden'; tip.style.left = '0px'; tip.style.top = '0px';
+        requestAnimationFrame(() => {
+          const th = tip.offsetHeight, tw = tip.offsetWidth;
+          let top = r.bottom + 12, left = r.left;
+          if (top + th > window.innerHeight - 8) top = Math.max(8, r.top - th - 12);
+          if (left + tw > window.innerWidth - 8) left = window.innerWidth - tw - 8;
+          if (left < 8) left = 8;
+          tip.style.left = left + 'px'; tip.style.top = top + 'px'; tip.style.visibility = 'visible';
+        });
+      }, 240);
+    }
+    function tourStep(i) { if (i >= TOUR.length) endTour(true); else tourAt(i); }
+    function endTour(done) {
+      document.getElementById('tour').hidden = true;
+      try { localStorage.setItem('ygiTourDone', '1'); } catch (_) {}
+      if (window.track) window.track(done ? 'Tour Completed' : 'Tour Skipped');
+    }
+    function startTour() {
+      document.getElementById('tour').hidden = false;
+      if (window.track) window.track('Tour Started');
+      tourAt(0);
+    }
+    document.getElementById('tourNext').addEventListener('click', () => tourStep(tourI + 1));
+    document.getElementById('tourSkip').addEventListener('click', () => endTour(false));
+    window.addEventListener('resize', () => { if (!document.getElementById('tour').hidden) tourAt(tourI); });
+    const tourReplay = document.getElementById('tourReplay');
+    if (tourReplay) tourReplay.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); userMenu.classList.remove('open'); startTour(); });
+    function maybeAutoTour() { if (tourAutoTried) return; tourAutoTried = true; if (!localStorage.getItem('ygiTourDone')) startTour(); }
+    if (!localStorage.getItem('ygiTourDone')) {
+      if (window.ygiOnProgress) window.ygiOnProgress(() => setTimeout(maybeAutoTour, 500));
+      else setTimeout(maybeAutoTour, 900);
+    }
   </script>
 
 </body>

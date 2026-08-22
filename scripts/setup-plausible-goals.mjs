@@ -33,6 +33,10 @@ const EVENTS = [
   "Level Up",
   "Streak Unlocked",
   "Points Earned",
+  "Sound Toggled",
+  "Tour Started",
+  "Tour Completed",
+  "Tour Skipped",
 ];
 
 const key = process.env.PLAUSIBLE_API_KEY;
