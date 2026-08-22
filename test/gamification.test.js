@@ -33,13 +33,13 @@ import { computeState } from "../lib/gamification.js";
 
 const A = (createdAt, taskId, checksPassed, passed) => ({ createdAt, taskId, checksPassed, passed });
 
-test("empty attempts → welcome-only state", () => {
+test("brand-new user (no attempts) sits at 0 — welcome bonus not yet earned", () => {
   const s = computeState([], new Date("2026-08-22T02:00:00Z"));
-  assert.equal(s.points, 20);
+  assert.equal(s.points, 0); // welcome +20 lands only after the first graded task
   assert.equal(s.level, 1);
   assert.equal(s.levelName, "Getting Going");
   assert.equal(s.character, "buddy");
-  assert.equal(s.nextLevelAt, 40); // brief said 60 (typo); LEVELS L2 minPoints=40 per Task 1, matches reference impl (next.minPoints)
+  assert.equal(s.nextLevelAt, 40);
   assert.equal(s.streakUnlocked, false);
   assert.equal(s.daysToUnlock, 3);
   assert.deepEqual(s.dailyHistory, []);
@@ -56,17 +56,27 @@ test("one all-pass task: welcome + showup + 4 checks + bonus", () => {
   assert.equal(s.dailyHistory[0].points, 40); // 10 + 20 + 10 (welcome not in day)
 });
 
-test("once-per-task-per-day: same-day retry does not re-pay", () => {
-  // first submission 2/4 (fail), retry same day 4/4 (pass) — only the FIRST counts
+test("best-of-day: improving a same-day retry counts", () => {
+  // first 2/4 (fail), retry same day 4/4 (pass) — the BEST submission is scored
   const day = [
     A("2026-08-20T03:00:00Z", "recall", 2, false),
     A("2026-08-20T05:00:00Z", "recall", 4, true),
   ];
   const s = computeState(day);
-  // day points = showup 10 + first submission 2*5 + no bonus = 20; +welcome 20 = 40
-  assert.equal(s.points, 40);
-  assert.equal(s.dailyHistory[0].points, 20);
+  // day = showup 10 + best(4*5 + bonus 10) = 40; + welcome 20 = 60
+  assert.equal(s.points, 60);
+  assert.equal(s.dailyHistory[0].points, 40);
+  assert.equal(s.dailyHistory[0].checksPassed, 4);
   assert.equal(s.dailyHistory[0].tasksDone, 1);
+});
+
+test("best-of-day: a worse retry doesn't reduce the day's points", () => {
+  const day = [
+    A("2026-08-20T03:00:00Z", "recall", 4, true),  // best
+    A("2026-08-20T05:00:00Z", "recall", 1, false), // worse retry
+  ];
+  const s = computeState(day);
+  assert.equal(s.dailyHistory[0].points, 40); // keeps the best: 10 + 30
 });
 
 test("show-up counts once per day across two tasks", () => {
@@ -94,13 +104,22 @@ test("dailyHistory is newest-first across days", () => {
 // append to test/gamification.test.js
 import { currentStreak, deltaForAttempt } from "../lib/gamification.js";
 
-test("deltaForAttempt: first task of the day, all-pass → +40, levels up", () => {
+test("deltaForAttempt: very first task bundles the welcome bonus → +60, levels up", () => {
   const now = new Date("2026-08-22T04:00:00Z");
   const d = deltaForAttempt([], { taskId: "recall", checksPassed: 4, passed: true }, now);
-  assert.equal(d.pointsEarned, 40); // showup 10 + 4*5 + bonus 10
-  assert.equal(d.totalPoints, 60);  // + welcome 20
+  // welcome 20 (lands now) + showup 10 + 4*5 + bonus 10 = 60
+  assert.equal(d.pointsEarned, 60);
+  assert.equal(d.totalPoints, 60);
   assert.equal(d.level, 2);
   assert.equal(d.leveledUp, true);
+});
+
+test("deltaForAttempt: improving a same-day retry pays the delta", () => {
+  const now = new Date("2026-08-22T06:00:00Z");
+  const prior = [{ taskId: "recall", checksPassed: 2, passed: false, createdAt: "2026-08-22T04:00:00Z" }];
+  const d = deltaForAttempt(prior, { taskId: "recall", checksPassed: 4, passed: true }, now);
+  // before: welcome20 + showup10 + 2*5 = 40; after: welcome20 + showup10 + (20+10) = 60 → +20
+  assert.equal(d.pointsEarned, 20);
 });
 
 test("deltaForAttempt: same task again same day → +0 (once per task per day)", () => {
@@ -111,10 +130,10 @@ test("deltaForAttempt: same task again same day → +0 (once per task per day)",
   assert.equal(d.leveledUp, false);
 });
 
-test("deltaForAttempt: partial checks, no bonus → showup + per-check only", () => {
+test("deltaForAttempt: first partial task → welcome + showup + per-check, no bonus", () => {
   const now = new Date("2026-08-22T04:00:00Z");
   const d = deltaForAttempt([], { taskId: "complaint", checksPassed: 2, passed: false }, now);
-  assert.equal(d.pointsEarned, 20); // showup 10 + 2*5
+  assert.equal(d.pointsEarned, 40); // welcome 20 + showup 10 + 2*5
 });
 
 // helper: N consecutive AEST day attempts ending on `endKey`

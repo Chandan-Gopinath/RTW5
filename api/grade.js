@@ -30,6 +30,8 @@ export default async function handler(req, res) {
         const passed = total > 0 && checksPassed === total;
         const prior = await db().select().from(attempts).where(eq(attempts.userId, user.id));
         gamify = deltaForAttempt(prior, { taskId: task, checksPassed, passed });
+        gamify.firstEver = prior.length === 0; // first graded task ever → welcome framing
+
         await recordAttempt(user.id, { taskId: task, model, prompt, draft, checks: data.checks });
       }
     } catch (e) {

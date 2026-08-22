@@ -31,7 +31,7 @@
     </nav>
     <a class="nav-gamify" id="navGamify" href="progress.html" hidden title="Your progress">
       <span class="nav-gamify__char" id="navGamifyChar"></span>
-      <span class="nav-gamify__txt">Lv <b id="navGamifyLevel">1</b> · <b id="navGamifyPts">0</b> pts</span>
+      <span class="nav-gamify__txt">Level <b id="navGamifyLevel">1</b> · <b id="navGamifyPts">0</b> pts</span>
     </a>
     <div class="topbar__user">
       <button class="user-chip" id="userChip" aria-haspopup="true" aria-expanded="false" aria-controls="userMenu">
@@ -60,31 +60,38 @@
     <a href="progress.html">Progress</a>
   </nav>
 
-  <main class="page">
-    <div class="page-head">
-      <p class="eyebrow">Your desk</p>
-      <h1>Good to see you, <span class="hl" data-profile-name></span>.</h1>
-      <p class="lead">One task a day, on the work already on your desk. Learn it, then prove it in AIGround.</p>
-    </div>
+  <main class="page desk-layout">
+    <!-- LEFT RAIL: progress -->
+    <aside class="desk-rail">
+      <section class="gamify gamify--rail" id="gamify" hidden aria-label="Your progress">
+        <a class="gamify__level" href="progress.html" data-event="Progress Viewed">
+          <span class="gamify__char" id="gxChar"></span>
+          <span class="gamify__meta">
+            <span class="k">Level <b id="gxLevel">1</b></span>
+            <span class="gamify__name" id="gxName">Getting Going</span>
+            <span class="gamify__pts"><b id="gxPoints">0</b> pts <i id="gxNext"></i></span>
+            <span class="gamify__bar"><i id="gxBar" style="width:0%"></i></span>
+            <span class="gamify__nextup" id="gxNextUp" hidden></span>
+            <span class="gamify__today"><span>Today</span><b id="gxToday">+0 pts</b></span>
+            <span class="gamify__view">View progress →</span>
+          </span>
+        </a>
+        <div class="gamify__streak" id="gxStreak"></div>
+      </section>
+    </aside>
 
-    <a class="gamify-new" id="gamifyNew" href="progress.html" hidden data-event="Progress Viewed">
-      ✨ New — You Got It now has levels &amp; points. See how it works →
-      <button class="gamify-new__x" id="gamifyNewX" aria-label="Dismiss" title="Dismiss">×</button>
-    </a>
+    <!-- MAIN COLUMN -->
+    <div class="desk-main">
+      <div class="page-head">
+        <p class="eyebrow">Your desk</p>
+        <h1>Good to see you, <span class="hl" data-profile-name></span>.</h1>
+        <p class="lead">One task a day, on the work already on your desk. Learn it, then prove it in AIGround.</p>
+      </div>
 
-    <!-- GAMIFICATION PANEL -->
-    <section class="gamify" id="gamify" hidden aria-label="Your progress">
-      <a class="gamify__level" href="progress.html">
-        <span class="gamify__char" id="gxChar"></span>
-        <span class="gamify__meta">
-          <span class="k">Level <b id="gxLevel">1</b></span>
-          <span class="gamify__name" id="gxName">Getting Going</span>
-          <span class="gamify__pts"><b id="gxPoints">20</b> pts <i id="gxNext"></i></span>
-          <span class="gamify__bar"><i id="gxBar" style="width:0%"></i></span>
-        </span>
+      <a class="gamify-new" id="gamifyNew" href="progress.html" hidden data-event="Progress Viewed">
+        ✨ New — You Got It now has levels &amp; points. See how it works →
+        <button class="gamify-new__x" id="gamifyNewX" aria-label="Dismiss" title="Dismiss">×</button>
       </a>
-      <div class="gamify__streak" id="gxStreak"></div>
-    </section>
 
     <!-- TODAY'S FOCUS -->
     <p class="section-label">Today's focus</p>
@@ -148,24 +155,19 @@
       </div>
 
     </section>
+    </div>
   </main>
 
   <script src="auth.js"></script>
   <script src="admin.js"></script>
   <script src="characters.js"></script>
+  <script src="progress-cache.js"></script>
   <script src="gamify-nav.js"></script>
   <script>
     ygiRequireProfile();
 
-    // gamification panel
-    (async function () {
-      let p;
-      try {
-        const r = await fetch("/api/progress");
-        if (!r.ok) return; // not signed in / error — leave panel hidden
-        ({ progress: p } = await r.json());
-      } catch (_) { return; }
-
+    // gamification panel — cache-first via ygiOnProgress (instant from cache, then fresh)
+    function renderGamify(p, isStale) {
       const $ = (id) => document.getElementById(id);
       $("gxChar").innerHTML = window.buddySvg(p.character, 72);
       $("gxLevel").textContent = p.level;
@@ -175,7 +177,12 @@
       const pct = p.nextLevelAt ? Math.round((p.pointsIntoLevel / (p.pointsIntoLevel + p.pointsToNext)) * 100) : 100;
       $("gxBar").style.width = pct + "%";
 
-      // streak card
+      const nu = $("gxNextUp");
+      if (p.points === 0) { nu.textContent = "🎉 Finish your first task for a +20 welcome bonus"; nu.hidden = false; }
+      else if (p.nextLevel && p.nextCharacter) { nu.textContent = `Next unlock: + ${p.nextCharacter} at Level ${p.nextLevel}`; nu.hidden = false; }
+      else { nu.hidden = true; }
+      $("gxToday").textContent = "+" + (p.todayPoints || 0) + " pts";
+
       if (p.streakUnlocked) {
         $("gxStreak").innerHTML =
           `<div class="streakcard"><div class="streakcard__n">${p.streak > 0 ? "🔥 " + p.streak + "-day streak" : "Streak resting — do a task to relight it"}</div>` +
@@ -188,8 +195,8 @@
       }
 
       $("gamify").hidden = false;
+      if (isStale) return; // analytics + first-time strip only on fresh data
 
-      // analytics: Level Up / Streak Unlocked vs last seen (localStorage)
       try {
         const prevLvl = Number(localStorage.getItem("ygiLevel") || "0");
         if (p.level > prevLvl && prevLvl > 0 && window.track) window.track("Level Up", { level: p.level });
@@ -199,7 +206,6 @@
         localStorage.setItem("ygiStreakUnlocked", p.streakUnlocked ? "1" : "0");
       } catch (_) {}
 
-      // first-time strip (once)
       if (!localStorage.getItem("ygiGamifySeen")) {
         const strip = document.getElementById("gamifyNew");
         strip.hidden = false;
@@ -209,7 +215,8 @@
           try { localStorage.setItem("ygiGamifySeen", "1"); } catch (_) {}
         });
       }
-    })();
+    }
+    if (window.ygiOnProgress) window.ygiOnProgress(renderGamify);
 
     const menuBtn = document.getElementById('menuBtn');
     const mobileNav = document.getElementById('mobileNav');

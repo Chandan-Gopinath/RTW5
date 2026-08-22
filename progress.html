@@ -31,7 +31,7 @@
     </nav>
     <a class="nav-gamify" id="navGamify" href="progress.html" hidden title="Your progress">
       <span class="nav-gamify__char" id="navGamifyChar"></span>
-      <span class="nav-gamify__txt">Lv <b id="navGamifyLevel">1</b> · <b id="navGamifyPts">0</b> pts</span>
+      <span class="nav-gamify__txt">Level <b id="navGamifyLevel">1</b> · <b id="navGamifyPts">0</b> pts</span>
     </a>
     <div class="topbar__user">
       <button class="user-chip" id="userChip" aria-haspopup="true" aria-expanded="false" aria-controls="userMenu">
@@ -103,6 +103,7 @@
   <script src="auth.js"></script>
   <script src="admin.js"></script>
   <script src="characters.js"></script>
+  <script src="progress-cache.js"></script>
   <script src="gamify-nav.js"></script>
   <script>
     ygiRequireProfile();
@@ -162,15 +163,9 @@
       ).join("");
     }
 
-    // gamification summary + ladder + history
-    (async function () {
-      let p;
-      try {
-        const r = await fetch("/api/progress");
-        if (!r.ok) return; // not signed in / error
-        ({ progress: p } = await r.json());
-      } catch (_) { return; }
-
+    // gamification summary + ladder + history — cache-first via ygiOnProgress
+    let progressTracked = false;
+    function renderProgress(p, isStale) {
       const $ = (id) => document.getElementById(id);
       $("gxChar").innerHTML = window.buddySvg(p.character, 72);
       $("gxLevel").textContent = p.level;
@@ -194,8 +189,9 @@
       renderLadder(p.level);
       renderHistory(p.dailyHistory);
 
-      if (window.track) window.track("Progress Viewed");
-    })();
+      if (!isStale && !progressTracked) { progressTracked = true; if (window.track) window.track("Progress Viewed"); }
+    }
+    if (window.ygiOnProgress) window.ygiOnProgress(renderProgress);
   </script>
 
 </body>

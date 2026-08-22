@@ -31,7 +31,7 @@
     </nav>
     <a class="nav-gamify" id="navGamify" href="progress.html" hidden title="Your progress">
       <span class="nav-gamify__char" id="navGamifyChar"></span>
-      <span class="nav-gamify__txt">Lv <b id="navGamifyLevel">1</b> · <b id="navGamifyPts">0</b> pts</span>
+      <span class="nav-gamify__txt">Level <b id="navGamifyLevel">1</b> · <b id="navGamifyPts">0</b> pts</span>
     </a>
     <div class="topbar__user">
       <button class="user-chip" id="userChip" aria-haspopup="true" aria-expanded="false" aria-controls="userMenu">
@@ -206,6 +206,7 @@
   <script src="auth.js"></script>
   <script src="admin.js"></script>
   <script src="characters.js"></script>
+  <script src="progress-cache.js"></script>
   <script src="gamify-nav.js"></script>
   <script>
     ygiRequireProfile();
@@ -506,22 +507,35 @@ Riverstone Family Practice`,
     function showReveal(g) {
       const el = document.getElementById('fbReveal');
       if (!el) return;
-      if (!g || !g.pointsEarned) { el.hidden = true; return; }
+      if (!g) { el.hidden = true; return; } // demo / not signed in
       const ptsEl = document.getElementById('fbRevealPts');
+      const lblEl = el.querySelector('.fb-reveal__lbl');
       const lvlEl = document.getElementById('fbRevealLvl');
-      lvlEl.textContent = g.leveledUp ? `Level up — you're now ${g.levelName}!` : '';
-      lvlEl.hidden = !g.leveledUp;
-      el.hidden = false;
-      const target = g.pointsEarned;
-      const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (reduce) {
-        ptsEl.textContent = '+' + target;
+      el.classList.remove('fb-reveal--none');
+
+      if (g.pointsEarned > 0) {
+        ptsEl.hidden = false;
+        lblEl.innerHTML = g.firstEver ? '🎉 Welcome aboard!' : 'points earned';
+        if (g.leveledUp) { lvlEl.textContent = `Level up — you're now ${g.levelName}!`; lvlEl.hidden = false; }
+        else if (g.firstEver) { lvlEl.textContent = "Your first points — you're on the board."; lvlEl.hidden = false; }
+        else { lvlEl.hidden = true; }
+        const target = g.pointsEarned;
+        const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduce) { ptsEl.textContent = '+' + target; }
+        else {
+          let n = 0; const step = Math.max(1, Math.round(target / 20));
+          ptsEl.textContent = '+0';
+          const timer = setInterval(() => { n = Math.min(target, n + step); ptsEl.textContent = '+' + n; if (n >= target) clearInterval(timer); }, 30);
+        }
       } else {
-        let n = 0; const step = Math.max(1, Math.round(target / 20));
-        ptsEl.textContent = '+0';
-        const timer = setInterval(() => { n = Math.min(target, n + step); ptsEl.textContent = '+' + n; if (n >= target) clearInterval(timer); }, 30);
+        // best-of-day: no improvement over what's already banked today for this task
+        el.classList.add('fb-reveal--none');
+        ptsEl.hidden = true;
+        lvlEl.hidden = true;
+        lblEl.innerHTML = "Already earned today ✓<span class='fb-reveal__sub'>Come back tomorrow, or beat your best, to earn more.</span>";
       }
-      window.track && window.track('Points Earned', { points: target, task: currentTask, leveled_up: !!g.leveledUp });
+      el.hidden = false;
+      window.track && window.track('Points Earned', { points: g.pointsEarned, task: currentTask, leveled_up: !!g.leveledUp, first: !!g.firstEver });
     }
 
     // entry: ?task=<id> jumps straight into that task's loop; otherwise show the hub
