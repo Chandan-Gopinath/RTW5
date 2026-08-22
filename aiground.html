@@ -78,6 +78,18 @@
           <span class="btn btn--primary btn--sm">Start &rarr;</span>
         </a>
 
+        <a class="path__node" href="#" data-start-task="plain-english">
+          <span class="path__badge avail"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5 L19 12 L8 19 Z" fill="#EFE84B"/></svg></span>
+          <div class="path__meta"><span class="path__cat">Patient correspondence · Starter</span><span class="path__ttl">Say it in plain English</span></div>
+          <span class="btn btn--primary btn--sm">Start &rarr;</span>
+        </a>
+
+        <a class="path__node" href="#" data-start-task="closure-notice">
+          <span class="path__badge avail"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5 L19 12 L8 19 Z" fill="#EFE84B"/></svg></span>
+          <div class="path__meta"><span class="path__cat">Clinic notices · Starter</span><span class="path__ttl">Public holiday closure notice</span></div>
+          <span class="btn btn--primary btn--sm">Start &rarr;</span>
+        </a>
+
         <a class="path__node" href="#" data-start-task="recall">
           <span class="path__badge avail"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5 L19 12 L8 19 Z" fill="#EFE84B"/></svg></span>
           <div class="path__meta"><span class="path__cat">Patient correspondence · Ready</span><span class="path__ttl">Recall &amp; reminder letters</span></div>
@@ -371,6 +383,82 @@
             { id: 'safety', title: 'Kept the clinical reason out of the text', verdict: 'fail', evidence: '"…about your upcoming diabetes review…"', why: "A text isn't a secure channel — a reminder only needs the time and place, not the medical reason for the visit." },
             { id: 'brevity', title: 'Kept it short, like a real SMS', verdict: 'warn', evidence: '"…remember to fast beforehand and bring your blood sugar log…"', why: 'Extra instructions make it long (and were never in the brief). A reminder text should be a line or two.' },
             { id: 'context', title: 'Sounded like the clinic', verdict: 'pass', evidence: '"…from Riverstone Family Practice…"', why: 'You named the clinic and kept it friendly — exactly right.' },
+          ],
+        },
+      },
+      'plain-english': {
+        brief: {
+          title: "Rewrite a clinician's note in plain English",
+          lead: "A patient can't act on shorthand they don't understand. Rewrite this note in plain English with AI — keeping every fact exactly the same.",
+          recordLabel: 'The note — synthetic, safe to practise on',
+          record: [
+            ['The note', '"Pt to commence metformin 500mg BD with meals; review HbA1c in 3/12."'],
+            ['What it means', 'Metformin 500mg twice a day, with meals'],
+            ['And', 'A blood-sugar (HbA1c) blood test in 3 months'],
+            ['For', 'The patient to read'],
+          ],
+        },
+        promptLead: "Ask for plain, patient-friendly English — and keep every fact exactly as it is.",
+        promptPlaceholder: 'e.g. Rewrite this note in plain, friendly English for a patient, keeping the meaning exactly the same…',
+        tips: [
+          "Say it's for a patient, in plain English",
+          'Keep the meaning exact (dose, timing, timeframe)',
+          "Don't add advice that isn't in the note",
+        ],
+        reveal: {
+          lead: 'Same note, in plain English — every fact kept, nothing added.',
+          promptLabel: 'The prompt',
+          promptText: 'Rewrite this clinical note in plain, friendly English a patient can understand. Keep the meaning exactly the same and don\'t add any advice that isn\'t there: "Pt to commence metformin 500mg BD with meals; review HbA1c in 3/12."',
+          draftLabel: 'The rewrite',
+          draftText: `Your doctor would like you to start a medicine called metformin. Please take one 500mg tablet twice a day, with meals. You'll also need a blood test (called HbA1c) to check your blood sugar in about three months.`,
+        },
+        fallbackDraft: `Your doctor wants you to start metformin 500mg once a day. It's a good idea to avoid sugary foods and exercise regularly while taking it. Come back for a blood test in a few weeks.`,
+        fallbackGrade: {
+          summary: 'Good, plain tone — but check the facts',
+          checks: [
+            { id: 'accuracy', title: 'Kept the meaning exact', verdict: 'fail', evidence: '"…metformin 500mg once a day… a blood test in a few weeks."', why: 'The note said twice a day with meals, and a review in three months — the rewrite changed both. Getting a dose or timeframe wrong is exactly what to catch.' },
+            { id: 'invent', title: "Didn't add anything new", verdict: 'fail', evidence: '"…avoid sugary foods and exercise regularly…"', why: 'That advice was never in the note — the AI added it. A rewrite translates, it doesn\'t invent.' },
+            { id: 'context', title: 'Asked for plain, patient-friendly English', verdict: 'pass', evidence: '', why: 'The tone is right — now keep the facts exact and add nothing.' },
+          ],
+        },
+      },
+      'closure-notice': {
+        brief: {
+          title: 'Draft a public holiday closure notice for Riverstone Family Practice',
+          lead: "The clinic's shut for the public holiday. Draft a short notice with AI — clear on the dates, and pointing people to help if they need it.",
+          recordLabel: 'The details — synthetic, safe to practise on',
+          record: [
+            ['Clinic', 'Riverstone Family Practice'],
+            ['Closed', 'Monday 9 June (King\'s Birthday)'],
+            ['Reopens', 'Tuesday 10 June, 9:00am'],
+            ['In an emergency', 'Patients should call 000'],
+          ],
+        },
+        promptLead: "Give the AI the clinic and the dates — and don't let it invent a phone number that wasn't given.",
+        promptPlaceholder: 'e.g. Write a short public notice that our clinic is closed for the public holiday on…',
+        tips: [
+          'Name the clinic and the closed / reopen dates',
+          'Keep it short and clear',
+          "Point to 000 — don't invent an after-hours number",
+        ],
+        reveal: {
+          lead: 'Short, clear, names the dates, and sends people to 000 in an emergency — no invented numbers.',
+          promptLabel: 'The prompt',
+          promptText: "Write a short public notice that Riverstone Family Practice is closed on Monday 9 June for the King's Birthday public holiday and reopens Tuesday 10 June at 9:00am. Tell patients to call 000 in an emergency. Keep it brief; don't invent an after-hours number.",
+          draftLabel: 'The notice',
+          draftText: `Riverstone Family Practice will be closed on Monday 9 June for the King's Birthday public holiday, reopening Tuesday 10 June at 9:00am.
+
+If you need urgent medical care while we're closed, please call 000.
+
+Thank you, and enjoy the long weekend.`,
+        },
+        fallbackDraft: `Please be advised that Riverstone Family Practice will be closed on Monday 9 June in observance of the King's Birthday public holiday, reopening on Tuesday 10 June at 9:00am. Should you require medical assistance during this period, our after-hours service is available on (03) 9412 7788. We sincerely appreciate your understanding and look forward to welcoming you back soon.`,
+        fallbackGrade: {
+          summary: 'Clear on the dates — one invented detail to cut',
+          checks: [
+            { id: 'invent', title: "Didn't invent details", verdict: 'fail', evidence: '"…our after-hours service is available on (03) 9412 7788."', why: 'No after-hours number was given — the AI made one up. Direct people to 000, or leave a placeholder to fill in.' },
+            { id: 'brevity', title: 'Kept it short and clear', verdict: 'warn', evidence: '"Please be advised that… We sincerely appreciate your understanding…"', why: 'A notice should be scannable. Trim the formal padding to the facts people need.' },
+            { id: 'context', title: 'Gave the clinic and the dates', verdict: 'pass', evidence: '"…closed on Monday 9 June… reopening on Tuesday 10 June at 9:00am."', why: 'The essentials are all there — nicely done.' },
           ],
         },
       },

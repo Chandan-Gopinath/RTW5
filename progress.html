@@ -72,14 +72,18 @@
       <div class="gamify__level" style="cursor:default">
         <span class="gamify__char" id="gxChar"></span>
         <span class="gamify__meta">
-          <span class="k">Level <b id="gxLevel">1</b></span>
-          <span class="gamify__name" id="gxName">Getting Going</span>
-          <span class="gamify__pts"><b id="gxPoints">20</b> pts <i id="gxNext"></i></span>
-          <span class="gamify__bar"><i id="gxBar" style="width:0%"></i></span>
+          <div class="lvlbar" id="gxLvlBar"></div>
         </span>
       </div>
       <div class="gamify__streak" id="gxStreak"></div>
     </section>
+
+    <!-- completed tasks (history + retake) -->
+    <p class="section-label">Completed tasks <span class="admin-note" id="doneCount"></span></p>
+    <details class="donebox" id="doneBox" open>
+      <summary class="donebox__summary"><span>Your task history</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+      <div class="donebox__body" id="doneList"></div>
+    </details>
 
     <!-- level ladder -->
     <p class="section-label">The level ladder</p>
@@ -105,6 +109,9 @@
   <script src="characters.js"></script>
   <script src="progress-cache.js"></script>
   <script src="gamify-nav.js"></script>
+  <script src="catalog.js"></script>
+  <script src="format.js"></script>
+  <script src="levelbar.js"></script>
   <script>
     ygiRequireProfile();
 
@@ -157,7 +164,7 @@
       const el = document.getElementById("history");
       if (!days.length) { el.innerHTML = `<p class="history__empty">No graded tasks yet — your first one lands here.</p>`; return; }
       el.innerHTML = days.map((d) =>
-        `<div class="histrow"><span class="histrow__date">${d.date}</span>
+        `<div class="histrow"><span class="histrow__date">${d.date.split('-').reverse().join('/')}</span>
           <span class="histrow__meta">${d.tasksDone} task${d.tasksDone === 1 ? "" : "s"} · ${d.checksPassed} check${d.checksPassed === 1 ? "" : "s"}${d.passedAll ? " · all clear ⭐" : ""}</span>
           <span class="histrow__pts">+${d.points}</span></div>`
       ).join("");
@@ -165,15 +172,33 @@
 
     // gamification summary + ladder + history — cache-first via ygiOnProgress
     let progressTracked = false;
-    function renderProgress(p, isStale) {
+    function renderCompleted(tasks) {
+      const cat = window.YGI_CATALOG || [];
+      const done = cat.filter(t => tasks && tasks[t.id] && tasks[t.id].passed);
+      const box = document.getElementById('doneBox');
+      const cnt = document.getElementById('doneCount');
+      if (!done.length) {
+        cnt.textContent = '';
+        document.getElementById('doneList').innerHTML = `<p class="history__empty" style="margin:0">No tasks completed yet — pass one and it lands here to revisit.</p>`;
+        return;
+      }
+      cnt.textContent = `${done.length} done`;
+      document.getElementById('doneList').innerHTML = done.map(t => {
+        const s = tasks[t.id];
+        const when = s.lastAt ? window.ygiFmtDate(s.lastAt) : '';
+        const score = (s.total ? `${s.bestChecks}/${s.total} checks` : '') + (when ? ` · ${when}` : '');
+        return `<div class="donerow">
+          <div class="donerow__main"><span class="donerow__ttl">✓ ${t.title}</span><span class="donerow__meta">${score}</span></div>
+          <a class="btn btn--secondary btn--sm" href="aiground.html?task=${encodeURIComponent(t.id)}">Retake &rarr;</a>
+        </div>`;
+      }).join('');
+    }
+
+    function renderProgress(p, isStale, tasks) {
       const $ = (id) => document.getElementById(id);
       $("gxChar").innerHTML = window.buddySvg(p.character, 72);
-      $("gxLevel").textContent = p.level;
-      $("gxName").textContent = p.levelName;
-      $("gxPoints").textContent = p.points;
-      $("gxNext").textContent = p.nextLevelAt ? `· ${p.pointsToNext} to Level ${p.level + 1}` : "· top level 🎉";
-      const pct = p.nextLevelAt ? Math.round((p.pointsIntoLevel / (p.pointsIntoLevel + p.pointsToNext)) * 100) : 100;
-      $("gxBar").style.width = pct + "%";
+      if (window.ygiLevelBar) window.ygiLevelBar($("gxLvlBar"), p);
+      renderCompleted(tasks || {});
 
       if (p.streakUnlocked) {
         $("gxStreak").innerHTML =

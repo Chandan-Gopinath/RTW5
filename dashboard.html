@@ -71,10 +71,7 @@
         <a class="gamify__level" href="progress.html" data-event="Progress Viewed">
           <span class="gamify__char" id="gxChar"></span>
           <span class="gamify__meta">
-            <span class="k">Level <b id="gxLevel">1</b></span>
-            <span class="gamify__name" id="gxName">Getting Going</span>
-            <span class="gamify__pts"><b id="gxPoints">0</b> pts <i id="gxNext"></i></span>
-            <span class="gamify__bar"><i id="gxBar" style="width:0%"></i></span>
+            <div class="lvlbar" id="gxLvlBar"></div>
             <span class="gamify__nextup" id="gxNextUp" hidden></span>
             <span class="gamify__today"><span>Today</span><b id="gxToday">+0 pts</b></span>
             <span class="gamify__view">View progress →</span>
@@ -86,6 +83,12 @@
 
     <!-- MAIN COLUMN -->
     <div class="desk-main">
+      <div class="levelup" id="levelUp" hidden>
+        <span class="levelup__char" id="levelUpChar" aria-hidden="true"></span>
+        <div class="levelup__txt"><span class="levelup__k">Level up</span><span class="levelup__h" id="levelUpH"></span></div>
+        <button class="levelup__x" id="levelUpX" type="button" aria-label="Dismiss">&times;</button>
+        <span class="levelup__confetti" id="levelUpConfetti" aria-hidden="true"></span>
+      </div>
       <div class="page-head">
         <p class="eyebrow">Your desk</p>
         <h1>Good to see you, <span class="hl" data-profile-name></span>.</h1>
@@ -123,6 +126,9 @@
   <script src="progress-cache.js"></script>
   <script src="gamify-nav.js"></script>
   <script src="catalog.js"></script>
+  <script src="format.js"></script>
+  <script src="levelbar.js"></script>
+  <script src="celebrate.js"></script>
   <script>
     ygiRequireProfile();
 
@@ -163,16 +169,15 @@
           ${chips ? `<div class="today-hero__aside"><p class="aside-label">What you'll practise</p><ul class="skill-chips">${chips}</ul></div>` : ''}
         </a>`;
 
-      // The rest of your week: remaining live tasks + locked "soon" teasers.
-      const liveCards = pick.rest.map(t => {
-        const done = tasks && tasks[t.id] && tasks[t.id].passed;
-        return `<a class="taskcard taskcard--live" href="learn.html?task=${encodeURIComponent(t.id)}" data-event="Learn Started">
+      // Up next: remaining live tasks NOT yet passed (completed ones live on the Progress page).
+      const upnext = pick.rest.filter(t => !(tasks && tasks[t.id] && tasks[t.id].passed));
+      const liveCards = upnext.map(t => `
+        <a class="taskcard taskcard--live" href="learn.html?task=${encodeURIComponent(t.id)}" data-event="Learn Started">
           <p class="taskcard__cat">${tierBadge(t.tier)} <span class="hl">${deskEsc(t.category)}</span></p>
           <h2 class="taskcard__title">${deskEsc(t.title)}</h2>
           <p class="taskcard__desc">${deskEsc(t.blurb)}</p>
-          <div class="taskcard__foot"><span class="meta">${done ? '✓ Passed — do it again' : deskEsc(t.meta || '')}</span><span class="btn btn--primary btn--sm">${done ? 'Revisit &rarr;' : 'Start &rarr;'}</span></div>
-        </a>`;
-      }).join('');
+          <div class="taskcard__foot"><span class="meta">${deskEsc(t.meta || '')}</span><span class="btn btn--primary btn--sm">Start &rarr;</span></div>
+        </a>`).join('');
       const soonCards = pick.soon.map(t => `
         <div class="taskcard taskcard--soon">
           <p class="taskcard__cat">${tierBadge(t.tier)} ${deskEsc(t.category)}</p>
@@ -180,8 +185,10 @@
           <p class="taskcard__desc">${deskEsc(t.blurb)}</p>
           <div class="taskcard__foot"><span class="meta">${deskEsc(t.meta || '')}</span><span class="pill pill--soon">Soon</span></div>
         </div>`).join('');
-      document.getElementById('deskRest').innerHTML =
-        `<p class="section-label">The rest of your week</p><section class="catalog" aria-label="More tasks">${liveCards}${soonCards}</section>`;
+      let restHtml = '';
+      if (liveCards) restHtml += `<p class="section-label">Up next</p><section class="catalog" aria-label="Up next">${liveCards}</section>`;
+      if (soonCards) restHtml += `<p class="section-label">Coming soon</p><section class="catalog" aria-label="Coming soon">${soonCards}</section>`;
+      document.getElementById('deskRest').innerHTML = restHtml;
     }
     renderDesk({}); // instant paint (default: Starter focus); refined once progress arrives
     if (window.ygiOnProgress) window.ygiOnProgress((p, stale, tasks) => renderDesk(tasks));
@@ -190,12 +197,7 @@
     function renderGamify(p, isStale) {
       const $ = (id) => document.getElementById(id);
       $("gxChar").innerHTML = window.buddySvg(p.character, 72);
-      $("gxLevel").textContent = p.level;
-      $("gxName").textContent = p.levelName;
-      $("gxPoints").textContent = p.points;
-      $("gxNext").textContent = p.nextLevelAt ? `· ${p.pointsToNext} to Level ${p.level + 1}` : "· top level 🎉";
-      const pct = p.nextLevelAt ? Math.round((p.pointsIntoLevel / (p.pointsIntoLevel + p.pointsToNext)) * 100) : 100;
-      $("gxBar").style.width = pct + "%";
+      if (window.ygiLevelBar) window.ygiLevelBar($("gxLvlBar"), p);
 
       const nu = $("gxNextUp");
       if (p.points === 0) { nu.textContent = "🎉 Finish your first task for a +20 welcome bonus"; nu.hidden = false; }
@@ -219,7 +221,10 @@
 
       try {
         const prevLvl = Number(localStorage.getItem("ygiLevel") || "0");
-        if (p.level > prevLvl && prevLvl > 0 && window.track) window.track("Level Up", { level: p.level });
+        if (p.level > prevLvl && prevLvl > 0) {
+          if (window.track) window.track("Level Up", { level: p.level });
+          showLevelUp(p);
+        }
         localStorage.setItem("ygiLevel", String(p.level));
         const prevUnlocked = localStorage.getItem("ygiStreakUnlocked") === "1";
         if (p.streakUnlocked && !prevUnlocked && window.track) window.track("Streak Unlocked");
@@ -237,6 +242,24 @@
       }
     }
     if (window.ygiOnProgress) window.ygiOnProgress(renderGamify);
+
+    // one-time level-up celebration on the desk (new buddy + confetti, auto-fading)
+    let levelUpTimer = null;
+    function showLevelUp(p) {
+      const el = document.getElementById('levelUp');
+      if (!el) return;
+      const ch = document.getElementById('levelUpChar');
+      if (ch && window.buddySvg) ch.innerHTML = window.buddySvg(p.character, 48);
+      document.getElementById('levelUpH').textContent = `You reached Level ${p.level} — ${p.levelName}!`;
+      el.hidden = false;
+      if (window.ygiConfetti) window.ygiConfetti(document.getElementById('levelUpConfetti'));
+      clearTimeout(levelUpTimer);
+      levelUpTimer = setTimeout(() => { el.hidden = true; }, 7000);
+    }
+    document.getElementById('levelUpX').addEventListener('click', () => {
+      clearTimeout(levelUpTimer);
+      document.getElementById('levelUp').hidden = true;
+    });
 
     const menuBtn = document.getElementById('menuBtn');
     const mobileNav = document.getElementById('mobileNav');

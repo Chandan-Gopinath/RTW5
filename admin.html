@@ -84,6 +84,7 @@
         <tbody id="usersBody"><tr><td colspan="9">Loading…</td></tr></tbody>
       </table>
     </div>
+    <div class="admin-pager" id="usersPager"></div>
   </main>
 
   <script src="auth.js"></script>
@@ -91,6 +92,7 @@
   <script src="characters.js"></script>
   <script src="progress-cache.js"></script>
   <script src="gamify-nav.js"></script>
+  <script src="format.js"></script>
   <script>
     // mobile + account menus (same pattern as the other pages)
     const menuBtn = document.getElementById('menuBtn');
@@ -103,7 +105,7 @@
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { userMenu.classList.remove('open'); userChip.setAttribute('aria-expanded', 'false'); } });
 
     function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m])); }
-    function fmtDate(d) { return d ? new Date(d).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '—'; }
+    function fmtDate(d) { return window.ygiFmtDate ? window.ygiFmtDate(d) : (d || '—'); }
 
     async function loadModels() {
       const list = document.getElementById('modelList');
@@ -124,11 +126,15 @@
       render();
     }
 
-    async function loadUsers() {
-      let data;
-      try { data = await (await fetch('/api/admin/users')).json(); } catch (_) { document.getElementById('usersBody').innerHTML = '<tr><td colspan="9">Could not load users.</td></tr>'; return; }
-      document.getElementById('usersCount').textContent = `${data.users.length} total`;
-      document.getElementById('usersBody').innerHTML = data.users.length ? data.users.map(u => `
+    const USERS_PER_PAGE = 10;
+    let allUsers = [], usersPage = 0;
+    function renderUsersPage() {
+      const body = document.getElementById('usersBody');
+      if (!allUsers.length) { body.innerHTML = '<tr><td colspan="9">No users yet.</td></tr>'; document.getElementById('usersPager').innerHTML = ''; return; }
+      const pages = Math.ceil(allUsers.length / USERS_PER_PAGE);
+      usersPage = Math.max(0, Math.min(usersPage, pages - 1));
+      const slice = allUsers.slice(usersPage * USERS_PER_PAGE, usersPage * USERS_PER_PAGE + USERS_PER_PAGE);
+      body.innerHTML = slice.map(u => `
         <tr>
           <td>${esc(u.name)}</td>
           <td class="mono">${esc(u.email)}</td>
@@ -139,7 +145,23 @@
           <td>${u.points == null ? '—' : u.points}</td>
           <td>${fmtDate(u.lastAttempt || u.lastActiveAt)}</td>
           <td>${u.isAdmin ? '<span class="pill pill--admin">Admin</span>' : ''}</td>
-        </tr>`).join('') : '<tr><td colspan="9">No users yet.</td></tr>';
+        </tr>`).join('');
+      document.getElementById('usersPager').innerHTML = pages > 1
+        ? `<button class="btn btn--secondary btn--sm" id="usersPrev" ${usersPage === 0 ? 'disabled' : ''}>&larr; Prev</button>
+           <span class="admin-note">Page ${usersPage + 1} of ${pages}</span>
+           <button class="btn btn--secondary btn--sm" id="usersNext" ${usersPage >= pages - 1 ? 'disabled' : ''}>Next &rarr;</button>`
+        : '';
+      const prev = document.getElementById('usersPrev'), next = document.getElementById('usersNext');
+      if (prev) prev.addEventListener('click', () => { usersPage--; renderUsersPage(); });
+      if (next) next.addEventListener('click', () => { usersPage++; renderUsersPage(); });
+    }
+    async function loadUsers() {
+      let data;
+      try { data = await (await fetch('/api/admin/users')).json(); } catch (_) { document.getElementById('usersBody').innerHTML = '<tr><td colspan="9">Could not load users.</td></tr>'; return; }
+      allUsers = data.users || [];
+      usersPage = 0;
+      document.getElementById('usersCount').textContent = `${allUsers.length} total`;
+      renderUsersPage();
     }
 
     async function loadMetrics() {

@@ -18,6 +18,22 @@
       chips: ["Give the AI clinic context", "Keep it short and clear", "No sensitive detail in a text"],
     },
     {
+      id: "plain-english", tier: "starter", status: "live", order: 12,
+      category: "Patient correspondence",
+      title: "Say it in plain English",
+      blurb: "Turn a line of clinical shorthand into something a patient can actually understand — without changing what it means.",
+      meta: "~5 min · starter",
+      chips: ["Say who it's for", "Keep the meaning exact", "Don't add anything new"],
+    },
+    {
+      id: "closure-notice", tier: "starter", status: "live", order: 14,
+      category: "Clinic notices",
+      title: "Public holiday closure notice",
+      blurb: "Draft a short notice that the clinic is closed for a public holiday — clear, and pointing people to help if they need it.",
+      meta: "~5 min · starter",
+      chips: ["Give the clinic and the dates", "Keep it short", "Don't invent a number"],
+    },
+    {
       id: "recall", tier: "core", status: "live", order: 20,
       category: "Patient correspondence",
       title: "Recall & reminder letters",
