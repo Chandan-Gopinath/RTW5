@@ -83,6 +83,7 @@
   <script src="auth.js"></script>
   <script src="admin.js"></script>
   <script src="characters.js"></script>
+  <script src="catalog.js"></script>
   <script src="progress-cache.js"></script>
   <script src="gamify-nav.js"></script>
   <script src="feedback-widget.js"></script>
@@ -241,10 +242,8 @@
       },
     };
 
-    (function renderLearn() {
-      const params = new URLSearchParams(location.search);
-      const req = params.get('task');
-      const taskId = LEARN[req] ? req : 'recall';
+    function renderLearn(reqId) {
+      const taskId = LEARN[reqId] ? reqId : 'recall';
       const L = LEARN[taskId];
       document.title = 'You Got It! — Learn: ' + L.title;
       document.getElementById('learnEyebrow').textContent = L.eyebrow;
@@ -270,6 +269,23 @@
             </div>
           </div>
         </article>`).join('');
+    }
+
+    // Explicit ?task wins (from Today's focus, a task card, or Learn's own CTA).
+    // With no task (nav "Learn" / direct visit), default to the user's Today's-focus
+    // task — the first not-yet-passed live task — matching the desk. Falls back to the
+    // first live task, then recall, until progress/catalog resolve.
+    (function () {
+      const req = new URLSearchParams(location.search).get('task');
+      const explicit = LEARN[req] ? req : null;
+      const firstLive = (window.YGI_CATALOG || []).filter(t => t.status === 'live' && LEARN[t.id])[0];
+      renderLearn(explicit || (firstLive ? firstLive.id : 'recall'));
+      if (!explicit && window.ygiOnProgress && window.ygiPickDesk && window.YGI_CATALOG) {
+        window.ygiOnProgress((p, stale, tasks) => {
+          const focus = window.ygiPickDesk(window.YGI_CATALOG, tasks || {}).focus;
+          if (focus && LEARN[focus.id]) renderLearn(focus.id);
+        });
+      }
     })();
 
     const menuBtn = document.getElementById('menuBtn');

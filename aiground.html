@@ -350,6 +350,38 @@
     );
     document.getElementById('backToHub').addEventListener('click', e => { e.preventDefault(); backToHub(); });
 
+    // Reflect completion in the hub: tasks you've passed get a done tick + "Retake",
+    // and not-yet-done tasks float to the top (locked "Soon" tasks stay last). Retaking
+    // matters for the spaced-repetition thesis, so completed tasks are marked, not hidden.
+    const DONE_TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5 L10 18 L20 6" fill="none" stroke="#EFE84B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    function decorateHub(tasks) {
+      tasks = tasks || {};
+      const path = document.querySelector('.path');
+      if (!path) return;
+      const liveNodes = [...path.querySelectorAll('.path__node[data-start-task]')];
+      const lockNodes = [...path.querySelectorAll('.path__node.is-lock')];
+      const notDone = [], done = [];
+      liveNodes.forEach(node => {
+        const s = tasks[node.dataset.startTask];
+        const isDone = !!(s && s.passed);
+        node.classList.toggle('is-done', isDone);
+        const badge = node.querySelector('.path__badge');
+        const cta = node.querySelector('.btn');
+        let tag = node.querySelector('.path__donetag');
+        if (isDone) {
+          if (badge) { badge.classList.remove('avail'); badge.classList.add('done'); badge.innerHTML = DONE_TICK; }
+          if (cta) { cta.textContent = 'Retake'; cta.classList.remove('btn--primary'); cta.classList.add('btn--secondary'); }
+          if (!tag) { tag = document.createElement('span'); tag.className = 'path__donetag'; node.querySelector('.path__meta').appendChild(tag); }
+          tag.textContent = '✓ Done' + ((s.total && s.bestChecks != null) ? ` · best ${s.bestChecks}/${s.total}` : '');
+          done.push(node);
+        } else {
+          notDone.push(node);
+        }
+      });
+      [...notDone, ...done, ...lockNodes].forEach(n => path.appendChild(n));
+    }
+    if (window.ygiOnProgress) window.ygiOnProgress((p, stale, tasks) => decorateHub(tasks));
+
     // ---------- per-task view content + demo fallbacks ----------
     // The grader/answer-key lives server-side (prompts.js). This is only the
     // display copy + the pre-scripted results used when there's no API key.
