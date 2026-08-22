@@ -29,6 +29,9 @@ const EVENTS = [
   "Try Again",
   "Reveal Viewed",
   "Model Switched",
+  "Progress Viewed",
+  "Level Up",
+  "Streak Unlocked",
 ];
 
 const key = process.env.PLAUSIBLE_API_KEY;
