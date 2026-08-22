@@ -5,6 +5,7 @@
     if (!container) return;
     var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) return;
+    container.classList.add("ygi-confetti");
     container.innerHTML = "";
     var cols = ["#EFE84B", "#FCFCFA", "#2E8B52", "#ffffff"];
     for (var i = 0; i < 26; i++) {

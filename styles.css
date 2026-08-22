@@ -582,17 +582,11 @@ button{font-family:inherit}
 .lvlbar__next{color:var(--muted)}
 .lvlbar__next b{color:var(--ink);font-weight:700}
 
-/* ---- level-up celebration banner (desk) ---- */
-.levelup{display:flex;align-items:center;gap:14px;background:var(--ink);color:var(--ground);border-radius:14px;padding:16px 18px;margin:0 0 var(--s5);position:relative;overflow:hidden}
-.levelup__char{width:48px;height:48px;flex:0 0 auto}
-.levelup__txt{display:flex;flex-direction:column;gap:2px}
-.levelup__k{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--highlight)}
-.levelup__h{font-family:var(--font-display);font-weight:800;font-size:19px;color:var(--ground);line-height:1.1}
-.levelup__x{margin-left:auto;background:none;border:0;color:#B9B9BD;font-size:22px;line-height:1;cursor:pointer;padding:0 4px}
-.levelup__confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
-.levelup__confetti i{position:absolute;left:50%;top:50%;width:8px;height:8px;border-radius:2px;animation:ygi-confetti .9s ease-out forwards}
+/* ---- level-up confetti (desk) — a burst from just under the top bar, no banner ---- */
+.ygi-confetti{position:fixed;left:0;right:0;top:66px;height:0;pointer-events:none;z-index:120}
+.ygi-confetti i{position:absolute;left:50%;top:0;width:9px;height:9px;border-radius:2px;animation:ygi-confetti 1s ease-out forwards}
 @keyframes ygi-confetti{to{transform:translate(var(--dx),var(--dy)) rotate(var(--r));opacity:0}}
-@media(prefers-reduced-motion:reduce){.levelup__confetti i{animation:none;opacity:0}}
+@media(prefers-reduced-motion:reduce){.ygi-confetti i{animation:none;opacity:0}}
 
 /* ---- admin pagination ---- */
 .admin-pager{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:var(--s4)}

@@ -83,12 +83,7 @@
 
     <!-- MAIN COLUMN -->
     <div class="desk-main">
-      <div class="levelup" id="levelUp" hidden>
-        <span class="levelup__char" id="levelUpChar" aria-hidden="true"></span>
-        <div class="levelup__txt"><span class="levelup__k">Level up</span><span class="levelup__h" id="levelUpH"></span></div>
-        <button class="levelup__x" id="levelUpX" type="button" aria-label="Dismiss">&times;</button>
-        <span class="levelup__confetti" id="levelUpConfetti" aria-hidden="true"></span>
-      </div>
+      <div id="deskConfetti" class="ygi-confetti" aria-hidden="true"></div>
       <div class="page-head">
         <p class="eyebrow">Your desk</p>
         <h1>Good to see you, <span class="hl" data-profile-name></span>.</h1>
@@ -243,23 +238,10 @@
     }
     if (window.ygiOnProgress) window.ygiOnProgress(renderGamify);
 
-    // one-time level-up celebration on the desk (new buddy + confetti, auto-fading)
-    let levelUpTimer = null;
-    function showLevelUp(p) {
-      const el = document.getElementById('levelUp');
-      if (!el) return;
-      const ch = document.getElementById('levelUpChar');
-      if (ch && window.buddySvg) ch.innerHTML = window.buddySvg(p.character, 48);
-      document.getElementById('levelUpH').textContent = `You reached Level ${p.level} — ${p.levelName}!`;
-      el.hidden = false;
-      if (window.ygiConfetti) window.ygiConfetti(document.getElementById('levelUpConfetti'));
-      clearTimeout(levelUpTimer);
-      levelUpTimer = setTimeout(() => { el.hidden = true; }, 7000);
+    // one-time level-up celebration on the desk: just a confetti burst (no banner).
+    function showLevelUp() {
+      if (window.ygiConfetti) window.ygiConfetti(document.getElementById('deskConfetti'));
     }
-    document.getElementById('levelUpX').addEventListener('click', () => {
-      clearTimeout(levelUpTimer);
-      document.getElementById('levelUp').hidden = true;
-    });
 
     const menuBtn = document.getElementById('menuBtn');
     const mobileNav = document.getElementById('mobileNav');
