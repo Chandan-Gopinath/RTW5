@@ -177,7 +177,7 @@
 
       if (p.streakUnlocked) {
         $("gxStreak").innerHTML =
-          `<div class="streakcard"><div class="streakcard__n">🔥 ${p.streak}-day streak</div>` +
+          `<div class="streakcard"><div class="streakcard__n">${p.streak > 0 ? "🔥 " + p.streak + "-day streak" : "Streak resting — do a task to relight it"}</div>` +
           `<div class="streakcard__sub">One missed day is always forgiven.</div></div>`;
       } else {
         const left = p.daysToUnlock;
