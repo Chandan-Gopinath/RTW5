@@ -20,6 +20,8 @@ import adminMetrics from "./lib/admin/metrics.js";
 import progressHandler from "./api/progress.js";
 import feedbackHandler from "./api/feedback.js";
 import adminFeedback from "./lib/admin/feedback.js";
+import cronDaily from "./lib/cron/daily.js";
+import cronWeekly from "./lib/cron/weekly.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -34,9 +36,10 @@ app.get("/api/admin/config", (req, res) => adminConfig(req, res));
 app.post("/api/admin/config", (req, res) => adminConfig(req, res));
 app.get("/api/admin/users", (req, res) => adminUsers(req, res));
 app.get("/api/admin/metrics", (req, res) => adminMetrics(req, res));
-app.get("/api/progress", (req, res) => progressHandler(req, res));
 app.post("/api/feedback", (req, res) => feedbackHandler(req, res));
 app.get("/api/admin/feedback", (req, res) => adminFeedback(req, res));
+app.get("/api/cron/daily", (req, res) => cronDaily(req, res));
+app.get("/api/cron/weekly", (req, res) => cronWeekly(req, res));
 
 app.get("/api/models", (req, res) => {
   const models = Object.values(MODELS).map((m) => ({

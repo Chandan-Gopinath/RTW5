@@ -22,6 +22,13 @@
       "when": 1787395758324,
       "tag": "0002_blue_loners",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1787413579412,
+      "tag": "0003_rich_valkyrie",
+      "breakpoints": true
     }
   ]
 }
