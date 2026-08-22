@@ -4,6 +4,9 @@ import { getTask } from "../prompts.js";
 import { getActiveModel } from "../lib/config.js";
 import { recordAttempt } from "../lib/attempts.js";
 import { getUserFromToken, readCookie, SESSION_COOKIE } from "../lib/session.js";
+import { db, attempts } from "../lib/db.js";
+import { eq } from "drizzle-orm";
+import { deltaForAttempt } from "../lib/gamification.js";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "method_not_allowed" });
@@ -16,14 +19,23 @@ export default async function handler(req, res) {
   if (!hasKey(model)) return res.json({ error: "no_api_key" });
   try {
     const data = await gradeSubmission(model, task, prompt, draft);
-    // record the attempt if signed in (best-effort; never blocks grading)
+    // record the attempt + compute the points reveal if signed in (best-effort; never blocks grading)
+    let gamify = null;
     try {
       const user = await getUserFromToken(readCookie(req.headers.cookie, SESSION_COOKIE));
-      if (user) await recordAttempt(user.id, { taskId: task, model, prompt, draft, checks: data.checks });
+      if (user) {
+        const list = Array.isArray(data.checks) ? data.checks : [];
+        const total = list.length;
+        const checksPassed = list.filter((c) => c.verdict === "pass").length;
+        const passed = total > 0 && checksPassed === total;
+        const prior = await db().select().from(attempts).where(eq(attempts.userId, user.id));
+        gamify = deltaForAttempt(prior, { taskId: task, checksPassed, passed });
+        await recordAttempt(user.id, { taskId: task, model, prompt, draft, checks: data.checks });
+      }
     } catch (e) {
-      console.error("attempt record failed:", e?.message || e);
+      console.error("attempt record/gamify failed:", e?.message || e);
     }
-    res.json(data);
+    res.json(gamify ? { ...data, gamify } : data);
   } catch (err) {
     console.error("grade error:", err?.message || err);
     res.status(502).json({ error: "api_error", message: String(err?.message || err) });

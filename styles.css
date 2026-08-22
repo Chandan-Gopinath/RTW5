@@ -476,3 +476,17 @@ button{font-family:inherit}
 .histrow__meta{color:var(--muted,#5b5b63);font-size:14px;flex:1}
 .histrow__pts{font-weight:700}
 .history__empty{color:var(--muted,#5b5b63)}
+
+/* ---- top-nav points/level chip ---- */
+.nav-gamify{display:inline-flex;align-items:center;gap:7px;margin-right:10px;padding:4px 12px 4px 6px;border:1px solid var(--hairline,#E4E4E0);border-radius:99px;background:var(--surface,#fff);text-decoration:none;color:var(--ink,#18181C);font-size:13px;white-space:nowrap}
+.nav-gamify[hidden]{display:none}
+.nav-gamify__char{display:inline-flex;width:22px;height:22px;flex:0 0 auto}
+.nav-gamify__txt b{font-weight:700}
+@media(max-width:720px){.nav-gamify{display:none}}
+
+/* ---- post-grade points reveal (AIGround feedback) ---- */
+.fb-reveal{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;background:var(--highlight,#EFE84B);border-radius:12px;padding:14px 18px;margin-bottom:16px}
+.fb-reveal__pts{font-family:'Fraunces',serif;font-weight:900;font-size:30px;line-height:1}
+.fb-reveal__lbl{font-weight:600}
+.fb-reveal__lvl{font-weight:700;width:100%;font-size:14px}
+.fb-reveal__lvl[hidden]{display:none}

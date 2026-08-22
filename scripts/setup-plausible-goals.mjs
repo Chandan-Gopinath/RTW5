@@ -32,6 +32,7 @@ const EVENTS = [
   "Progress Viewed",
   "Level Up",
   "Streak Unlocked",
+  "Points Earned",
 ];
 
 const key = process.env.PLAUSIBLE_API_KEY;

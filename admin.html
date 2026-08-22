@@ -28,6 +28,10 @@
       <a href="aiground.html">AIGround</a>
       <a href="admin.html" class="active">Admin</a>
     </nav>
+    <a class="nav-gamify" id="navGamify" href="progress.html" hidden title="Your progress">
+      <span class="nav-gamify__char" id="navGamifyChar"></span>
+      <span class="nav-gamify__txt">Lv <b id="navGamifyLevel">1</b> · <b id="navGamifyPts">0</b> pts</span>
+    </a>
     <div class="topbar__user">
       <button class="user-chip" id="userChip" aria-haspopup="true" aria-expanded="false" aria-controls="userMenu">
         <span class="name">Welcome</span>
@@ -70,15 +74,17 @@
     <div class="admin-table-wrap">
       <table class="admin-table" id="usersTable">
         <thead>
-          <tr><th>Name</th><th>Email</th><th>Joined</th><th>Attempts</th><th>Pass rate</th><th>Last active</th><th>Role</th></tr>
+          <tr><th>Name</th><th>Email</th><th>Joined</th><th>Attempts</th><th>Pass rate</th><th>Level</th><th>Points</th><th>Last active</th><th>Role</th></tr>
         </thead>
-        <tbody id="usersBody"><tr><td colspan="7">Loading…</td></tr></tbody>
+        <tbody id="usersBody"><tr><td colspan="9">Loading…</td></tr></tbody>
       </table>
     </div>
   </main>
 
   <script src="auth.js"></script>
   <script src="admin.js"></script>
+  <script src="characters.js"></script>
+  <script src="gamify-nav.js"></script>
   <script>
     // mobile + account menus (same pattern as the other pages)
     const menuBtn = document.getElementById('menuBtn');
@@ -114,7 +120,7 @@
 
     async function loadUsers() {
       let data;
-      try { data = await (await fetch('/api/admin/users')).json(); } catch (_) { document.getElementById('usersBody').innerHTML = '<tr><td colspan="7">Could not load users.</td></tr>'; return; }
+      try { data = await (await fetch('/api/admin/users')).json(); } catch (_) { document.getElementById('usersBody').innerHTML = '<tr><td colspan="9">Could not load users.</td></tr>'; return; }
       document.getElementById('usersCount').textContent = `${data.users.length} total`;
       document.getElementById('usersBody').innerHTML = data.users.length ? data.users.map(u => `
         <tr>
@@ -123,9 +129,11 @@
           <td>${fmtDate(u.createdAt)}</td>
           <td>${u.attempts}</td>
           <td>${u.passRate == null ? '—' : u.passRate + '%'}</td>
+          <td>${u.level ? 'Lv ' + u.level + (u.levelName ? ' · ' + esc(u.levelName) : '') : '—'}</td>
+          <td>${u.points == null ? '—' : u.points}</td>
           <td>${fmtDate(u.lastAttempt || u.lastActiveAt)}</td>
           <td>${u.isAdmin ? '<span class="pill pill--admin">Admin</span>' : ''}</td>
-        </tr>`).join('') : '<tr><td colspan="7">No users yet.</td></tr>';
+        </tr>`).join('') : '<tr><td colspan="9">No users yet.</td></tr>';
     }
 
     // gate: require a session AND admin

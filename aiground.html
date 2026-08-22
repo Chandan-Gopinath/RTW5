@@ -29,6 +29,10 @@
       <a href="aiground.html" class="active">AIGround</a>
       <a href="progress.html">Progress</a>
     </nav>
+    <a class="nav-gamify" id="navGamify" href="progress.html" hidden title="Your progress">
+      <span class="nav-gamify__char" id="navGamifyChar"></span>
+      <span class="nav-gamify__txt">Lv <b id="navGamifyLevel">1</b> · <b id="navGamifyPts">0</b> pts</span>
+    </a>
     <div class="topbar__user">
       <button class="user-chip" id="userChip" aria-haspopup="true" aria-expanded="false" aria-controls="userMenu">
         <span class="name">Welcome</span>
@@ -165,6 +169,11 @@
           <h1 class="aig-h" id="fbSummary">How you did</h1>
           <p class="aig-lead">Graded on the judgment that matters — with the proof pulled straight from your work.</p>
         </div>
+        <div class="fb-reveal" id="fbReveal" hidden>
+          <span class="fb-reveal__pts" id="fbRevealPts">+0</span>
+          <span class="fb-reveal__lbl">points earned</span>
+          <span class="fb-reveal__lvl" id="fbRevealLvl" hidden></span>
+        </div>
         <div class="fb-list" id="fbList"></div>
         <div class="aig-actions">
           <button class="btn btn--secondary" data-goto="2" data-event="Try Again">Try again</button>
@@ -196,6 +205,8 @@
 
   <script src="auth.js"></script>
   <script src="admin.js"></script>
+  <script src="characters.js"></script>
+  <script src="gamify-nav.js"></script>
   <script>
     ygiRequireProfile();
 
@@ -464,6 +475,7 @@ Riverstone Family Practice`,
       }
       demoGrade = !liveGrade;
       renderFeedback(data);
+      showReveal(data.gamify);
       gradeBtn.disabled = false;
       gradeBtn.textContent = 'Submit for feedback →';
       const total = (data.checks || []).length;
@@ -488,6 +500,28 @@ Riverstone Family Practice`,
             ${c.evidence ? `<div class="fb-evidence">${escapeHtml(c.evidence)}</div>` : ''}
           </div>
         </div>`).join('');
+    }
+
+    // Post-grade points reveal (only for signed-in live grades, where /api/grade returns `gamify`).
+    function showReveal(g) {
+      const el = document.getElementById('fbReveal');
+      if (!el) return;
+      if (!g || !g.pointsEarned) { el.hidden = true; return; }
+      const ptsEl = document.getElementById('fbRevealPts');
+      const lvlEl = document.getElementById('fbRevealLvl');
+      lvlEl.textContent = g.leveledUp ? `Level up — you're now ${g.levelName}!` : '';
+      lvlEl.hidden = !g.leveledUp;
+      el.hidden = false;
+      const target = g.pointsEarned;
+      const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce) {
+        ptsEl.textContent = '+' + target;
+      } else {
+        let n = 0; const step = Math.max(1, Math.round(target / 20));
+        ptsEl.textContent = '+0';
+        const timer = setInterval(() => { n = Math.min(target, n + step); ptsEl.textContent = '+' + n; if (n >= target) clearInterval(timer); }, 30);
+      }
+      window.track && window.track('Points Earned', { points: target, task: currentTask, leveled_up: !!g.leveledUp });
     }
 
     // entry: ?task=<id> jumps straight into that task's loop; otherwise show the hub

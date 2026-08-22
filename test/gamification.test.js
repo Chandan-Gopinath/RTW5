@@ -92,7 +92,30 @@ test("dailyHistory is newest-first across days", () => {
 });
 
 // append to test/gamification.test.js
-import { currentStreak } from "../lib/gamification.js";
+import { currentStreak, deltaForAttempt } from "../lib/gamification.js";
+
+test("deltaForAttempt: first task of the day, all-pass → +40, levels up", () => {
+  const now = new Date("2026-08-22T04:00:00Z");
+  const d = deltaForAttempt([], { taskId: "recall", checksPassed: 4, passed: true }, now);
+  assert.equal(d.pointsEarned, 40); // showup 10 + 4*5 + bonus 10
+  assert.equal(d.totalPoints, 60);  // + welcome 20
+  assert.equal(d.level, 2);
+  assert.equal(d.leveledUp, true);
+});
+
+test("deltaForAttempt: same task again same day → +0 (once per task per day)", () => {
+  const now = new Date("2026-08-22T06:00:00Z");
+  const prior = [{ taskId: "recall", checksPassed: 4, passed: true, createdAt: "2026-08-22T04:00:00Z" }];
+  const d = deltaForAttempt(prior, { taskId: "recall", checksPassed: 4, passed: true }, now);
+  assert.equal(d.pointsEarned, 0);
+  assert.equal(d.leveledUp, false);
+});
+
+test("deltaForAttempt: partial checks, no bonus → showup + per-check only", () => {
+  const now = new Date("2026-08-22T04:00:00Z");
+  const d = deltaForAttempt([], { taskId: "complaint", checksPassed: 2, passed: false }, now);
+  assert.equal(d.pointsEarned, 20); // showup 10 + 2*5
+});
 
 // helper: N consecutive AEST day attempts ending on `endKey`
 test("currentStreak counts consecutive days ending today", () => {
