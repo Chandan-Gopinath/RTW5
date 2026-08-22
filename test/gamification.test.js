@@ -27,3 +27,66 @@ test("levelFor picks highest threshold <= points and the next", () => {
   assert.equal(levelFor(360).current.level, 6);
   assert.equal(levelFor(360).next, null);         // top level, no next
 });
+
+// append to test/gamification.test.js
+import { computeState } from "../lib/gamification.js";
+
+const A = (createdAt, taskId, checksPassed, passed) => ({ createdAt, taskId, checksPassed, passed });
+
+test("empty attempts → welcome-only state", () => {
+  const s = computeState([], new Date("2026-08-22T02:00:00Z"));
+  assert.equal(s.points, 20);
+  assert.equal(s.level, 1);
+  assert.equal(s.levelName, "Getting Going");
+  assert.equal(s.character, "buddy");
+  assert.equal(s.nextLevelAt, 40); // brief said 60 (typo); LEVELS L2 minPoints=40 per Task 1, matches reference impl (next.minPoints)
+  assert.equal(s.streakUnlocked, false);
+  assert.equal(s.daysToUnlock, 3);
+  assert.deepEqual(s.dailyHistory, []);
+});
+
+test("one all-pass task: welcome + showup + 4 checks + bonus", () => {
+  // 4/4 checks, passed → 20 + 10 + 4*5 + 10 = 60
+  const s = computeState([A("2026-08-20T03:00:00Z", "recall", 4, true)]);
+  assert.equal(s.points, 60);
+  assert.equal(s.level, 2); // 60 hits Finding Your Feet
+  assert.equal(s.dailyHistory[0].tasksDone, 1);
+  assert.equal(s.dailyHistory[0].checksPassed, 4);
+  assert.equal(s.dailyHistory[0].passedAll, true);
+  assert.equal(s.dailyHistory[0].points, 40); // 10 + 20 + 10 (welcome not in day)
+});
+
+test("once-per-task-per-day: same-day retry does not re-pay", () => {
+  // first submission 2/4 (fail), retry same day 4/4 (pass) — only the FIRST counts
+  const day = [
+    A("2026-08-20T03:00:00Z", "recall", 2, false),
+    A("2026-08-20T05:00:00Z", "recall", 4, true),
+  ];
+  const s = computeState(day);
+  // day points = showup 10 + first submission 2*5 + no bonus = 20; +welcome 20 = 40
+  assert.equal(s.points, 40);
+  assert.equal(s.dailyHistory[0].points, 20);
+  assert.equal(s.dailyHistory[0].tasksDone, 1);
+});
+
+test("show-up counts once per day across two tasks", () => {
+  const day = [
+    A("2026-08-20T03:00:00Z", "recall", 4, true),
+    A("2026-08-20T04:00:00Z", "complaint", 0, false),
+  ];
+  const s = computeState(day);
+  // showup 10 (once) + recall(20+10) + complaint(0) = 40; +welcome = 60
+  assert.equal(s.dailyHistory[0].points, 40);
+  assert.equal(s.dailyHistory[0].tasksDone, 2);
+  assert.equal(s.points, 60);
+});
+
+test("dailyHistory is newest-first across days", () => {
+  const s = computeState([
+    A("2026-08-18T03:00:00Z", "recall", 1, false),
+    A("2026-08-20T03:00:00Z", "recall", 1, false),
+  ]);
+  assert.equal(s.dailyHistory[0].date, "2026-08-20");
+  assert.equal(s.dailyHistory[1].date, "2026-08-18");
+  assert.equal(s.activeDays, 2);
+});
