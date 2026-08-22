@@ -85,6 +85,16 @@
       </table>
     </div>
     <div class="admin-pager" id="usersPager"></div>
+
+    <p class="section-label" style="margin-top:var(--s7)">Feedback <span class="admin-note" id="feedbackCount"></span></p>
+    <div class="admin-table-wrap">
+      <table class="admin-table" id="feedbackTable">
+        <thead>
+          <tr><th>When</th><th>Rating</th><th>Context</th><th>Message</th><th>From</th></tr>
+        </thead>
+        <tbody id="feedbackBody"><tr><td colspan="5">Loading…</td></tr></tbody>
+      </table>
+    </div>
   </main>
 
   <script src="auth.js"></script>
@@ -93,6 +103,7 @@
   <script src="progress-cache.js"></script>
   <script src="gamify-nav.js"></script>
   <script src="format.js"></script>
+  <script src="feedback-widget.js"></script>
   <script>
     // mobile + account menus (same pattern as the other pages)
     const menuBtn = document.getElementById('menuBtn');
@@ -192,6 +203,23 @@
       if (window.track) window.track('Metrics Viewed');
     }
 
+    async function loadFeedback() {
+      let data;
+      try { data = await (await fetch('/api/admin/feedback')).json(); }
+      catch (_) { document.getElementById('feedbackBody').innerHTML = '<tr><td colspan="5">Could not load feedback.</td></tr>'; return; }
+      document.getElementById('feedbackCount').textContent = `${data.feedback.length} total`;
+      const icon = r => r === 'up' ? '👍' : r === 'down' ? '👎' : '—';
+      const dash = '<span style="color:var(--muted)">—</span>';
+      document.getElementById('feedbackBody').innerHTML = data.feedback.length ? data.feedback.map(f => `
+        <tr>
+          <td>${fmtDate(f.createdAt)}</td>
+          <td>${icon(f.rating)}</td>
+          <td class="mono">${esc(f.context)}</td>
+          <td>${f.message ? esc(f.message) : dash}</td>
+          <td>${f.name ? esc(f.name) : dash}${f.email ? ' <span class="mono" style="color:var(--muted)">' + esc(f.email) + '</span>' : ''}</td>
+        </tr>`).join('') : '<tr><td colspan="5">No feedback yet.</td></tr>';
+    }
+
     // gate: require a session AND admin
     ygiRequireProfile().then(user => {
       if (!user) return;                    // ygiRequireProfile already redirected to sign-in
@@ -200,6 +228,7 @@
       loadMetrics();
       loadModels();
       loadUsers();
+      loadFeedback();
     });
   </script>
 

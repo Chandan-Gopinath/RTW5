@@ -18,6 +18,8 @@ import adminConfig from "./api/admin/config.js";
 import adminUsers from "./api/admin/users.js";
 import adminMetrics from "./api/admin/metrics.js";
 import progressHandler from "./api/progress.js";
+import feedbackHandler from "./api/feedback.js";
+import adminFeedback from "./api/admin/feedback.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -33,6 +35,8 @@ app.post("/api/admin/config", (req, res) => adminConfig(req, res));
 app.get("/api/admin/users", (req, res) => adminUsers(req, res));
 app.get("/api/admin/metrics", (req, res) => adminMetrics(req, res));
 app.get("/api/progress", (req, res) => progressHandler(req, res));
+app.post("/api/feedback", (req, res) => feedbackHandler(req, res));
+app.get("/api/admin/feedback", (req, res) => adminFeedback(req, res));
 
 app.get("/api/models", (req, res) => {
   const models = Object.values(MODELS).map((m) => ({

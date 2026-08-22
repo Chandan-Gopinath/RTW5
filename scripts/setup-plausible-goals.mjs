@@ -38,6 +38,7 @@ const EVENTS = [
   "Tour Completed",
   "Tour Skipped",
   "Metrics Viewed",
+  "Feedback Submitted",
 ];
 
 const key = process.env.PLAUSIBLE_API_KEY;
