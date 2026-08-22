@@ -13,6 +13,7 @@ test("empty data is safe (no divide-by-zero)", () => {
   assert.equal(m.passRate, null);
   assert.equal(m.activation.rate, null);
   assert.equal(m.weeklyTrend.length, 6);
+  assert.equal(m.dailyTrend.length, 14);
 });
 
 test("weekly applied actions counts distinct users in the last 7 days", () => {
@@ -72,4 +73,23 @@ test("weekly trend has 6 buckets, newest last, counting distinct users", () => {
   assert.equal(thisWeek.week, isoWeekKey("2026-08-22"));
   assert.equal(thisWeek.users, 2);
   assert.equal(prevWeek.users, 1);
+});
+
+test("daily trend has 14 buckets, newest last, distinct users per Sydney day", () => {
+  const attempts = [
+    A("u1", "2026-08-22T02:00:00Z"), // today (Sydney)
+    A("u2", "2026-08-22T05:00:00Z"), // today, different user
+    A("u1", "2026-08-22T06:00:00Z"), // today, same user → still distinct = {u1,u2}
+    A("u3", "2026-08-20T02:00:00Z"), // 2 days ago
+    A("u4", "2026-07-01T02:00:00Z"), // outside the 14-day window
+  ];
+  const m = computeMetrics([], attempts, now);
+  assert.equal(m.dailyTrend.length, 14);
+  const today = m.dailyTrend[13];
+  assert.equal(today.day, "2026-08-22");
+  assert.equal(today.label, "22/08");
+  assert.equal(today.users, 2);
+  const twoDaysAgo = m.dailyTrend[11];
+  assert.equal(twoDaysAgo.day, "2026-08-20");
+  assert.equal(twoDaysAgo.users, 1);
 });

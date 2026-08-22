@@ -40,6 +40,8 @@ const EVENTS = [
   "Metrics Viewed",
   "Feedback Submitted",
   "Reminder Clicked",
+  "Admin Tab Viewed",
+  "Trend Granularity Changed",
 ];
 
 const key = process.env.PLAUSIBLE_API_KEY;

@@ -67,34 +67,49 @@
       <p class="lead">Set the grading model everyone uses, and see who's practising.</p>
     </div>
 
-    <p class="section-label">Metrics <span class="admin-note">doing, not watching · the engagement funnel lives in Plausible</span></p>
-    <div class="mtx" id="metricsWrap" style="margin-bottom:var(--s7)"><p class="admin-note">Loading…</p></div>
-
-    <p class="section-label">Grading model <span class="admin-note">applies to draft + grading, for all users</span></p>
-    <div class="brief-card" style="margin-bottom:var(--s7)">
-      <div class="admin-menu__list" id="modelList">Loading…</div>
+    <div class="tabs" role="tablist" aria-label="Admin sections">
+      <button class="tab is-active" data-tab="metrics" role="tab" aria-selected="true">Metrics</button>
+      <button class="tab" data-tab="users" role="tab" aria-selected="false">Users <span class="cnt" id="usersTabCount" hidden></span></button>
+      <button class="tab" data-tab="feedback" role="tab" aria-selected="false">Feedback <span class="cnt" id="feedbackTabCount" hidden></span></button>
+      <button class="tab" data-tab="settings" role="tab" aria-selected="false">Settings</button>
     </div>
 
-    <p class="section-label">Users <span class="admin-note" id="usersCount"></span></p>
-    <div class="admin-table-wrap">
-      <table class="admin-table" id="usersTable">
-        <thead>
-          <tr><th>Name</th><th>Email</th><th>Joined</th><th>Attempts</th><th>Pass rate</th><th>Level</th><th>Points</th><th>Last active</th><th>Role</th></tr>
-        </thead>
-        <tbody id="usersBody"><tr><td colspan="9">Loading…</td></tr></tbody>
-      </table>
-    </div>
-    <div class="admin-pager" id="usersPager"></div>
+    <section class="tabpanel" data-panel="metrics" role="tabpanel">
+      <p class="section-label">Metrics <span class="admin-note">doing, not watching · the engagement funnel lives in Plausible</span></p>
+      <div class="mtx" id="metricsWrap"><p class="admin-note">Loading…</p></div>
+    </section>
 
-    <p class="section-label" style="margin-top:var(--s7)">Feedback <span class="admin-note" id="feedbackCount"></span></p>
-    <div class="admin-table-wrap">
-      <table class="admin-table" id="feedbackTable">
-        <thead>
-          <tr><th>When</th><th>Rating</th><th>Context</th><th>Message</th><th>From</th></tr>
-        </thead>
-        <tbody id="feedbackBody"><tr><td colspan="5">Loading…</td></tr></tbody>
-      </table>
-    </div>
+    <section class="tabpanel" data-panel="users" role="tabpanel" hidden>
+      <p class="section-label">Users <span class="admin-note" id="usersCount"></span></p>
+      <div class="admin-table-wrap">
+        <table class="admin-table" id="usersTable">
+          <thead>
+            <tr><th>Name</th><th>Email</th><th>Joined</th><th>Attempts</th><th>Pass rate</th><th>Level</th><th>Points</th><th>Last active</th><th>Role</th></tr>
+          </thead>
+          <tbody id="usersBody"><tr><td colspan="9">Loading…</td></tr></tbody>
+        </table>
+      </div>
+      <div class="admin-pager" id="usersPager"></div>
+    </section>
+
+    <section class="tabpanel" data-panel="feedback" role="tabpanel" hidden>
+      <p class="section-label">Feedback <span class="admin-note" id="feedbackCount"></span></p>
+      <div class="admin-table-wrap">
+        <table class="admin-table" id="feedbackTable">
+          <thead>
+            <tr><th>When</th><th>Rating</th><th>Context</th><th>Message</th><th>From</th></tr>
+          </thead>
+          <tbody id="feedbackBody"><tr><td colspan="5">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="tabpanel" data-panel="settings" role="tabpanel" hidden>
+      <p class="section-label">Grading model <span class="admin-note">applies to draft + grading, for all users</span></p>
+      <div class="brief-card">
+        <div class="admin-menu__list" id="modelList">Loading…</div>
+      </div>
+    </section>
   </main>
 
   <script src="auth.js"></script>
@@ -172,7 +187,34 @@
       allUsers = data.users || [];
       usersPage = 0;
       document.getElementById('usersCount').textContent = `${allUsers.length} total`;
+      const badge = document.getElementById('usersTabCount');
+      badge.textContent = allUsers.length; badge.hidden = false;
       renderUsersPage();
+    }
+
+    // Trend granularity — persisted so the admin's Day/Week choice sticks.
+    let metricsData = null;
+    let trendGran = localStorage.getItem('ygiTrendGran') === 'week' ? 'week' : 'day';
+    function renderTrend() {
+      if (!metricsData) return;
+      const series = trendGran === 'week' ? metricsData.weeklyTrend : metricsData.dailyTrend;
+      const maxU = Math.max(1, ...series.map(x => x.users));
+      document.getElementById('trendTitle').textContent =
+        trendGran === 'week' ? 'Applied Actions — last 6 weeks' : 'Applied Actions — last 14 days';
+      document.getElementById('trendBars').innerHTML = series.map(x => `
+        <div class="mtx-bar">
+          <div class="mtx-bar__track"><div class="mtx-bar__fill" style="height:${Math.round(x.users / maxU * 100)}%"></div></div>
+          <div class="mtx-bar__n">${x.users}</div>
+          <div class="mtx-bar__l">${esc(x.label)}</div>
+        </div>`).join('');
+      document.querySelectorAll('.gran button').forEach(b => b.classList.toggle('is-on', b.dataset.gran === trendGran));
+    }
+    function setGran(mode) {
+      if (mode === trendGran) return;
+      trendGran = mode;
+      localStorage.setItem('ygiTrendGran', mode);
+      renderTrend();
+      if (window.track) window.track('Trend Granularity Changed', { mode });
     }
 
     async function loadMetrics() {
@@ -180,14 +222,8 @@
       let m;
       try { m = (await (await fetch('/api/admin/metrics')).json()).metrics; }
       catch (_) { wrap.innerHTML = '<p class="admin-note">Could not load metrics.</p>'; return; }
+      metricsData = m;
       const p = v => v == null ? '—' : v + '%';
-      const maxU = Math.max(1, ...m.weeklyTrend.map(w => w.users));
-      const bars = m.weeklyTrend.map(w => `
-        <div class="mtx-bar">
-          <div class="mtx-bar__track"><div class="mtx-bar__fill" style="height:${Math.round(w.users / maxU * 100)}%"></div></div>
-          <div class="mtx-bar__n">${w.users}</div>
-          <div class="mtx-bar__l">${esc(w.label)}</div>
-        </div>`).join('');
       wrap.innerHTML = `
         <div class="mtx-cards">
           <div class="mtx-card mtx-card--star"><span class="mtx-card__l">Weekly Applied Actions <b>· North Star</b></span><span class="mtx-card__v">${m.weeklyAppliedActions}</span><span class="mtx-card__s">active users, last 7 days</span></div>
@@ -197,9 +233,17 @@
           <div class="mtx-card"><span class="mtx-card__l">Pass rate</span><span class="mtx-card__v">${p(m.passRate)}</span><span class="mtx-card__s">first try ${p(m.firstTryPassRate)} → retry ${p(m.retryPassRate)}</span></div>
         </div>
         <div class="mtx-trend">
-          <p class="mtx-trend__t">Weekly Applied Actions — last 6 weeks</p>
-          <div class="mtx-trend__bars">${bars}</div>
+          <div class="mtx-trend__head">
+            <p class="mtx-trend__t" id="trendTitle"></p>
+            <div class="gran" role="group" aria-label="Trend granularity">
+              <button data-gran="day">Day</button>
+              <button data-gran="week">Week</button>
+            </div>
+          </div>
+          <div class="mtx-trend__bars" id="trendBars"></div>
         </div>`;
+      wrap.querySelectorAll('.gran button').forEach(b => b.addEventListener('click', () => setGran(b.dataset.gran)));
+      renderTrend();
       if (window.track) window.track('Metrics Viewed');
     }
 
@@ -208,6 +252,8 @@
       try { data = await (await fetch('/api/admin/feedback')).json(); }
       catch (_) { document.getElementById('feedbackBody').innerHTML = '<tr><td colspan="5">Could not load feedback.</td></tr>'; return; }
       document.getElementById('feedbackCount').textContent = `${data.feedback.length} total`;
+      const fbBadge = document.getElementById('feedbackTabCount');
+      fbBadge.textContent = data.feedback.length; fbBadge.hidden = false;
       const icon = r => r === 'up' ? '👍' : r === 'down' ? '👎' : '—';
       const dash = '<span style="color:var(--muted)">—</span>';
       document.getElementById('feedbackBody').innerHTML = data.feedback.length ? data.feedback.map(f => `
@@ -220,15 +266,27 @@
         </tr>`).join('') : '<tr><td colspan="5">No feedback yet.</td></tr>';
     }
 
+    // Tabs — lazy-load each section's data on first open (metrics is the default landing).
+    const adminTabs = [...document.querySelectorAll('.tab')];
+    const adminPanels = [...document.querySelectorAll('.tabpanel')];
+    const tabLoaders = { metrics: loadMetrics, users: loadUsers, feedback: loadFeedback, settings: loadModels };
+    const tabLoaded = new Set();
+    function showTab(name) {
+      adminTabs.forEach(t => { const on = t.dataset.tab === name; t.classList.toggle('is-active', on); t.setAttribute('aria-selected', on ? 'true' : 'false'); });
+      adminPanels.forEach(pl => { pl.hidden = pl.dataset.panel !== name; });
+      if (location.hash.slice(1) !== name) history.replaceState(null, '', '#' + name);
+      if (!tabLoaded.has(name)) { tabLoaded.add(name); (tabLoaders[name] || (() => {}))(); }
+      if (window.track) window.track('Admin Tab Viewed', { tab: name });
+    }
+    adminTabs.forEach(t => t.addEventListener('click', () => showTab(t.dataset.tab)));
+
     // gate: require a session AND admin
     ygiRequireProfile().then(user => {
       if (!user) return;                    // ygiRequireProfile already redirected to sign-in
       if (!user.isAdmin) { window.location.href = 'dashboard.html'; return; }
       document.getElementById('adminMain').hidden = false;
-      loadMetrics();
-      loadModels();
-      loadUsers();
-      loadFeedback();
+      const start = location.hash.slice(1);
+      showTab(adminTabs.some(t => t.dataset.tab === start) ? start : 'metrics');
     });
   </script>
 
