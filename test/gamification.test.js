@@ -90,3 +90,50 @@ test("dailyHistory is newest-first across days", () => {
   assert.equal(s.dailyHistory[1].date, "2026-08-18");
   assert.equal(s.activeDays, 2);
 });
+
+// append to test/gamification.test.js
+import { currentStreak } from "../lib/gamification.js";
+
+// helper: N consecutive AEST day attempts ending on `endKey`
+test("currentStreak counts consecutive days ending today", () => {
+  const keys = ["2026-08-18", "2026-08-19", "2026-08-20"];
+  const now = new Date("2026-08-20T04:00:00Z"); // 2026-08-20 in Sydney
+  assert.equal(currentStreak(keys, now), 3);
+});
+
+test("currentStreak stays alive if active yesterday but not yet today", () => {
+  const keys = ["2026-08-18", "2026-08-19"];
+  const now = new Date("2026-08-20T04:00:00Z"); // today has no attempt yet
+  assert.equal(currentStreak(keys, now), 2);
+});
+
+test("currentStreak absorbs a single grace day", () => {
+  // missed 2026-08-19, active 18 and 20 → streak of 3 (gap bridged once)
+  const keys = ["2026-08-17", "2026-08-18", "2026-08-20"];
+  const now = new Date("2026-08-20T04:00:00Z");
+  assert.equal(currentStreak(keys, now), 3);
+});
+
+test("currentStreak resets after two consecutive missed days", () => {
+  // active up to 2026-08-16, then 17 & 18 missed, active again 19 & 20
+  const keys = ["2026-08-14", "2026-08-15", "2026-08-16", "2026-08-19", "2026-08-20"];
+  const now = new Date("2026-08-20T04:00:00Z");
+  assert.equal(currentStreak(keys, now), 2); // only 19 + 20 survive the double gap
+});
+
+test("currentStreak is 0 when neither today nor yesterday active", () => {
+  const keys = ["2026-08-10", "2026-08-11"];
+  const now = new Date("2026-08-20T04:00:00Z");
+  assert.equal(currentStreak(keys, now), 0);
+});
+
+test("computeState surfaces the streak once unlocked", () => {
+  const A = (createdAt, taskId, c, p) => ({ createdAt, taskId, checksPassed: c, passed: p });
+  const s = computeState([
+    A("2026-08-18T04:00:00Z", "recall", 1, false),
+    A("2026-08-19T04:00:00Z", "recall", 1, false),
+    A("2026-08-20T04:00:00Z", "recall", 1, false),
+  ], new Date("2026-08-20T05:00:00Z"));
+  assert.equal(s.streakUnlocked, true);
+  assert.equal(s.streak, 3);
+});
