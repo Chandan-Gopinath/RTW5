@@ -561,3 +561,19 @@ button{font-family:inherit}
 @keyframes ygi-spin{to{transform:rotate(360deg)}}
 @keyframes ygi-blink{0%,60%,100%{opacity:.25}30%{opacity:1}}
 @media(prefers-reduced-motion:reduce){.thinking__ring{animation-duration:2.6s}.thinking__dots i{animation:none;opacity:.6}}
+
+/* ---- feedback widget ---- */
+.fbw{border:1px solid var(--hairline);border-radius:var(--radius);padding:16px 18px;background:var(--wash)}
+.fbw__q{margin:0 0 10px;font-weight:600;color:var(--ink);font-size:14.5px}
+.fbw__rate{display:flex;gap:10px}
+.fbw__thumb{width:44px;height:40px;font-size:19px;line-height:1;border:1px solid var(--hairline-strong);background:#fff;border-radius:var(--radius-sm);cursor:pointer;transition:transform .08s ease,border-color .12s ease,background .12s ease}
+.fbw__thumb:hover{transform:translateY(-1px)}
+.fbw__thumb.is-on{border-color:var(--ink);background:var(--highlight)}
+.fbw__note{margin-top:12px;width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--hairline-strong);border-radius:var(--radius-sm);font:inherit;font-size:14px;color:var(--ink)}
+.fbw__note:focus{outline:none;border-color:var(--ink)}
+.fbw__actions{margin-top:10px}
+.fbw__send{padding:9px 18px;background:var(--ink);color:#fff;border:0;border-radius:var(--radius-sm);font-weight:600;font-size:14px;cursor:pointer}
+.fbw__send:disabled{opacity:.6;cursor:default}
+.fbw__thanks{margin:0;font-weight:600;color:var(--pass)}
+.fbw-pop{position:fixed;top:64px;right:18px;z-index:120;width:min(320px,calc(100vw - 36px));background:#fff;border:1px solid var(--hairline-strong);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:6px}
+.fbw-pop .fbw{border:0;background:#fff}

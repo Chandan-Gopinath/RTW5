@@ -15,6 +15,13 @@
       "when": 1787318524836,
       "tag": "0001_faulty_wilson_fisk",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1787395758324,
+      "tag": "0002_blue_loners",
+      "breakpoints": true
     }
   ]
 }

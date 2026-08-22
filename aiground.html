@@ -211,6 +211,7 @@
           <button class="btn btn--secondary" data-goto="2" data-event="Try Again">Try it yourself</button>
           <a class="btn btn--primary" href="dashboard.html">Back to Your desk &rarr;</a>
         </div>
+        <div id="revealFeedback" style="margin-top:22px;max-width:420px"></div>
       </section>
     </div>
 
@@ -230,6 +231,7 @@
   <script src="characters.js"></script>
   <script src="progress-cache.js"></script>
   <script src="gamify-nav.js"></script>
+  <script src="feedback-widget.js"></script>
   <script>
     ygiRequireProfile();
 
@@ -292,7 +294,10 @@
       // banner rides with the pre-scripted result: Draft (3) / Feedback (4) only
       demoBanner.hidden = !((n === 3 && demoDraft) || (n === 4 && demoGrade));
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      if (n === 5) window.track && window.track('Reveal Viewed');
+      if (n === 5) {
+        window.track && window.track('Reveal Viewed');
+        window.ygiFeedback && window.ygiFeedback(document.getElementById('revealFeedback'), 'grade:' + currentTask);
+      }
     }
 
     function startTask(id) {
