@@ -14,12 +14,12 @@ import authRequest from "./api/auth/request.js";
 import authVerify from "./api/auth/verify.js";
 import authMe from "./api/auth/me.js";
 import authSignout from "./api/auth/signout.js";
-import adminConfig from "./api/admin/config.js";
-import adminUsers from "./api/admin/users.js";
-import adminMetrics from "./api/admin/metrics.js";
+import adminConfig from "./lib/admin/config.js";
+import adminUsers from "./lib/admin/users.js";
+import adminMetrics from "./lib/admin/metrics.js";
 import progressHandler from "./api/progress.js";
 import feedbackHandler from "./api/feedback.js";
-import adminFeedback from "./api/admin/feedback.js";
+import adminFeedback from "./lib/admin/feedback.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
