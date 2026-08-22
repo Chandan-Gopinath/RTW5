@@ -67,6 +67,9 @@
       <p class="lead">Set the grading model everyone uses, and see who's practising.</p>
     </div>
 
+    <p class="section-label">Metrics <span class="admin-note">doing, not watching · the engagement funnel lives in Plausible</span></p>
+    <div class="mtx" id="metricsWrap" style="margin-bottom:var(--s7)"><p class="admin-note">Loading…</p></div>
+
     <p class="section-label">Grading model <span class="admin-note">applies to draft + grading, for all users</span></p>
     <div class="brief-card" style="margin-bottom:var(--s7)">
       <div class="admin-menu__list" id="modelList">Loading…</div>
@@ -139,11 +142,40 @@
         </tr>`).join('') : '<tr><td colspan="9">No users yet.</td></tr>';
     }
 
+    async function loadMetrics() {
+      const wrap = document.getElementById('metricsWrap');
+      let m;
+      try { m = (await (await fetch('/api/admin/metrics')).json()).metrics; }
+      catch (_) { wrap.innerHTML = '<p class="admin-note">Could not load metrics.</p>'; return; }
+      const p = v => v == null ? '—' : v + '%';
+      const maxU = Math.max(1, ...m.weeklyTrend.map(w => w.users));
+      const bars = m.weeklyTrend.map(w => `
+        <div class="mtx-bar">
+          <div class="mtx-bar__track"><div class="mtx-bar__fill" style="height:${Math.round(w.users / maxU * 100)}%"></div></div>
+          <div class="mtx-bar__n">${w.users}</div>
+          <div class="mtx-bar__l">${esc(w.label)}</div>
+        </div>`).join('');
+      wrap.innerHTML = `
+        <div class="mtx-cards">
+          <div class="mtx-card mtx-card--star"><span class="mtx-card__l">Weekly Applied Actions <b>· North Star</b></span><span class="mtx-card__v">${m.weeklyAppliedActions}</span><span class="mtx-card__s">active users, last 7 days</span></div>
+          <div class="mtx-card"><span class="mtx-card__l">Activation</span><span class="mtx-card__v">${p(m.activation.rate)}</span><span class="mtx-card__s">${m.activation.activated}/${m.activation.eligible} did a task ≤3 days from signup</span></div>
+          <div class="mtx-card"><span class="mtx-card__l">Graded tasks (7d)</span><span class="mtx-card__v">${m.gradedTasksLast7}</span><span class="mtx-card__s">${m.totalGradedTasks} all time</span></div>
+          <div class="mtx-card"><span class="mtx-card__l">Total users</span><span class="mtx-card__v">${m.totalUsers}</span><span class="mtx-card__s">signed up</span></div>
+          <div class="mtx-card"><span class="mtx-card__l">Pass rate</span><span class="mtx-card__v">${p(m.passRate)}</span><span class="mtx-card__s">first try ${p(m.firstTryPassRate)} → retry ${p(m.retryPassRate)}</span></div>
+        </div>
+        <div class="mtx-trend">
+          <p class="mtx-trend__t">Weekly Applied Actions — last 6 weeks</p>
+          <div class="mtx-trend__bars">${bars}</div>
+        </div>`;
+      if (window.track) window.track('Metrics Viewed');
+    }
+
     // gate: require a session AND admin
     ygiRequireProfile().then(user => {
       if (!user) return;                    // ygiRequireProfile already redirected to sign-in
       if (!user.isAdmin) { window.location.href = 'dashboard.html'; return; }
       document.getElementById('adminMain').hidden = false;
+      loadMetrics();
       loadModels();
       loadUsers();
     });
