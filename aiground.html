@@ -173,6 +173,7 @@
           <span class="fb-reveal__pts" id="fbRevealPts">+0</span>
           <span class="fb-reveal__lbl">points earned</span>
           <span class="fb-reveal__lvl" id="fbRevealLvl" hidden></span>
+          <span class="fb-reveal__bd" id="fbRevealBd"></span>
         </div>
         <div class="fb-list" id="fbList"></div>
         <div class="aig-actions">
@@ -513,9 +514,11 @@ Riverstone Family Practice`,
       const lvlEl = document.getElementById('fbRevealLvl');
       el.classList.remove('fb-reveal--none');
 
+      const bd = document.getElementById('fbRevealBd');
       if (g.pointsEarned > 0) {
         ptsEl.hidden = false;
         lblEl.innerHTML = g.firstEver ? '🎉 Welcome aboard!' : 'points earned';
+        if (bd) bd.innerHTML = (g.breakdown || []).map(b => `<span class="fb-bd"><b>+${b.points}</b> ${b.label}</span>`).join('');
         if (g.leveledUp) { lvlEl.textContent = `Level up — you're now ${g.levelName}!`; lvlEl.hidden = false; }
         else if (g.firstEver) { lvlEl.textContent = "Your first points — you're on the board."; lvlEl.hidden = false; }
         else { lvlEl.hidden = true; }
@@ -532,6 +535,7 @@ Riverstone Family Practice`,
         el.classList.add('fb-reveal--none');
         ptsEl.hidden = true;
         lvlEl.hidden = true;
+        if (bd) bd.innerHTML = '';
         lblEl.innerHTML = "Already earned today ✓<span class='fb-reveal__sub'>Come back tomorrow, or beat your best, to earn more.</span>";
       }
       el.hidden = false;

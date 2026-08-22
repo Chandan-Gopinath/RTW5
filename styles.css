@@ -516,3 +516,5 @@ button{font-family:inherit}
 .fb-reveal--none{background:var(--ground,#FCFCFA);border:1px solid var(--hairline,#E4E4E0)}
 .fb-reveal--none .fb-reveal__lbl{width:100%;font-weight:700}
 .fb-reveal__sub{display:block;width:100%;font-weight:400;color:var(--muted,#5b5b63);font-size:13px;margin-top:2px}
+.fb-reveal__bd{display:flex;flex-wrap:wrap;gap:6px 14px;width:100%;margin-top:8px;font-size:13px}
+.fb-bd b{font-family:'IBM Plex Mono',monospace;font-weight:700}

@@ -122,6 +122,28 @@ test("deltaForAttempt: improving a same-day retry pays the delta", () => {
   assert.equal(d.pointsEarned, 20);
 });
 
+test("deltaForAttempt breakdown: improving 3→4 checks explains +5 check + 10 bonus", () => {
+  const now = new Date("2026-08-22T06:00:00Z");
+  const prior = [{ taskId: "recall", checksPassed: 3, passed: false, createdAt: "2026-08-22T04:00:00Z" }];
+  const d = deltaForAttempt(prior, { taskId: "recall", checksPassed: 4, passed: true }, now);
+  assert.equal(d.pointsEarned, 15);
+  assert.deepEqual(d.breakdown, [
+    { label: "1 more check passed", points: 5 },
+    { label: "All checks clear bonus", points: 10 },
+  ]);
+});
+
+test("deltaForAttempt breakdown: very first task lists welcome + showup + checks + bonus", () => {
+  const now = new Date("2026-08-22T04:00:00Z");
+  const d = deltaForAttempt([], { taskId: "recall", checksPassed: 4, passed: true }, now);
+  assert.deepEqual(d.breakdown, [
+    { label: "Welcome aboard", points: 20 },
+    { label: "Showed up today", points: 10 },
+    { label: "4 checks passed", points: 20 },
+    { label: "All checks clear bonus", points: 10 },
+  ]);
+});
+
 test("deltaForAttempt: same task again same day → +0 (once per task per day)", () => {
   const now = new Date("2026-08-22T06:00:00Z");
   const prior = [{ taskId: "recall", checksPassed: 4, passed: true, createdAt: "2026-08-22T04:00:00Z" }];
