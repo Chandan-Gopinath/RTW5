@@ -16,12 +16,23 @@
     .brand-lead{max-width:40ch}
     .si-context{display:flex;flex-direction:column;gap:var(--s5);margin-top:var(--s2)}
     .si-how{display:flex;flex-direction:column;gap:12px}
-    .si-how__step{display:flex;align-items:flex-start;gap:12px}
-    .si-how__n{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--highlight);color:var(--ink);font-family:var(--font-mono);font-weight:600;font-size:12px;display:flex;align-items:center;justify-content:center}
+    .si-how__step{display:flex;align-items:flex-start;gap:12px;background:none;border:0;width:100%;text-align:left;padding:0;font:inherit;cursor:pointer;opacity:.5;transition:opacity .3s}
+    .si-how__step.is-on{opacity:1}
+    .si-how__n{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--wash);color:var(--muted);font-family:var(--font-mono);font-weight:600;font-size:12px;display:flex;align-items:center;justify-content:center;transition:background .3s,color .3s}
+    .si-how__step.is-on .si-how__n{background:var(--highlight);color:var(--ink)}
+    .si-stage{position:relative;min-height:216px}
+    .si-panel{position:absolute;inset:0;opacity:0;transition:opacity .45s ease;pointer-events:none}
+    .si-panel.on{opacity:1;pointer-events:auto}
+    .si-rec{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:7px 0;border-top:1px solid var(--hairline)}
+    .si-rec span{color:var(--muted)} .si-rec b{color:var(--ink);font-weight:600;text-align:right}
+    .si-prompt{font-family:var(--font-mono);font-size:11.5px;line-height:1.5;color:var(--ink);background:var(--wash);border-radius:8px;padding:9px 11px;margin:0 0 11px}
+    .si-draft-lbl{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 5px}
+    .si-draft{font-size:12.5px;line-height:1.5;color:var(--text-2);margin:0}
     .si-how__t{font-size:14.5px;line-height:1.3;padding-top:3px;margin:0}
     .si-how__t b{color:var(--ink);font-weight:700}
     .si-how__t span{color:var(--text-2)}
-    .si-pp{background:var(--surface);border:1px solid var(--hairline-strong);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;max-width:420px}
+    .si-pp{background:var(--surface);border:1px solid var(--hairline-strong);border-radius:var(--radius);box-shadow:var(--shadow),inset 4px 0 0 var(--highlight);overflow:hidden;max-width:420px}
+    .si-pp__eyebrow{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);font-weight:600;margin:0 0 10px}
     .si-pp__top{display:flex;align-items:center;gap:6px;padding:9px 13px;border-bottom:1px solid var(--hairline);background:var(--wash)}
     .si-pp__dot{width:7px;height:7px;border-radius:50%;background:var(--hairline-strong)}
     .si-pp__tag{margin-left:auto;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
@@ -37,7 +48,7 @@
     .si-chk__pill--pass{background:#E7F1EA;color:var(--pass)}
     .si-chk__pill--warn{background:#F6ECD6;color:var(--warn)}
     .si-chk__ev{font-family:var(--font-mono);font-size:10.5px;color:var(--text-2);margin:6px 0 0;line-height:1.45}
-    @media(max-width:860px){ .si-pp{display:none} }
+    @media(max-width:860px){ .si-stage{display:none} }
   </style>
 </head>
 <body>
@@ -50,7 +61,6 @@
         <span class="logo__mark">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5 L10 18 L20 6" fill="none" stroke="#EFE84B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </span>
-        <span class="logo__word">You Got It!</span>
       </div>
 
       <div class="brand-hero">
@@ -58,19 +68,48 @@
         <h1 class="brand-mark">You <span class="hl">Got&nbsp;It!</span></h1>
         <p class="brand-lead">Practise the AI skills your clinic actually needs — on safe, realistic tasks. Then prove it in <strong>AIGround</strong>.</p>
 
-        <div class="si-context">
+        <div class="si-context" id="siWalk">
           <div class="si-how">
-            <div class="si-how__step"><span class="si-how__n">1</span><p class="si-how__t"><b>Bring a real task</b> <span>— a recall letter, a complaint reply</span></p></div>
-            <div class="si-how__step"><span class="si-how__n">2</span><p class="si-how__t"><b>Do it with AI</b> <span>— on safe, synthetic data</span></p></div>
-            <div class="si-how__step"><span class="si-how__n">3</span><p class="si-how__t"><b>Get graded</b> <span>— on whether you actually got it right</span></p></div>
+            <button type="button" class="si-how__step is-on" data-step="0"><span class="si-how__n">1</span><span class="si-how__t"><b>Bring a real task</b> <span>— a recall letter, a complaint reply</span></span></button>
+            <button type="button" class="si-how__step" data-step="1"><span class="si-how__n">2</span><span class="si-how__t"><b>Do it with AI</b> <span>— on safe, synthetic data</span></span></button>
+            <button type="button" class="si-how__step" data-step="2"><span class="si-how__n">3</span><span class="si-how__t"><b>Get graded</b> <span>— on whether you actually got it right</span></span></button>
           </div>
 
-          <div class="si-pp" role="img" aria-label="Example AIGround graded result: one check passed, one flagged, with cited evidence.">
-            <div class="si-pp__top"><span class="si-pp__dot"></span><span class="si-pp__dot"></span><span class="si-pp__dot"></span><span class="si-pp__tag">AIGround · graded</span></div>
-            <div class="si-pp__body">
-              <p class="si-pp__sum">You're close — one thing to tighten.</p>
-              <div class="si-chk si-chk--pass"><div class="si-chk__row"><span class="si-chk__t">Kept sensitive data out of the tool</span><span class="si-chk__pill si-chk__pill--pass">Pass</span></div><p class="si-chk__ev">“a patient overdue for a review” — no Medicare number, no DOB.</p></div>
-              <div class="si-chk si-chk--warn"><div class="si-chk__row"><span class="si-chk__t">Handled the unverifiable detail</span><span class="si-chk__pill si-chk__pill--warn">Check</span></div><p class="si-chk__ev">“…call us on (03) 9412 6680…” — the AI invented a number. Use a placeholder.</p></div>
+          <div class="si-stage" aria-live="polite">
+            <!-- panel 0 — bring a real task -->
+            <div class="si-panel on" data-panel="0">
+              <div class="si-pp">
+                <div class="si-pp__body">
+                  <p class="si-pp__eyebrow">Your desk · a real task</p>
+                  <p class="si-pp__sum">Today: a patient recall letter.</p>
+                  <div class="si-rec"><span>Patient</span><b>Overdue for a review</b></div>
+                  <div class="si-rec"><span>Clinic</span><b>Riverstone Family Practice</b></div>
+                  <div class="si-rec"><span>Send by</span><b>Letter or SMS</b></div>
+                </div>
+              </div>
+            </div>
+            <!-- panel 1 — do it with AI -->
+            <div class="si-panel" data-panel="1">
+              <div class="si-pp">
+                <div class="si-pp__body">
+                  <p class="si-pp__eyebrow">AIGround · your prompt</p>
+                  <p class="si-pp__sum">You direct the AI.</p>
+                  <p class="si-prompt">“Warm recall letter for our clinic inviting a patient to book — no personal details.”</p>
+                  <p class="si-draft-lbl">The AI's draft</p>
+                  <p class="si-draft">“It's time for your regular review at Riverstone Family Practice. Please call us to book a time that suits you…”</p>
+                </div>
+              </div>
+            </div>
+            <!-- panel 2 — get graded -->
+            <div class="si-panel" data-panel="2">
+              <div class="si-pp">
+                <div class="si-pp__body">
+                  <p class="si-pp__eyebrow">AIGround · graded</p>
+                  <p class="si-pp__sum">You're close — one thing to tighten.</p>
+                  <div class="si-chk si-chk--pass"><div class="si-chk__row"><span class="si-chk__t">Kept sensitive data out of the tool</span><span class="si-chk__pill si-chk__pill--pass">Pass</span></div><p class="si-chk__ev">“a patient overdue for a review” — no Medicare number, no DOB.</p></div>
+                  <div class="si-chk si-chk--warn"><div class="si-chk__row"><span class="si-chk__t">Handled the unverifiable detail</span><span class="si-chk__pill si-chk__pill--warn">Check</span></div><p class="si-chk__ev">“…call us on (03) 9412 6680…” — the AI invented a number. Use a placeholder.</p></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -105,6 +144,32 @@
   </main>
 
   <script>
+    // "How it works" looping walkthrough — steps highlight in turn, panel below
+    // cross-fades to match. Pauses on hover; steps are clickable; static on
+    // prefers-reduced-motion.
+    (function () {
+      const walk = document.getElementById('siWalk');
+      if (!walk) return;
+      const steps = [...walk.querySelectorAll('.si-how__step')];
+      const panels = [...walk.querySelectorAll('.si-panel')];
+      if (!steps.length || !panels.length) return;
+      const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let i = 0, timer = null;
+      const STEP_MS = 2800;
+      function show(n) {
+        i = n % steps.length;
+        steps.forEach((s, k) => s.classList.toggle('is-on', k === i));
+        panels.forEach((p, k) => p.classList.toggle('on', k === i));
+      }
+      function start() { if (reduce) return; stop(); timer = setInterval(() => show(i + 1), STEP_MS); }
+      function stop() { if (timer) { clearInterval(timer); timer = null; } }
+      steps.forEach((s) => s.addEventListener('click', () => { show(Number(s.dataset.step)); start(); }));
+      walk.addEventListener('mouseenter', stop);
+      walk.addEventListener('mouseleave', start);
+      show(0);
+      start();
+    })();
+
     const form = document.getElementById('signinForm');
     const emailInput = document.getElementById('emailInput');
     const nameInput = document.getElementById('nameInput');
