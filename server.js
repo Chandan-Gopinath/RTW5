@@ -16,6 +16,7 @@ import authMe from "./api/auth/me.js";
 import authSignout from "./api/auth/signout.js";
 import adminConfig from "./api/admin/config.js";
 import adminUsers from "./api/admin/users.js";
+import progressHandler from "./api/progress.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -29,6 +30,7 @@ app.post("/api/auth/signout", (req, res) => authSignout(req, res));
 app.get("/api/admin/config", (req, res) => adminConfig(req, res));
 app.post("/api/admin/config", (req, res) => adminConfig(req, res));
 app.get("/api/admin/users", (req, res) => adminUsers(req, res));
+app.get("/api/progress", (req, res) => progressHandler(req, res));
 
 app.get("/api/models", (req, res) => {
   const models = Object.values(MODELS).map((m) => ({
