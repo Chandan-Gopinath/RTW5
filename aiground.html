@@ -72,6 +72,12 @@
       <p class="aig-lead">Practise a real task on safe, synthetic data — then get graded on the judgment that matters. Work your way along; new tasks unlock over time.</p>
 
       <div class="path">
+        <a class="path__node" href="#" data-start-task="reminder-sms">
+          <span class="path__badge avail"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5 L19 12 L8 19 Z" fill="#EFE84B"/></svg></span>
+          <div class="path__meta"><span class="path__cat">Patient correspondence · Start here</span><span class="path__ttl">Appointment reminder text</span></div>
+          <span class="btn btn--primary btn--sm">Start &rarr;</span>
+        </a>
+
         <a class="path__node" href="#" data-start-task="recall">
           <span class="path__badge avail"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5 L19 12 L8 19 Z" fill="#EFE84B"/></svg></span>
           <div class="path__meta"><span class="path__cat">Patient correspondence · Ready</span><span class="path__ttl">Recall &amp; reminder letters</span></div>
@@ -135,6 +141,10 @@
         <p class="eyebrow">Your prompt</p>
         <h1 class="aig-h">Tell the AI what to write</h1>
         <p class="aig-lead" id="promptLead"></p>
+        <div class="aig-tips-wrap" id="promptTipsWrap" hidden>
+          <p class="aig-tips__k">Keep in mind — you're graded on these</p>
+          <ul class="aig-tips" id="promptTips"></ul>
+        </div>
         <details class="brief-peek" open>
           <summary class="brief-peek__summary">
             <span class="brief-peek__label">The task &amp; record</span>
@@ -327,6 +337,43 @@
     // The grader/answer-key lives server-side (prompts.js). This is only the
     // display copy + the pre-scripted results used when there's no API key.
     const TASK_VIEWS = {
+      'reminder-sms': {
+        brief: {
+          title: 'Draft an appointment reminder text for Riverstone Family Practice',
+          lead: "Your first task — a gentle one. Send Tom a short, friendly SMS reminding him about Thursday's appointment. Draft it with AI, keep it brief and safe.",
+          recordLabel: 'Appointment details — synthetic, safe to practise on',
+          record: [
+            ['Patient', 'Tom Reed'],
+            ['Appointment', 'This Thursday, 2:00pm'],
+            ['With', 'Dr Okafor'],
+            ['Reason for visit', 'Routine diabetes review'],
+            ['To reschedule', 'Reply or call the clinic'],
+          ],
+        },
+        promptLead: "Tell the AI it's a short SMS from Riverstone — friendly and brief. Remember a text only needs the when and where, not the medical reason.",
+        promptPlaceholder: 'e.g. Write a short, friendly SMS from our clinic reminding a patient about their appointment this Thursday at 2pm…',
+        tips: [
+          'Name the clinic and keep it friendly',
+          "Keep it to a line or two — it's a text",
+          'Leave the medical reason out of a text',
+        ],
+        reveal: {
+          lead: 'Same task, done well — short, warm, names the clinic and the time, and leaves the medical reason out of a text.',
+          promptLabel: 'The prompt',
+          promptText: 'Write a short, friendly SMS reminder from Riverstone Family Practice for a patient with an appointment this Thursday at 2:00pm with Dr Okafor. Keep it brief, warm, and don\'t mention the reason for the visit. Tell them to reply or call to reschedule.',
+          draftLabel: 'The text',
+          draftText: `Hi Tom, a friendly reminder of your appointment at Riverstone Family Practice this Thursday at 2:00pm with Dr Okafor. Need to reschedule? Just reply or give us a call. See you then!`,
+        },
+        fallbackDraft: `Hi Tom, this is a reminder from Riverstone Family Practice about your upcoming diabetes review with Dr Okafor this Thursday at 2:00pm. Please remember to fast beforehand and bring your blood sugar log with you. If you need to change the appointment, reply to this message or call the clinic. We look forward to seeing you.`,
+        fallbackGrade: {
+          summary: 'Nice start — one thing to keep out of a text',
+          checks: [
+            { id: 'safety', title: 'Kept the clinical reason out of the text', verdict: 'fail', evidence: '"…about your upcoming diabetes review…"', why: "A text isn't a secure channel — a reminder only needs the time and place, not the medical reason for the visit." },
+            { id: 'brevity', title: 'Kept it short, like a real SMS', verdict: 'warn', evidence: '"…remember to fast beforehand and bring your blood sugar log…"', why: 'Extra instructions make it long (and were never in the brief). A reminder text should be a line or two.' },
+            { id: 'context', title: 'Sounded like the clinic', verdict: 'pass', evidence: '"…from Riverstone Family Practice…"', why: 'You named the clinic and kept it friendly — exactly right.' },
+          ],
+        },
+      },
       recall: {
         brief: {
           title: 'Draft a recall letter for Riverstone Family Practice',
@@ -343,6 +390,12 @@
         },
         promptLead: "Give it enough to sound like Riverstone — and remember what's unsafe to paste in.",
         promptPlaceholder: 'e.g. Write a warm, plain-English recall letter for our clinic inviting a patient to book a review…',
+        tips: [
+          'Give the clinic name and the tone you want',
+          "Describe the situation, not the patient's details",
+          "Don't let it state the clinical result",
+          "Leave placeholders for anything you can't verify",
+        ],
         reveal: {
           lead: 'Same task, done with the three skills. Notice what changed — no personal data, no clinical result, placeholders for anything unverified.',
           promptLabel: 'The prompt',
@@ -389,6 +442,12 @@ Riverstone Family Practice`,
         },
         promptLead: "Give it the clinic and the tone you want — calm and warm — and remember what's unsafe to paste in.",
         promptPlaceholder: 'e.g. Write a calm, empathetic first reply from our clinic to a patient who waited a long time and felt dismissed…',
+        tips: [
+          'Set a calm, empathetic tone',
+          'Keep her name and details out of the tool',
+          "Apologise for the experience — don't admit fault or over-promise",
+          "Don't let it invent a reason for the delay",
+        ],
         reveal: {
           lead: 'Same task, done with judgment. Notice what changed — no personal details in the tool, a sincere apology, no admission of fault, nothing invented, and a human takes it from here.',
           promptLabel: 'The prompt',
@@ -436,6 +495,9 @@ Riverstone Family Practice`,
       document.getElementById('peekRecordLabel').textContent = v.brief.recordLabel;
       document.getElementById('peekRecord').innerHTML = recordHtml;
       document.getElementById('promptLead').textContent = v.promptLead;
+      const tips = v.tips || [];
+      document.getElementById('promptTips').innerHTML = tips.map((t) => `<li>${escapeHtml(t)}</li>`).join('');
+      document.getElementById('promptTipsWrap').hidden = tips.length === 0;
       document.getElementById('promptInput').placeholder = v.promptPlaceholder;
       document.getElementById('revealLead').textContent = v.reveal.lead;
       document.getElementById('revealPromptLabel').textContent = v.reveal.promptLabel;

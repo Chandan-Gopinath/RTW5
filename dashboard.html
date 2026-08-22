@@ -97,68 +97,9 @@
         <button class="gamify-new__x" id="gamifyNewX" aria-label="Dismiss" title="Dismiss">×</button>
       </a>
 
-    <!-- TODAY'S FOCUS -->
-    <p class="section-label">Today's focus</p>
-    <a class="today-hero" href="learn.html?task=recall" data-event="Learn Started">
-      <div class="today-hero__main">
-        <p class="today-hero__cat"><span class="hl">Patient correspondence</span></p>
-        <h2 class="today-hero__title">Recall &amp; reminder letters</h2>
-        <p class="today-hero__desc">Draft a warm, on-brand recall letter with AI — and learn what's unsafe to share, what to verify, and how to make it sound like your clinic.</p>
-        <div class="today-hero__foot">
-          <span class="btn btn--primary">Start today's task &rarr;</span>
-          <span class="meta">~10 min · graded in AIGround</span>
-        </div>
-      </div>
-      <div class="today-hero__aside">
-        <p class="aside-label">What you'll practise</p>
-        <ul class="skill-chips">
-          <li>Give the AI context</li>
-          <li>Keep unsafe data out</li>
-          <li>Verify what it gives back</li>
-        </ul>
-      </div>
-    </a>
-
-    <!-- THE REST OF YOUR WEEK -->
-    <p class="section-label">The rest of your week</p>
-    <section class="catalog" aria-label="Upcoming tasks">
-
-      <a class="taskcard taskcard--live" href="learn.html?task=complaint" data-event="Learn Started">
-        <p class="taskcard__cat"><span class="hl">Complaints &amp; sensitive</span></p>
-        <h2 class="taskcard__title">Complaint responses</h2>
-        <p class="taskcard__desc">Draft a calm, professional first reply — and judge when a draft needs a human, not AI.</p>
-        <div class="taskcard__foot"><span class="meta">De-escalate with care</span><span class="btn btn--primary btn--sm">Start &rarr;</span></div>
-      </a>
-
-      <div class="taskcard taskcard--soon">
-        <p class="taskcard__cat">Staff communication</p>
-        <h2 class="taskcard__title">Staff announcements</h2>
-        <p class="taskcard__desc">Turn messy meeting notes into a clear, calm message the whole team can act on.</p>
-        <div class="taskcard__foot"><span class="meta">Messy notes → message</span><span class="pill pill--soon">Soon</span></div>
-      </div>
-
-      <div class="taskcard taskcard--soon">
-        <p class="taskcard__cat">Policies &amp; procedures</p>
-        <h2 class="taskcard__title">Policy updates</h2>
-        <p class="taskcard__desc">Shape rough notes into a staff-ready SOP — and check the AI hasn't misstated the rule.</p>
-        <div class="taskcard__foot"><span class="meta">Notes → SOP</span><span class="pill pill--soon">Soon</span></div>
-      </div>
-
-      <div class="taskcard taskcard--soon">
-        <p class="taskcard__cat">Reporting</p>
-        <h2 class="taskcard__title">Board reporting</h2>
-        <p class="taskcard__desc">Turn a set of numbers into a written summary — and verify the AI read the figures right.</p>
-        <div class="taskcard__foot"><span class="meta">Numbers → narrative</span><span class="pill pill--soon">Soon</span></div>
-      </div>
-
-      <div class="taskcard taskcard--soon">
-        <p class="taskcard__cat">Compliance &amp; audit</p>
-        <h2 class="taskcard__title">Compliance prep</h2>
-        <p class="taskcard__desc">Generate checklists and evidence summaries — while confirming everything against the primary source.</p>
-        <div class="taskcard__foot"><span class="meta">Checklists &amp; evidence</span><span class="pill pill--soon">Soon</span></div>
-      </div>
-
-    </section>
+    <!-- TASKS — rendered from catalog.js by renderDesk() (Today's focus + the rest) -->
+    <div id="deskFocus"></div>
+    <div id="deskRest"></div>
     </div>
   </main>
 
@@ -181,8 +122,69 @@
   <script src="characters.js"></script>
   <script src="progress-cache.js"></script>
   <script src="gamify-nav.js"></script>
+  <script src="catalog.js"></script>
   <script>
     ygiRequireProfile();
+
+    // ---- desk: rendered from catalog.js (metadata) + per-task completion (tasks) ----
+    function deskEsc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m])); }
+    function tierBadge(tier) {
+      const t = (window.YGI_TIERS || {})[tier];
+      return t ? `<span class="tier-badge tier-badge--${tier}">${t.label}</span>` : '';
+    }
+    function renderDesk(tasks) {
+      if (!window.YGI_CATALOG || !window.ygiPickDesk) return;
+      const pick = window.ygiPickDesk(window.YGI_CATALOG, tasks || {});
+      if (!pick.focus) return;
+      const isNew = !tasks || Object.keys(tasks).length === 0;
+      const f = pick.focus;
+      const chips = (f.chips || []).map(c => `<li>${deskEsc(c)}</li>`).join('');
+
+      // Today's focus (or all-caught-up) hero — keeps .today-hero for the tour + styles.
+      const label = pick.allDone ? "You're all caught up" : "Today's focus";
+      const ribbon = (!pick.allDone && isNew && f.tier === 'starter')
+        ? `<span class="starthere">New here? Start with this</span>` : '';
+      const desc = pick.allDone
+        ? `You've done every task available — nice work. Keep it sharp with a quick refresh of <strong>${deskEsc(f.title)}</strong> while new tasks are on the way.`
+        : deskEsc(f.blurb);
+      const cta = pick.allDone ? 'Refresh this task &rarr;' : 'Start this task &rarr;';
+      document.getElementById('deskFocus').innerHTML = `
+        <p class="section-label">${label}</p>
+        <a class="today-hero" href="learn.html?task=${encodeURIComponent(f.id)}" data-event="Learn Started">
+          <div class="today-hero__main">
+            <p class="today-hero__cat">${ribbon}${tierBadge(f.tier)} <span class="hl">${deskEsc(f.category)}</span></p>
+            <h2 class="today-hero__title">${deskEsc(f.title)}</h2>
+            <p class="today-hero__desc">${desc}</p>
+            <div class="today-hero__foot">
+              <span class="btn btn--primary">${cta}</span>
+              <span class="meta">${deskEsc(f.meta || '')}</span>
+            </div>
+          </div>
+          ${chips ? `<div class="today-hero__aside"><p class="aside-label">What you'll practise</p><ul class="skill-chips">${chips}</ul></div>` : ''}
+        </a>`;
+
+      // The rest of your week: remaining live tasks + locked "soon" teasers.
+      const liveCards = pick.rest.map(t => {
+        const done = tasks && tasks[t.id] && tasks[t.id].passed;
+        return `<a class="taskcard taskcard--live" href="learn.html?task=${encodeURIComponent(t.id)}" data-event="Learn Started">
+          <p class="taskcard__cat">${tierBadge(t.tier)} <span class="hl">${deskEsc(t.category)}</span></p>
+          <h2 class="taskcard__title">${deskEsc(t.title)}</h2>
+          <p class="taskcard__desc">${deskEsc(t.blurb)}</p>
+          <div class="taskcard__foot"><span class="meta">${done ? '✓ Passed — do it again' : deskEsc(t.meta || '')}</span><span class="btn btn--primary btn--sm">${done ? 'Revisit &rarr;' : 'Start &rarr;'}</span></div>
+        </a>`;
+      }).join('');
+      const soonCards = pick.soon.map(t => `
+        <div class="taskcard taskcard--soon">
+          <p class="taskcard__cat">${tierBadge(t.tier)} ${deskEsc(t.category)}</p>
+          <h2 class="taskcard__title">${deskEsc(t.title)}</h2>
+          <p class="taskcard__desc">${deskEsc(t.blurb)}</p>
+          <div class="taskcard__foot"><span class="meta">${deskEsc(t.meta || '')}</span><span class="pill pill--soon">Soon</span></div>
+        </div>`).join('');
+      document.getElementById('deskRest').innerHTML =
+        `<p class="section-label">The rest of your week</p><section class="catalog" aria-label="More tasks">${liveCards}${soonCards}</section>`;
+    }
+    renderDesk({}); // instant paint (default: Starter focus); refined once progress arrives
+    if (window.ygiOnProgress) window.ygiOnProgress((p, stale, tasks) => renderDesk(tasks));
 
     // gamification panel — cache-first via ygiOnProgress (instant from cache, then fresh)
     function renderGamify(p, isStale) {

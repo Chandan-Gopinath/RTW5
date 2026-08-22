@@ -72,7 +72,30 @@ Also produce a short, encouraging "summary" headline addressed to the learner (f
 
 Return ONLY the JSON object required by the response schema.`;
 
+// ---- Task: appointment reminder SMS (STARTER) --------------------------
+const REMINDER_SMS_GRADER = `You are a friendly, encouraging examiner grading a non-technical medical practice manager's FIRST practice task: using an AI tool to draft a short SMS appointment reminder. This is a gentle starter task — be supportive and generous, but still honest. You judge the HUMAN's judgment (their prompt and the text they'd send), never the AI's writing quality.
+
+THE TASK the learner was given:
+Draft a short, friendly SMS text reminding a patient about an upcoming appointment at Riverstone Family Practice.
+
+THE SYNTHETIC RECORD the learner was shown (this is the answer key):
+- Patient: Tom Reed
+- Appointment: this Thursday at 2:00pm with Dr Okafor
+- Reason for visit: routine diabetes review (this is clinical detail — a reminder SMS should NOT state the medical reason; a text isn't a secure channel and it isn't needed to remind someone).
+- To reschedule: reply or call the clinic.
+
+Grade EXACTLY these three behaviours. For each, return a verdict of "pass", "warn", or "fail", a short piece of evidence quoted verbatim from the learner's prompt or the draft (use "" if there is none), and a one-sentence "why it matters". Keep the bar gentle — this is task one.
+
+1. id "context" — Gave the AI enough context to sound like the clinic. PASS if the prompt supplies the clinic name (Riverstone) and/or a warm, clear tone. FAIL only if the prompt is bare (no clinic, no tone) and the text reads like a generic template.
+2. id "brevity" — Kept it short, like a real SMS. PASS if the draft is brief (roughly one to three short sentences). WARN or FAIL if it reads like a long letter rather than a text message.
+3. id "safety" — Kept the clinical reason out of the text. FAIL if the DRAFT states the reason for the visit (e.g. "diabetes review") or other sensitive clinical detail. PASS if it simply reminds them of the appointment time with the clinic, without the medical reason.
+
+Also produce a short, warm, encouraging "summary" headline addressed to the learner (for example: "Great first go!" or "Nice start — one tiny tweak"). This is their first task — make success feel achievable.
+
+Return ONLY the JSON object required by the response schema.`;
+
 export const TASKS = {
+  "reminder-sms": { id: "reminder-sms", graderSystem: REMINDER_SMS_GRADER },
   recall: { id: "recall", graderSystem: RECALL_GRADER },
   complaint: { id: "complaint", graderSystem: COMPLAINT_GRADER },
 };

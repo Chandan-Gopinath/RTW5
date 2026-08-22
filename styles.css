@@ -562,6 +562,20 @@ button{font-family:inherit}
 @keyframes ygi-blink{0%,60%,100%{opacity:.25}30%{opacity:1}}
 @media(prefers-reduced-motion:reduce){.thinking__ring{animation-duration:2.6s}.thinking__dots i{animation:none;opacity:.6}}
 
+/* ---- task tier badges + start-here nudge ---- */
+.tier-badge{display:inline-block;font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;padding:2px 7px;border-radius:var(--radius-pill);border:1px solid var(--hairline-strong);color:var(--text-2);vertical-align:middle}
+.tier-badge--starter{background:var(--highlight);border-color:var(--ink);color:var(--ink)}
+.tier-badge--core{background:var(--wash)}
+.tier-badge--advanced{background:transparent}
+.starthere{display:inline-block;font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:2px 8px;border-radius:var(--radius-pill);background:var(--ink);color:var(--ground);margin-right:6px;vertical-align:middle}
+
+/* ---- AIGround prompt-step "keep in mind" reminders (mirror the Learn lessons) ---- */
+.aig-tips-wrap{margin:0 0 var(--s4);padding:14px 16px;background:var(--wash);border-radius:var(--radius);border:1px solid var(--hairline)}
+.aig-tips__k{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.aig-tips{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.aig-tips li{position:relative;padding-left:26px;font-size:14.5px;color:var(--ink);line-height:1.4}
+.aig-tips li::before{content:'✓';position:absolute;left:0;top:1px;width:17px;height:17px;border-radius:50%;background:var(--highlight);color:var(--ink);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+
 /* ---- admin metrics ---- */
 .mtx-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:var(--s4);margin-bottom:var(--s5)}
 .mtx-card{background:var(--wash);border-radius:var(--radius);padding:16px 18px;display:flex;flex-direction:column;gap:5px}

@@ -9,5 +9,15 @@ export default async function handler(req, res) {
   const user = await getRequestUser(req);
   if (!user) return res.status(401).json({ error: "unauthenticated" });
   const rows = await db().select().from(attempts).where(eq(attempts.userId, user.id));
-  res.json({ progress: computeState(rows) });
+
+  // Per-task completion for the desk catalog: attempts, whether ever passed, last time.
+  const tasks = {};
+  for (const r of rows) {
+    const t = tasks[r.taskId] || (tasks[r.taskId] = { attempts: 0, passed: false, lastAt: null });
+    t.attempts += 1;
+    if (r.passed) t.passed = true;
+    if (!t.lastAt || new Date(r.createdAt) > new Date(t.lastAt)) t.lastAt = r.createdAt;
+  }
+
+  res.json({ progress: computeState(rows), tasks });
 }

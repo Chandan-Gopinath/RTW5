@@ -91,12 +91,39 @@
     // ---------- task-aware lesson content ----------
     // Each task's three judgment lessons map to how it's graded in AIGround.
     const LEARN = {
+      'reminder-sms': {
+        title: 'Appointment reminders',
+        eyebrow: 'Learn · Start here',
+        heading: 'Appointment reminder text',
+        lead: "Your first task — a gentle one. Three quick ideas, about two minutes, then you'll try it in AIGround.",
+        ctaText: "In AIGround you'll write a short reminder text yourself and get friendly, graded feedback — on safe, synthetic details.",
+        lessons: [
+          {
+            title: 'Tell the AI who you are',
+            text: `A quick line of context is all it takes for the AI to sound like your clinic. Name the practice and the tone you want — friendly and clear — instead of leaving it to guess.`,
+            do: `"A short, friendly SMS from Riverstone Family Practice reminding a patient about their appointment."`,
+            dont: `"Write a reminder."`,
+          },
+          {
+            title: 'Keep it short',
+            text: `It's a text, not a letter. A reminder only needs the day, the time, and how to reschedule — a sentence or two. If the AI writes a paragraph, trim it back.`,
+            do: `"Keep it to one or two short sentences."`,
+            dont: `A long message with extra instructions no one asked for.`,
+          },
+          {
+            title: 'Leave the medical reason out',
+            text: `A text message isn't a secure, private channel — and a reminder doesn't need the reason for the visit. Give the time and place; leave the clinical detail (like why they're coming in) out of it.`,
+            do: `"…your appointment this Thursday at 2pm."`,
+            dont: `"…your diabetes review this Thursday at 2pm."`,
+          },
+        ],
+      },
       recall: {
         title: 'Recall letters',
         eyebrow: 'Learn · Patient correspondence',
         heading: 'Recall & reminder letters',
-        lead: "Three judgment skills, one real task — about four minutes, then you'll prove it in AIGround.",
-        ctaText: "In AIGround you'll write the letter yourself and get graded on these three skills — on safe, synthetic data.",
+        lead: "Four judgment skills, one real task — about five minutes, then you'll prove it in AIGround.",
+        ctaText: "In AIGround you'll write the letter yourself and get graded on these four skills — on safe, synthetic data.",
         lessons: [
           {
             title: 'Give the AI context',
@@ -111,6 +138,12 @@
             dont: `"Margaret Nguyen, DOB 14/03/1958, Medicare 2953 8881 71, borderline high result"`,
           },
           {
+            title: "Don't reveal the clinical result",
+            text: `A reminder invites a booking — it should never state a clinical finding. The AI will happily repeat any result you feed it, so keep it out; that conversation belongs in the room, not the letterbox. Dr Okafor asked you not to alarm her.`,
+            do: `"It's time for your regular review — please book in."`,
+            dont: `"Your recent borderline high blood sugar result means you're due…"`,
+          },
+          {
             title: 'Verify what it gives back',
             text: `AI writes confidently even when it's wrong — it will invent a phone number or a date to fill a gap. Treat every draft as a first version: leave placeholders for anything you can't confirm, and check facts against the real source before it goes out.`,
             do: `Leave "[booking phone]" and confirm it before sending.`,
@@ -122,8 +155,8 @@
         title: 'Complaint responses',
         eyebrow: 'Learn · Complaints & sensitive',
         heading: 'Complaint responses',
-        lead: "Three judgment skills for a first reply that's warm, safe, and careful — then you'll prove it in AIGround.",
-        ctaText: "In AIGround you'll write the reply yourself and get graded on these three skills — on a safe, synthetic complaint.",
+        lead: "Four judgment skills for a first reply that's warm, safe, and careful — then you'll prove it in AIGround.",
+        ctaText: "In AIGround you'll write the reply yourself and get graded on these four skills — on a safe, synthetic complaint.",
         lessons: [
           {
             title: 'Set a calm, careful tone',
@@ -139,9 +172,15 @@
           },
           {
             title: "Apologise, don't over-commit",
-            text: `You can be warm without signing the clinic up to things. Say sorry for the experience, but don't admit fault, promise it'll never happen again, or offer a refund — and don't let the AI invent a reason for the delay it was never told. Some complaints need a real human: hand off to a call.`,
+            text: `You can be warm without signing the clinic up to things. Say sorry for the experience, but don't admit fault, promise it'll never happen again, or offer a refund — those aren't yours to give in a first reply. Some complaints need a real human: hand off to a call.`,
             do: `"I'm sorry about your experience — our practice principal will call you to talk it through."`,
-            dont: `"This was completely our fault, it won't happen again, and here's a refund. (The doctor had an emergency.)"`,
+            dont: `"This was completely our fault, it won't happen again, and here's a refund."`,
+          },
+          {
+            title: "Don't let it invent facts",
+            text: `The AI fills gaps with plausible fiction — it will invent a reason for the delay it was never told. Apologise for the experience without making up an excuse; only state what you actually know.`,
+            do: `Apologise for the wait without explaining a cause you can't confirm.`,
+            dont: `"The doctor was running late because of an emergency." (You were never told why.)`,
           },
         ],
       },
